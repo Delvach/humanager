@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 
 import Tab from '@material-ui/core/Tab';
@@ -6,23 +6,19 @@ import Tabs from '@material-ui/core/Tabs';
 
 import { TABS } from '../constants/navigation';
 
-class TabsNav extends Component {
-  onChange = (e, val) => {
-    this.props.onTabChange(val);
-  };
+import { changeTab } from '../actions/navigation';
 
-  render() {
-    return (
-      <div>
-        <Tabs value={this.props.tab} onChange={this.onChange} centered>
-          {TABS.map(({ title, value }) => (
-            <Tab key={value} label={title} />
-          ))}
-        </Tabs>
-      </div>
-    );
-  }
-}
+const TabsNav = ({ changeTab, tab }) => {
+  return (
+    <div>
+      <Tabs value={tab} onChange={(e, v) => changeTab(v)} centered>
+        {TABS.map(({ title, value }) => (
+          <Tab key={value} label={title} />
+        ))}
+      </Tabs>
+    </div>
+  );
+};
 
 function mapStateToProps(state) {
   return {
@@ -30,4 +26,13 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps)(TabsNav);
+const mapDispatchToProps = dispatch => ({
+  changeTab: id => {
+    dispatch(changeTab(id));
+  }
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(TabsNav);

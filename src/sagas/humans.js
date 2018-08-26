@@ -64,10 +64,11 @@ function* loadHumanData({ payload }) {
 
 function* handleHumanSubmit(payload) {
   const isNew = yield select(state => state.human.isNew);
+  console.log(isNew);
   if (isNew) {
-    yield* call(createHuman());
+    yield* createHuman();
   } else {
-    yield* call(updateHuman(payload));
+    yield* updateHuman(payload);
   }
 }
 

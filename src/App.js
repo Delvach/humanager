@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { initApp } from './actions';
-import { changeTab } from './actions/navigation';
+// import { changeTab } from './actions/navigation';
 
 import './App.css';
 
@@ -17,7 +17,6 @@ import RolesView from './modules/RolesView';
 
 class App extends Component {
   componentDidMount = () => this.props.initApp();
-  onTabChange = val => this.props.changeTab(val);
 
   tabViews = idx => {
     return [<HumansView />, <RolesView />, <div>Item Three</div>][idx];
@@ -34,11 +33,7 @@ class App extends Component {
             </Typography>
           </Toolbar>
         </AppBar>
-        <TabsNav
-          tab={this.props.tab}
-          onTabChange={this.onTabChange}
-          createHuman={this.onCreateHuman}
-        />
+        <TabsNav />
         {this.tabViews(this.props.tab)}
       </div>
     );
@@ -54,8 +49,7 @@ function mapStateToProps({ navigation }) {
 }
 
 const mapDispatchToProps = dispatch => ({
-  initApp: () => dispatch(initApp()),
-  changeTab: tab => dispatch(changeTab(tab))
+  initApp: () => dispatch(initApp())
 });
 
 export default connect(
