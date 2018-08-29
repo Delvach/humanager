@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
 // import Human from './Human';
 import Paper from '@material-ui/core/Paper';
@@ -11,7 +12,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Button from '@material-ui/core/Button';
 
 import { deleteHumanAction } from '../actions/humans';
-import { openEditHumanModalAction } from '../actions/navigation';
+import { toggleHumanModalStatusAction } from '../actions/navigation';
 
 const HumanList = ({ deleteHuman, editHuman, humans }) => (
   <Paper>
@@ -32,7 +33,7 @@ const HumanList = ({ deleteHuman, editHuman, humans }) => (
               <Button
                 variant="contained"
                 color="primary"
-                onClick={() => editHuman(id)}
+                onClick={() => editHuman(true, id)}
               >
                 Edit
               </Button>
@@ -53,10 +54,14 @@ const HumanList = ({ deleteHuman, editHuman, humans }) => (
 
 const mapStateToProps = ({ humans }) => ({ humans });
 
-const mapDispatchToProps = dispatch => ({
-  deleteHuman: (id = null) => dispatch(deleteHumanAction(id)),
-  editHuman: (id = null) => dispatch(openEditHumanModalAction(id))
-});
+const mapDispatchToProps = dispatch =>
+  bindActionCreators(
+    {
+      deleteHuman: deleteHumanAction,
+      editHuman: toggleHumanModalStatusAction
+    },
+    dispatch
+  );
 
 export default connect(
   mapStateToProps,

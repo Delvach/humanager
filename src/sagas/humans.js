@@ -11,19 +11,14 @@ import {
   humanUpdatedAction
 } from '../actions/humans';
 
-import { setHumanAttribute } from '../actions/human';
+// import { setHumanName } from '../actions/human';
 
 import { closeEditHumanModalAction } from '../actions/navigation';
 
 import * as ACTIONS from '../constants/actions';
 import * as DATABASE_TABLES from '../constants/api';
-import { HUMAN_NAME } from '../constants/humans';
 
-import {
-  normalizeAllHumansData,
-  normalizeHumanData,
-  normalizeCreateHumanData
-} from '../utils/humans';
+import { normalizeAllHumansData } from '../utils/humans';
 
 /*
  *  Define saga tasks
@@ -56,7 +51,7 @@ function* loadHumanData({ payload }) {
     );
 
     // Update state with human data
-    yield put(humanLoadedAction(normalizeHumanData(human)));
+    yield put(humanLoadedAction(human));
   } catch (error) {
     yield put(apiError(error));
   }
@@ -84,7 +79,7 @@ function* createHuman() {
     const newHumanID = yield call(
       api.database.create,
       DATABASE_TABLES.HUMANS,
-      normalizeCreateHumanData(data)
+      data
     );
 
     // Dispatch human creation success notification
@@ -104,6 +99,7 @@ function* createHuman() {
  *  Update existing human in api
  */
 function* updateHuman({ payload }) {
+  console.log(payload);
   try {
     // Pull human data from state
     const data = yield select(state => state.human);
@@ -112,7 +108,7 @@ function* updateHuman({ payload }) {
     yield call(
       api.database.patch,
       `${DATABASE_TABLES.HUMANS}/${payload.id}`,
-      normalizeCreateHumanData(data)
+      data
     );
 
     // Dispatch human update success notification
@@ -143,48 +139,48 @@ function* deleteHuman({ payload }) {
 /*
  * Set modal for new human
  */
-function* openHumanCreateModal() {
-  try {
-    // Set empty data for new human
-    yield put(setHumanAttribute(HUMAN_NAME, ''));
+// function* openHumanCreateModal() {
+//   try {
+//     // Set empty data for new human
+//     // yield put(setHumanName(HUMAN_NAME, ''));
 
-    // Open modal
-    yield put({
-      type: ACTIONS.CHANGE_HUMAN_MODAL_STATUS,
-      payload: {
-        open: true
-      }
-    });
-  } catch (error) {
-    yield put(apiError(error));
-  }
-}
+//     // Open modal
+//     yield put({
+//       type: ACTIONS.CHANGE_HUMAN_MODAL_STATUS,
+//       payload: {
+//         open: true
+//       }
+//     });
+//   } catch (error) {
+//     yield put(apiError(error));
+//   }
+// }
 
 /*
  * Set modal for existing human
  */
-function* openHumanEditModal({ payload }) {
-  try {
-    // Import existing user data from API to ensure up-to-date
-    yield* loadHumanData({ payload });
+// function* openHumanEditModal({ payload }) {
+//   try {
+//     // Import existing user data from API to ensure up-to-date
+//     yield* loadHumanData({ payload });
 
-    // Pull updated data from state
-    const human = yield select(({ human }) => ({ human }));
+//     // Pull updated data from state
+//     // const human = yield select(({ human }) => ({ human }));
 
-    // Inject existing user data into modal fields
-    yield put(setHumanAttribute(HUMAN_NAME, human[HUMAN_NAME]));
+//     // Inject existing user data into modal fields
+//     // yield put(setHumanName(HUMAN_NAME, human[HUMAN_NAME]));
 
-    // Open modal
-    yield put({
-      type: ACTIONS.CHANGE_HUMAN_MODAL_STATUS,
-      payload: {
-        open: true
-      }
-    });
-  } catch (error) {
-    yield put(apiError(error));
-  }
-}
+//     // Open modal
+//     yield put({
+//       type: ACTIONS.CHANGE_HUMAN_MODAL_STATUS,
+//       payload: {
+//         open: true
+//       }
+//     });
+//   } catch (error) {
+//     yield put(apiError(error));
+//   }
+// }
 
 /*
  *  Define saga watchers
@@ -214,13 +210,13 @@ function* watchHumanDelete() {
   yield takeEvery(ACTIONS.DELETE_HUMAN, deleteHuman);
 }
 
-function* watchHumanCreateModalOpen() {
-  yield takeEvery(ACTIONS.OPEN_CREATE_HUMAN_MODAL, openHumanCreateModal);
-}
+// function* watchHumanCreateModalOpen() {
+//   yield takeEvery(ACTIONS.OPEN_CREATE_HUMAN_MODAL, openHumanCreateModal);
+// }
 
-function* watchHumanEditModalOpen() {
-  yield takeEvery(ACTIONS.OPEN_EDIT_HUMAN_MODAL, openHumanEditModal);
-}
+// function* watchHumanEditModalOpen() {
+//   yield takeEvery(ACTIONS.OPEN_EDIT_HUMAN_MODAL, openHumanEditModal);
+// }
 
 export const humansSagas = [
   initializeHumanagerApp(),
@@ -228,7 +224,5 @@ export const humansSagas = [
   watchHumanLoad(),
   watchHumanCreation(),
   watchHumanUpdate(),
-  watchHumanDelete(),
-  watchHumanCreateModalOpen(),
-  watchHumanEditModalOpen()
+  watchHumanDelete()
 ];

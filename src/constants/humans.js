@@ -14,14 +14,15 @@ export const DEFAULT_HUMAN_FIELD = {
   valid: false
 };
 
-export const DEFAULT_STATE_HUMAN = {
-  name: { ...DEFAULT_HUMAN_FIELD },
-  nickname: { ...DEFAULT_HUMAN_FIELD },
-  isNew: true
-};
+export const DEFAULT_STATE_HUMAN = { name: '', email: '', age: '' };
+
+export const HUMAN_MODAL_MODE_CREATE = 'create';
+export const HUMAN_MODAL_MODE_EDIT = 'edit';
 
 export const DEFAULT_STATE_NAVIGATION = {
-  editHumanModalOpen: false,
+  humanModalOpen: false,
+  humanModalMode: HUMAN_MODAL_MODE_CREATE,
+  humanModalEditId: null,
   tab: 0
 };
 

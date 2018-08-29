@@ -1,11 +1,29 @@
 import * as ACTIONS from '../constants/actions';
 
-export const setHumanAttribute = ({ attrib, value }) => {
+// export const setHumanName = ({ key, value }) => {
+//   return {
+//     type: ACTIONS.STORE_HUMAN_NAME,
+//     payload: {
+//       key,
+//       value
+//     }
+//   };
+// };
+
+export const submitHumanFormAction = ({ name = '', email = '', age = '' }) => {
   return {
-    type: ACTIONS.STORE_HUMAN_ATTRIBUTE,
+    type: ACTIONS.SUBMIT_HUMAN_MODAL,
     payload: {
-      attrib,
-      value
+      name,
+      email,
+      age
     }
+  };
+};
+
+export const initializeHumanFormAction = () => {
+  return {
+    type: 'INITIALIZE',
+    payload: {}
   };
 };

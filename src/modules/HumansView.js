@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
 import { openCreateHumanModalAction } from '../actions/navigation';
 
@@ -18,9 +19,11 @@ const HumansView = ({ openCreateHumanModal }) => (
 
 const mapStateToProps = ({ humans }) => ({ humans });
 
-const mapDispatchToProps = dispatch => ({
-  openCreateHumanModal: () => dispatch(openCreateHumanModalAction())
-});
+const mapDispatchToProps = dispatch =>
+  bindActionCreators(
+    { openCreateHumanModal: openCreateHumanModalAction },
+    dispatch
+  );
 
 export default connect(
   mapStateToProps,

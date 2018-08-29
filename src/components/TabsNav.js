@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
 import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
@@ -20,17 +21,12 @@ const TabsNav = ({ changeTab, tab }) => {
   );
 };
 
-function mapStateToProps(state) {
-  return {
-    tab: state.navigation.tab
-  };
-}
-
-const mapDispatchToProps = dispatch => ({
-  changeTab: id => {
-    dispatch(changeTab(id));
-  }
+const mapStateToProps = state => ({
+  tab: state.navigation.tab
 });
+
+const mapDispatchToProps = dispatch =>
+  bindActionCreators({ changeTab }, dispatch);
 
 export default connect(
   mapStateToProps,

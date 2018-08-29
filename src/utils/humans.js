@@ -22,7 +22,12 @@ export const normalizeHumanData = human => {
   return human;
 };
 
-export const normalizeCreateHumanData = ({ name, nickname }) => ({
-  name: name.value,
-  nickname: nickname.value
+export const normalizeCreateHumanData = ({
+  name = '',
+  email = '',
+  age = ''
+}) => ({
+  name,
+  email,
+  age
 });
