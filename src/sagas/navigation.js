@@ -8,8 +8,11 @@ import {
   setHumanModalModeAction,
   setHumanModalEditIdAction,
   setHumanModalOpenStatusAction,
-  setHumanModalInitDataAction
+  setHumanModalInitDataAction,
+  resetHumanModalInitDataAction
 } from '../actions/navigation';
+
+import { uiErrorHandler } from '../utils/core';
 
 // Handle human create/edit open/close & related behaviors
 function* setHumanModalStatus({ payload }) {
@@ -19,8 +22,8 @@ function* setHumanModalStatus({ payload }) {
   // Set flag indicating modal mode
   yield put(setHumanModalModeAction(mode));
 
-  // If editing, use ID to populate initialValues data
-  yield put(setHumanModalEditIdAction(isEditing ? id : null));
+  // If editing, use ID to populate  data
+  yield put(setHumanModalEditIdAction(open && isEditing ? id : null));
 
   if (isEditing) {
     try {
@@ -33,12 +36,15 @@ function* setHumanModalStatus({ payload }) {
       // Set data used by initialValues during form render
       yield put(setHumanModalInitDataAction(human));
     } catch (error) {
-      console.log(`ERROR: Unable to load user ${id}`);
+      uiErrorHandler(`ERROR: Unable to load user ${id}`);
     }
   }
 
   // Set flag used for modal open status
   yield put(setHumanModalOpenStatusAction(open));
+
+  // When closing, reset human data used to init modal
+  if (!open) yield put(resetHumanModalInitDataAction());
 }
 
 /*

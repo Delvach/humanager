@@ -13,7 +13,7 @@ import Grid from '@material-ui/core/Grid';
 
 import HumanForm from '../forms/human';
 
-import { closeEditHumanModalAction } from '../../actions/navigation';
+import { toggleHumanModalStatusAction } from '../../actions/navigation';
 
 const getModalStyle = (top = 50, left = 50) => ({
   top: `${top}%`,
@@ -33,7 +33,12 @@ const styles = theme => ({
 
 const UserModal = ({ humanModalOpen, handleClose, classes }) => {
   return (
-    <Modal open={humanModalOpen} onClose={handleClose}>
+    <Modal
+      open={humanModalOpen}
+      onClose={() => {
+        handleClose(false);
+      }}
+    >
       <div style={getModalStyle()} className={classes.paper}>
         <Grid>
           <h2>Title</h2>
@@ -51,7 +56,7 @@ const mapStateToProps = ({ navigation }) => ({
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
     {
-      handleClose: closeEditHumanModalAction
+      handleClose: toggleHumanModalStatusAction
     },
     dispatch
   );

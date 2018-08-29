@@ -13,22 +13,22 @@ export const changeTab = tab => {
   };
 };
 
-export const toggleModal = (dataType, open, id = null) => {
-  return {
-    type: ACTIONS.CHANGE_HUMAN_MODAL_STATUS,
-    payload: {
-      dataType,
-      open,
-      id,
-      isNew: id === null
-    }
-  };
-};
+// export const toggleModal = (dataType, open, id = null) => {
+//   return {
+//     type: ACTIONS.CHANGE_HUMAN_MODAL_STATUS,
+//     payload: {
+//       dataType,
+//       open,
+//       id,
+//       isNew: id === null
+//     }
+//   };
+// };
 
-export const openCreateHumanModalAction = () => ({
-  type: ACTIONS.OPEN_CREATE_HUMAN_MODAL,
-  payload: {}
-});
+// export const openCreateHumanModalAction = () => ({
+//   type: ACTIONS.OPEN_CREATE_HUMAN_MODAL,
+//   payload: {}
+// });
 
 // export const openEditHumanModalAction = id => ({
 //   type: ACTIONS.OPEN_EDIT_HUMAN_MODAL,
@@ -37,14 +37,7 @@ export const openCreateHumanModalAction = () => ({
 //   }
 // });
 
-export const closeEditHumanModalAction = () => toggleModal('human', false);
-
-export const submitHumanModalAction = () => {
-  return {
-    type: ACTIONS.SUBMIT_HUMAN_MODAL,
-    payload: {}
-  };
-};
+// export const closeEditHumanModalAction = () => toggleModal('human', false);
 
 // Open or close human modal
 // Determine whether human modal functions as create or edit by inclusion of ID
@@ -83,9 +76,24 @@ export const setHumanModalInitDataAction = human => {
   };
 };
 
+export const resetHumanModalInitDataAction = human => {
+  return {
+    type: ACTIONS.RESET_HUMAN_MODAL_INIT_VALUES,
+    payload: {}
+  };
+};
+
 export const setHumanModalOpenStatusAction = open => ({
   type: ACTIONS.SET_HUMAN_MODAL_OPEN_STATUS,
   payload: {
     open
   }
 });
+
+// Human form submission
+export const submitHumanModalAction = () => {
+  return {
+    type: ACTIONS.SUBMIT_HUMAN_MODAL,
+    payload: {}
+  };
+};

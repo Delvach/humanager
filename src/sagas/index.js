@@ -4,9 +4,11 @@ import { humansSagas } from './humans';
 import { navigationSagas } from './navigation';
 import { rolesSagas } from './roles';
 
+import { apiErrorHandler } from '../utils/core';
+
 // Default API error handler
 function* handleAPIError({ payload }) {
-  yield call(console.log(payload.error));
+  yield call(apiErrorHandler(payload.error));
 }
 
 // Watch for default API error handler

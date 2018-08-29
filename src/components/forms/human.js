@@ -40,13 +40,13 @@ const warn = values => {
 };
 
 // Define component
-const HumanForm = ({ pristine, handleSubmit, valid }) => (
+const HumanForm = ({ pristine, handleSubmit, createNewUser, valid }) => (
   <form onSubmit={handleSubmit}>
     <Field type="text" name="username" component={TextField} hintText="Name" />
     <Field type="text" name="email" component={TextField} hintText="Email" />
     <Field type="text" name="age" component={TextField} hintText="Age" />
     <Button disabled={!valid} variant="contained" color="primary" type="submit">
-      Click me
+      {createNewUser ? 'Create' : 'Update'}
     </Button>
     {pristine && <div>Pristine</div>}
   </form>
@@ -60,15 +60,21 @@ const HumanReduxForm = reduxForm({
 })(HumanForm);
 
 // Connected redux-form-wrapped component with initialValues mapped
-const HumanReduxFormSubmittable = ({ submitHumanForm, initialValues }) => (
+const HumanReduxFormSubmittable = ({
+  submitHumanForm,
+  initialValues,
+  createNewUser
+}) => (
   <HumanReduxForm
     initialValues={initialValues}
     onSubmit={values => submitHumanForm(values)}
+    createNewUser={createNewUser}
   />
 );
 
 // initialValues populates form when launched
-const mapStateToProps = ({ human }) => ({
+const mapStateToProps = ({ human, navigation }) => ({
+  createNewUser: navigation.humanModalEditId === null,
   initialValues: {
     username: human.username,
     email: human.email,
@@ -76,6 +82,7 @@ const mapStateToProps = ({ human }) => ({
   }
 });
 
+//navigation.humanModalEditId === null
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
     {

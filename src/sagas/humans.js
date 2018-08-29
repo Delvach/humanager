@@ -13,7 +13,7 @@ import {
 
 // import { setHumanName } from '../actions/human';
 
-import { closeEditHumanModalAction } from '../actions/navigation';
+import { toggleHumanModalStatusAction } from '../actions/navigation';
 
 import * as ACTIONS from '../constants/actions';
 import * as DATABASE_TABLES from '../constants/api';
@@ -57,23 +57,36 @@ function* loadHumanData({ payload }) {
   }
 }
 
-function* handleHumanSubmit(payload) {
-  const isNew = yield select(state => state.human.isNew);
-  console.log(isNew);
-  if (isNew) {
-    yield* createHuman();
-  } else {
-    yield* updateHuman(payload);
+function* handleHumanModalSubmit() {
+  try {
+    const state = yield select(state => state);
+
+    const { username, email, age } = state.form.humanForm.values;
+    const id = state.navigation.humanModalEditId;
+    console.log(id);
+    if (id === null) {
+      yield* createHuman({ username, email, age });
+    } else {
+      yield* updateHuman({ username, email, age, id });
+    }
+
+    // Close human modal
+    yield put(toggleHumanModalStatusAction(false));
+
+    // Refresh master human list
+    yield* loadHumansData();
+  } catch (error) {
+    yield put(apiError(error));
   }
 }
 
 /*
  *  Save new human to api
  */
-function* createHuman() {
+function* createHuman(data) {
   try {
     // Pull human data from state
-    const data = yield select(state => state.human);
+    // const data = yield select(state => state.human);
 
     // Submit new human to API
     const newHumanID = yield call(
@@ -85,11 +98,8 @@ function* createHuman() {
     // Dispatch human creation success notification
     yield put(humanCreatedAction(newHumanID));
 
-    // Ensure human modal is closed
-    yield put(closeEditHumanModalAction());
-
-    // Refresh master human list
-    yield* loadHumansData();
+    // // Refresh master human list
+    // yield* loadHumansData();
   } catch (error) {
     yield put(apiError(error));
   }
@@ -98,24 +108,24 @@ function* createHuman() {
 /*
  *  Update existing human in api
  */
-function* updateHuman({ payload }) {
-  console.log(payload);
+function* updateHuman(data) {
   try {
     // Pull human data from state
-    const data = yield select(state => state.human);
+    // const data = yield select(state => state.human);
+    const { username, email, age } = data;
 
     // Submit updated human to API
-    yield call(
-      api.database.patch,
-      `${DATABASE_TABLES.HUMANS}/${payload.id}`,
-      data
-    );
+    yield call(api.database.patch, `${DATABASE_TABLES.HUMANS}/${data.id}`, {
+      username,
+      email,
+      age
+    });
 
     // Dispatch human update success notification
-    yield put(humanUpdatedAction(payload.id));
+    yield put(humanUpdatedAction(data.id));
 
-    // Refresh master human list
-    yield* loadHumansData();
+    // // Refresh master human list
+    // yield* loadHumansData();
   } catch (error) {
     yield put(apiError(error));
   }
@@ -137,52 +147,6 @@ function* deleteHuman({ payload }) {
 }
 
 /*
- * Set modal for new human
- */
-// function* openHumanCreateModal() {
-//   try {
-//     // Set empty data for new human
-//     // yield put(setHumanName(HUMAN_NAME, ''));
-
-//     // Open modal
-//     yield put({
-//       type: ACTIONS.CHANGE_HUMAN_MODAL_STATUS,
-//       payload: {
-//         open: true
-//       }
-//     });
-//   } catch (error) {
-//     yield put(apiError(error));
-//   }
-// }
-
-/*
- * Set modal for existing human
- */
-// function* openHumanEditModal({ payload }) {
-//   try {
-//     // Import existing user data from API to ensure up-to-date
-//     yield* loadHumanData({ payload });
-
-//     // Pull updated data from state
-//     // const human = yield select(({ human }) => ({ human }));
-
-//     // Inject existing user data into modal fields
-//     // yield put(setHumanName(HUMAN_NAME, human[HUMAN_NAME]));
-
-//     // Open modal
-//     yield put({
-//       type: ACTIONS.CHANGE_HUMAN_MODAL_STATUS,
-//       payload: {
-//         open: true
-//       }
-//     });
-//   } catch (error) {
-//     yield put(apiError(error));
-//   }
-// }
-
-/*
  *  Define saga watchers
  */
 function* initializeHumanagerApp() {
@@ -197,9 +161,9 @@ function* watchHumanLoad() {
   yield takeEvery(ACTIONS.LOAD_HUMAN, loadHumanData);
 }
 
-function* watchHumanCreation() {
+function* watchHumanModal() {
   // yield takeEvery(ACTIONS.CREATE_HUMAN, createHuman);
-  yield takeEvery(ACTIONS.SUBMIT_HUMAN_MODAL, handleHumanSubmit);
+  yield takeEvery(ACTIONS.SUBMIT_HUMAN_MODAL, handleHumanModalSubmit);
 }
 
 function* watchHumanUpdate() {
@@ -222,7 +186,7 @@ export const humansSagas = [
   initializeHumanagerApp(),
   watchHumansLoad(),
   watchHumanLoad(),
-  watchHumanCreation(),
+  watchHumanModal(),
   watchHumanUpdate(),
   watchHumanDelete()
 ];

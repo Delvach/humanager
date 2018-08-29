@@ -19,15 +19,19 @@ const HumanList = ({ deleteHuman, editHuman, humans }) => (
     <Table>
       <TableHead>
         <TableRow>
-          <TableCell>Name</TableCell>
+          <TableCell>Username</TableCell>
+          <TableCell>Email</TableCell>
+          <TableCell>Age</TableCell>
           <TableCell numeric>ID</TableCell>
           <TableCell>Actions</TableCell>
         </TableRow>
       </TableHead>
       <TableBody>
-        {humans.map(({ name, id }) => (
+        {humans.map(({ username, email, age, id }) => (
           <TableRow key={id}>
-            <TableCell>{name}</TableCell>
+            <TableCell>{username}</TableCell>
+            <TableCell>{email}</TableCell>
+            <TableCell>{age}</TableCell>
             <TableCell numeric>{id}</TableCell>
             <TableCell>
               <Button

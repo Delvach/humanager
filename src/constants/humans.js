@@ -1,11 +1,11 @@
 // Human template state tree
-export const DEFAULT_HUMAN = {
-  id: null,
-  name: {
-    last: 'Last',
-    first: 'First'
-  }
-};
+// export const DEFAULT_HUMAN = {
+//   id: null,
+//   name: {
+//     last: 'Last',
+//     first: 'First'
+//   }
+// };
 
 export const DEFAULT_STATE_HUMANS = [];
 
@@ -14,7 +14,7 @@ export const DEFAULT_HUMAN_FIELD = {
   valid: false
 };
 
-export const DEFAULT_STATE_HUMAN = { name: '', email: '', age: '' };
+export const DEFAULT_STATE_HUMAN = { username: '', email: '', age: '' };
 
 export const HUMAN_MODAL_MODE_CREATE = 'create';
 export const HUMAN_MODAL_MODE_EDIT = 'edit';
@@ -26,4 +26,4 @@ export const DEFAULT_STATE_NAVIGATION = {
   tab: 0
 };
 
-export const HUMAN_NAME = 'name';
+// export const HUMAN_NAME = 'name';

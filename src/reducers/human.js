@@ -8,13 +8,12 @@ export default function human(state = DEFAULT_STATE_HUMAN, { type, payload }) {
     case ACTIONS.SET_HUMAN_MODAL_INIT_VALUES:
       return Object.assign(newState, payload);
 
+    case ACTIONS.RESET_HUMAN_MODAL_INIT_VALUES:
+      return Object.assign({}, DEFAULT_STATE_HUMAN);
+
     // Human loaded from API
     case ACTIONS.HUMAN_LOADED:
       return payload.human;
-    case ACTIONS.VALIDATE_HUMAN_NAME:
-      newState.name.value = payload.name;
-      newState.name.valid = payload.name !== '';
-      return newState;
 
     default:
       return state;

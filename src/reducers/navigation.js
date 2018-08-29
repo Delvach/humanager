@@ -16,6 +16,11 @@ export default function navigation(
         humanModalOpen: payload.open
       });
 
+    case ACTIONS.SET_HUMAN_MODAL_EDIT_ID:
+      return Object.assign(newState, {
+        humanModalEditId: payload.id
+      });
+
     default:
       break;
   }
