@@ -85,9 +85,6 @@ function* handleHumanModalSubmit() {
  */
 function* createHuman(data) {
   try {
-    // Pull human data from state
-    // const data = yield select(state => state.human);
-
     // Submit new human to API
     const newHumanID = yield call(
       api.database.create,
@@ -97,9 +94,6 @@ function* createHuman(data) {
 
     // Dispatch human creation success notification
     yield put(humanCreatedAction(newHumanID));
-
-    // // Refresh master human list
-    // yield* loadHumansData();
   } catch (error) {
     yield put(apiError(error));
   }
@@ -110,8 +104,6 @@ function* createHuman(data) {
  */
 function* updateHuman(data) {
   try {
-    // Pull human data from state
-    // const data = yield select(state => state.human);
     const { username, email, age } = data;
 
     // Submit updated human to API
@@ -123,9 +115,6 @@ function* updateHuman(data) {
 
     // Dispatch human update success notification
     yield put(humanUpdatedAction(data.id));
-
-    // // Refresh master human list
-    // yield* loadHumansData();
   } catch (error) {
     yield put(apiError(error));
   }
@@ -162,31 +151,22 @@ function* watchHumanLoad() {
 }
 
 function* watchHumanModal() {
-  // yield takeEvery(ACTIONS.CREATE_HUMAN, createHuman);
   yield takeEvery(ACTIONS.SUBMIT_HUMAN_MODAL, handleHumanModalSubmit);
 }
 
-function* watchHumanUpdate() {
-  yield takeEvery(ACTIONS.UPDATE_HUMAN, updateHuman);
-}
+// function* watchHumanUpdate() {
+//   yield takeEvery(ACTIONS.UPDATE_HUMAN, updateHuman);
+// }
 
 function* watchHumanDelete() {
   yield takeEvery(ACTIONS.DELETE_HUMAN, deleteHuman);
 }
-
-// function* watchHumanCreateModalOpen() {
-//   yield takeEvery(ACTIONS.OPEN_CREATE_HUMAN_MODAL, openHumanCreateModal);
-// }
-
-// function* watchHumanEditModalOpen() {
-//   yield takeEvery(ACTIONS.OPEN_EDIT_HUMAN_MODAL, openHumanEditModal);
-// }
 
 export const humansSagas = [
   initializeHumanagerApp(),
   watchHumansLoad(),
   watchHumanLoad(),
   watchHumanModal(),
-  watchHumanUpdate(),
+  // watchHumanUpdate(),
   watchHumanDelete()
 ];
