@@ -40,10 +40,10 @@ function* setHumanModalStatus({ payload }) {
     }
   }
 
-  // Set flag used for modal open status
+  // Set flag used for modal open/close status
   yield put(setHumanModalOpenStatusAction(open));
 
-  // When closing, reset human data used to init modal
+  // When closing, reset human data used for initialValues
   if (!open) yield put(resetHumanModalInitDataAction());
 }
 

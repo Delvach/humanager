@@ -13,32 +13,6 @@ export const changeTab = tab => {
   };
 };
 
-// export const toggleModal = (dataType, open, id = null) => {
-//   return {
-//     type: ACTIONS.CHANGE_HUMAN_MODAL_STATUS,
-//     payload: {
-//       dataType,
-//       open,
-//       id,
-//       isNew: id === null
-//     }
-//   };
-// };
-
-// export const openCreateHumanModalAction = () => ({
-//   type: ACTIONS.OPEN_CREATE_HUMAN_MODAL,
-//   payload: {}
-// });
-
-// export const openEditHumanModalAction = id => ({
-//   type: ACTIONS.OPEN_EDIT_HUMAN_MODAL,
-//   payload: {
-//     id
-//   }
-// });
-
-// export const closeEditHumanModalAction = () => toggleModal('human', false);
-
 // Open or close human modal
 // Determine whether human modal functions as create or edit by inclusion of ID
 export const toggleHumanModalStatusAction = (open = false, id = null) => ({
