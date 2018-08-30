@@ -10,7 +10,7 @@ import CloseIcon from '@material-ui/icons/Close';
 
 import HumanForm from '../forms/human';
 
-import { toggleHumanModalStatusAction } from '../../actions/navigation';
+import { closeHumanModalAction } from '../../actions/navigation';
 
 const getModalStyle = (top = 50, left = 50) => ({
   top: `${top}%`,
@@ -34,13 +34,16 @@ const UserModal = ({ createNewUser, humanModalOpen, handleClose, classes }) => {
       disableBackdropClick
       open={humanModalOpen}
       onClose={() => {
-        handleClose(false);
+        handleClose();
+      }}
+      onEscapeKeyDown={() => {
+        handleClose();
       }}
     >
       <div style={getModalStyle()} className={classes.paper}>
         <IconButton
           onClick={() => {
-            handleClose(false);
+            handleClose();
           }}
           style={{
             position: 'absolute',
@@ -69,7 +72,7 @@ const mapStateToProps = ({ navigation }) => ({
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
     {
-      handleClose: toggleHumanModalStatusAction
+      handleClose: closeHumanModalAction
     },
     dispatch
   );

@@ -24,6 +24,10 @@ export const toggleHumanModalStatusAction = (open = false, id = null) => ({
   }
 });
 
+export const closeHumanModalAction = () => {
+  return toggleHumanModalStatusAction(false);
+};
+
 export const setHumanModalModeAction = (mode = HUMAN_MODAL_MODE_CREATE) => ({
   type: ACTIONS.SET_HUMAN_MODAL_MODE,
   payload: {

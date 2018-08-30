@@ -11,27 +11,7 @@ import Button from '@material-ui/core/Button';
 import { submitHumanFormAction } from '../../actions/human';
 import { toggleHumanModalStatusAction } from '../../actions/navigation';
 
-const validate = values => {
-  const errors = {};
-  if (!values.username) {
-    errors.username = 'Required';
-  } else if (values.username.length > 15) {
-    errors.username = 'Must be 15 characters or less';
-  }
-  if (!values.email) {
-    errors.email = 'Required';
-  } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
-    errors.email = 'Invalid email address';
-  }
-  if (!values.age) {
-    errors.age = 'Required';
-  } else if (isNaN(Number(values.age))) {
-    errors.age = 'Must be a number';
-  } else if (Number(values.age) < 18) {
-    errors.age = 'Sorry, you must be at least 18 years old';
-  }
-  return errors;
-};
+import { validateHuman as validate } from '../../utils/validation';
 
 const warn = values => {
   const warnings = {};
@@ -51,7 +31,6 @@ const HumanForm = ({ handleClose, handleSubmit, createNewUser, valid }) => (
       <Grid item xs={6}>
         <Field
           type="text"
-          label="Username"
           name="username"
           component={TextField}
           hintText="Username"
@@ -126,14 +105,13 @@ const HumanReduxFormSubmittable = ({
 );
 
 // initialValues populates form when launched
-const mapStateToProps = ({ human, navigation }) => ({
-  createNewUser: navigation.humanModalEditId === null,
-  initialValues: {
-    username: human.username,
-    email: human.email,
-    age: human.age
-  }
-});
+const mapStateToProps = ({ human, navigation }) => {
+  const { username, email, age } = human;
+  return {
+    createNewUser: navigation.humanModalEditId === null,
+    initialValues: { username, email, age }
+  };
+};
 
 //navigation.humanModalEditId === null
 const mapDispatchToProps = dispatch =>
