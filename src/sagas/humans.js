@@ -24,7 +24,7 @@ import { uiErrorHandler } from '../utils/core';
 import { toggleHumanModalStatusAction } from '../actions/navigation';
 
 import * as ACTIONS from '../constants/actions';
-import * as DATABASE_TABLES from '../constants/api';
+import * as DATABASE_NAMES from '../constants/api';
 import { HUMAN_MODAL_MODE_EDIT } from '../constants/humans';
 
 import { normalizeAllHumansData } from '../utils/humans';
@@ -39,7 +39,7 @@ import { normalizeAllHumansData } from '../utils/humans';
 function* loadHumansData() {
   try {
     // Read master humans list from API
-    const allHumans = yield call(api.database.read, DATABASE_TABLES.HUMANS);
+    const allHumans = yield call(api.database.read, DATABASE_NAMES.HUMANS);
 
     // Update state with master humans list data
     yield put(humansLoadedAction(normalizeAllHumansData(allHumans)));
@@ -56,7 +56,7 @@ function* loadHumanData({ payload }) {
     // Read single human from API
     const human = yield call(
       api.database.read,
-      `${DATABASE_TABLES.HUMANS}/${payload.id}`
+      `${DATABASE_NAMES.HUMANS}/${payload.id}`
     );
 
     // Update state with human data
@@ -130,7 +130,7 @@ function* createHuman(data) {
     // Submit new human to API
     const newHumanID = yield call(
       api.database.create,
-      DATABASE_TABLES.HUMANS,
+      DATABASE_NAMES.HUMANS,
       data
     );
 
@@ -149,7 +149,7 @@ function* updateHuman(data) {
     const { username, email, age } = data;
 
     // Submit updated human to API
-    yield call(api.database.patch, `${DATABASE_TABLES.HUMANS}/${data.id}`, {
+    yield call(api.database.patch, `${DATABASE_NAMES.HUMANS}/${data.id}`, {
       username,
       email,
       age
@@ -167,7 +167,7 @@ function* updateHuman(data) {
  */
 function* deleteHuman({ payload }) {
   try {
-    yield call(api.database.delete, `${DATABASE_TABLES.HUMANS}/${payload.id}`);
+    yield call(api.database.delete, `${DATABASE_NAMES.HUMANS}/${payload.id}`);
     yield put(humanDeletedAction(payload.id));
 
     // Refresh master human list
@@ -184,11 +184,11 @@ function* initializeHumanagerApp() {
   yield takeEvery(ACTIONS.INITIALIZE_APP, loadHumansData);
 }
 
-function* watchHumanModal() {
+function* watchHumanModalSubmission() {
   yield takeEvery(ACTIONS.SUBMIT_HUMAN_MODAL, handleHumanModalSubmit);
 }
 
-function* watchHumanEditModalStatus() {
+function* watchHumanModalStatus() {
   yield takeEvery(ACTIONS.SET_HUMAN_MODAL_STATUS, setHumanModalStatus);
 }
 
@@ -206,8 +206,8 @@ function* watchHumanDelete() {
 
 export const humansSagas = [
   initializeHumanagerApp(),
-  watchHumanModal(),
-  watchHumanEditModalStatus(),
+  watchHumanModalSubmission(),
+  watchHumanModalStatus(),
   watchHumansLoad(),
   watchHumanLoad(),
   watchHumanDelete()
