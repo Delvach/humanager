@@ -4,12 +4,9 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import Modal from '@material-ui/core/Modal';
 import Grid from '@material-ui/core/Grid';
-// import Button from '@material-ui/core/Button';
 
-// import Paper from '@material-ui/core/Paper';
-// import FormLabel from '@material-ui/core/FormLabel';
-// import FormControlLabel from '@material-ui/core/FormControlLabel';
-// import TextField from '@material-ui/core/TextField';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
 
 import HumanForm from '../forms/human';
 
@@ -24,24 +21,39 @@ const getModalStyle = (top = 50, left = 50) => ({
 const styles = theme => ({
   paper: {
     position: 'absolute',
-    width: theme.spacing.unit * 50,
+    width: theme.spacing.unit * 60,
     backgroundColor: theme.palette.background.paper,
     boxShadow: theme.shadows[5],
     padding: theme.spacing.unit * 4
   }
 });
 
-const UserModal = ({ humanModalOpen, handleClose, classes }) => {
+const UserModal = ({ createNewUser, humanModalOpen, handleClose, classes }) => {
   return (
     <Modal
+      disableBackdropClick
       open={humanModalOpen}
       onClose={() => {
         handleClose(false);
       }}
     >
       <div style={getModalStyle()} className={classes.paper}>
+        <IconButton
+          onClick={() => {
+            handleClose(false);
+          }}
+          style={{
+            position: 'absolute',
+            right: 10,
+            top: 10
+          }}
+          className={classes.button}
+          aria-label="Close"
+        >
+          <CloseIcon />
+        </IconButton>
         <Grid>
-          <h2>Title</h2>
+          <h2>{createNewUser ? 'Create' : 'Edit'} User</h2>
           <HumanForm />
         </Grid>
       </div>
@@ -50,6 +62,7 @@ const UserModal = ({ humanModalOpen, handleClose, classes }) => {
 };
 
 const mapStateToProps = ({ navigation }) => ({
+  createNewUser: navigation.humanModalEditId === null,
   humanModalOpen: navigation.humanModalOpen
 });
 

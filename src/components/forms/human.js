@@ -5,9 +5,11 @@ import { reduxForm, Field } from 'redux-form';
 import { connect } from 'react-redux';
 
 import { TextField } from 'redux-form-material-ui';
+import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 
 import { submitHumanFormAction } from '../../actions/human';
+import { toggleHumanModalStatusAction } from '../../actions/navigation';
 
 const validate = values => {
   const errors = {};
@@ -40,15 +42,62 @@ const warn = values => {
 };
 
 // Define component
-const HumanForm = ({ pristine, handleSubmit, createNewUser, valid }) => (
+const HumanForm = ({ handleClose, handleSubmit, createNewUser, valid }) => (
   <form onSubmit={handleSubmit}>
-    <Field type="text" name="username" component={TextField} hintText="Name" />
-    <Field type="text" name="email" component={TextField} hintText="Email" />
-    <Field type="text" name="age" component={TextField} hintText="Age" />
-    <Button disabled={!valid} variant="contained" color="primary" type="submit">
-      {createNewUser ? 'Create' : 'Update'}
-    </Button>
-    {pristine && <div>Pristine</div>}
+    <Grid container spacing={8}>
+      <Grid item xs={6}>
+        Username
+      </Grid>
+      <Grid item xs={6}>
+        <Field
+          type="text"
+          label="Username"
+          name="username"
+          component={TextField}
+          hintText="Username"
+        />
+      </Grid>
+
+      <Grid item xs={6}>
+        Email
+      </Grid>
+      <Grid item xs={6}>
+        <Field
+          type="text"
+          name="email"
+          component={TextField}
+          hintText="Email"
+        />
+      </Grid>
+
+      <Grid item xs={6}>
+        Age
+      </Grid>
+      <Grid item xs={6}>
+        <Field type="text" name="age" component={TextField} hintText="Age" />
+      </Grid>
+
+      <Grid item xs={12}>
+        <Grid container justify="flex-end" spacing={8}>
+          <Grid item xs={3}>
+            <Button
+              disabled={!valid}
+              variant="contained"
+              color="primary"
+              type="submit"
+            >
+              {createNewUser ? 'Create' : 'Update'}
+            </Button>
+          </Grid>
+
+          <Grid item xs={3}>
+            <Button onClick={handleClose} variant="contained" color="primary">
+              Cancel
+            </Button>
+          </Grid>
+        </Grid>
+      </Grid>
+    </Grid>
   </form>
 );
 
@@ -62,12 +111,16 @@ const HumanReduxForm = reduxForm({
 // Connected redux-form-wrapped component with initialValues mapped
 const HumanReduxFormSubmittable = ({
   submitHumanForm,
+  handleClose,
   initialValues,
   createNewUser
 }) => (
   <HumanReduxForm
     initialValues={initialValues}
     onSubmit={values => submitHumanForm(values)}
+    handleClose={() => {
+      handleClose(false);
+    }}
     createNewUser={createNewUser}
   />
 );
@@ -86,7 +139,8 @@ const mapStateToProps = ({ human, navigation }) => ({
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
     {
-      submitHumanForm: submitHumanFormAction
+      submitHumanForm: submitHumanFormAction,
+      handleClose: toggleHumanModalStatusAction
     },
     dispatch
   );
