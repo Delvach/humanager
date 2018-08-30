@@ -6,15 +6,6 @@ export const loadHumansAction = () => {
   };
 };
 
-// export const createHumanAction = name => {
-//   return {
-//     type: ACTIONS.CREATE_HUMAN,
-//     payload: {
-//       name
-//     }
-//   };
-// };
-
 export const deleteHumanAction = id => {
   return {
     type: ACTIONS.DELETE_HUMAN,
@@ -23,15 +14,6 @@ export const deleteHumanAction = id => {
     }
   };
 };
-
-// export const editHumanAction = id => {
-//   return {
-//     type: ACTIONS.EDIT_HUMAN,
-//     payload: {
-//       id
-//     }
-//   };
-// };
 
 export const humanCreatedAction = id => {
   return {

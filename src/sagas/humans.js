@@ -4,6 +4,14 @@ import api from '../api';
 
 import { apiError } from '../actions';
 import {
+  setHumanModalModeAction,
+  setHumanModalEditIdAction,
+  setHumanModalOpenStatusAction,
+  setHumanModalInitDataAction,
+  resetHumanModalInitDataAction
+} from '../actions/navigation';
+
+import {
   humanCreatedAction,
   humanDeletedAction,
   humansLoadedAction,
@@ -11,12 +19,13 @@ import {
   humanUpdatedAction
 } from '../actions/humans';
 
-// import { setHumanName } from '../actions/human';
+import { uiErrorHandler } from '../utils/core';
 
 import { toggleHumanModalStatusAction } from '../actions/navigation';
 
 import * as ACTIONS from '../constants/actions';
 import * as DATABASE_TABLES from '../constants/api';
+import { HUMAN_MODAL_MODE_EDIT } from '../constants/humans';
 
 import { normalizeAllHumansData } from '../utils/humans';
 
@@ -55,6 +64,39 @@ function* loadHumanData({ payload }) {
   } catch (error) {
     yield put(apiError(error));
   }
+}
+
+// Handle human create/edit open/close & related behaviors
+function* setHumanModalStatus({ payload }) {
+  const { id, mode, open } = payload;
+  const isEditing = mode === HUMAN_MODAL_MODE_EDIT;
+
+  // Set flag indicating modal mode
+  yield put(setHumanModalModeAction(mode));
+
+  // If editing, use ID to populate  data
+  yield put(setHumanModalEditIdAction(open && isEditing ? id : null));
+
+  if (isEditing) {
+    try {
+      // Pull all users from state
+      const humans = yield select(state => state.humans);
+
+      // Identify specified user by id
+      const human = humans.find(hum => hum.id === id);
+
+      // Set data used by initialValues during form render
+      yield put(setHumanModalInitDataAction(human));
+    } catch (error) {
+      uiErrorHandler(`ERROR: Unable to load user ${id}`);
+    }
+  }
+
+  // Set flag used for modal open/close status
+  yield put(setHumanModalOpenStatusAction(open));
+
+  // When closing, reset human data used for initialValues
+  if (!open) yield put(resetHumanModalInitDataAction());
 }
 
 function* handleHumanModalSubmit() {
@@ -142,6 +184,14 @@ function* initializeHumanagerApp() {
   yield takeEvery(ACTIONS.INITIALIZE_APP, loadHumansData);
 }
 
+function* watchHumanModal() {
+  yield takeEvery(ACTIONS.SUBMIT_HUMAN_MODAL, handleHumanModalSubmit);
+}
+
+function* watchHumanEditModalStatus() {
+  yield takeEvery(ACTIONS.SET_HUMAN_MODAL_STATUS, setHumanModalStatus);
+}
+
 function* watchHumansLoad() {
   yield takeEvery(ACTIONS.LOAD_HUMANS, loadHumansData);
 }
@@ -150,23 +200,15 @@ function* watchHumanLoad() {
   yield takeEvery(ACTIONS.LOAD_HUMAN, loadHumanData);
 }
 
-function* watchHumanModal() {
-  yield takeEvery(ACTIONS.SUBMIT_HUMAN_MODAL, handleHumanModalSubmit);
-}
-
-// function* watchHumanUpdate() {
-//   yield takeEvery(ACTIONS.UPDATE_HUMAN, updateHuman);
-// }
-
 function* watchHumanDelete() {
   yield takeEvery(ACTIONS.DELETE_HUMAN, deleteHuman);
 }
 
 export const humansSagas = [
   initializeHumanagerApp(),
+  watchHumanModal(),
+  watchHumanEditModalStatus(),
   watchHumansLoad(),
   watchHumanLoad(),
-  watchHumanModal(),
-  // watchHumanUpdate(),
   watchHumanDelete()
 ];
