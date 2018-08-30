@@ -17,7 +17,7 @@ const HumansView = ({ openCreateHumanModal }) => (
         openCreateHumanModal(true);
       }}
     >
-      New Human
+      Create Human
     </Button>
     <HumanList />
   </div>

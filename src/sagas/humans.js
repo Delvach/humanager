@@ -34,7 +34,7 @@ import { normalizeAllHumansData } from '../utils/humans';
  */
 
 /*
- *  Load humans from api andnormalize data
+ *  Load humans from api and normalize data
  */
 function* loadHumansData() {
   try {
@@ -49,7 +49,7 @@ function* loadHumansData() {
 }
 
 /*
- *  Load single human from api andnormalize data
+ *  Load single human from api and normalize data
  */
 function* loadHumanData({ payload }) {
   try {
@@ -79,7 +79,7 @@ function* setHumanModalStatus({ payload }) {
 
   if (isEditing) {
     try {
-      // Pull all users from state
+      // Pull all humans from state
       const humans = yield select(state => state.humans);
 
       // Identify specified user by id

@@ -9,7 +9,7 @@ import Button from '@material-ui/core/Button';
 const RolesView = ({ createHuman, openHumanEditModal }) => (
   <div>
     <Button variant="contained" color="primary" onClick={createHuman}>
-      New Human
+      Create Role
     </Button>
     <Button variant="contained" color="primary" onClick={openHumanEditModal}>
       Open Modal

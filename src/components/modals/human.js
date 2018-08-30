@@ -56,7 +56,7 @@ const UserModal = ({ createNewUser, humanModalOpen, handleClose, classes }) => {
           <CloseIcon />
         </IconButton>
         <Grid>
-          <h2>{createNewUser ? 'Create' : 'Edit'} User</h2>
+          <h2>{createNewUser ? 'Create' : 'Edit'} Human</h2>
           <HumanForm />
         </Grid>
       </div>

@@ -2,7 +2,7 @@
 export const TABS = [
   {
     value: 0,
-    title: 'Users'
+    title: 'Humans'
   },
   {
     value: 1,
