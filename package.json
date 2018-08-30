@@ -3,16 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@material-ui/core": "^1.4.3",
-    "@material-ui/icons": "^2.0.1",
-    "@material/tab-bar": "^0.38.0",
+    "@material-ui/core": "^3.0.1",
+    "@material-ui/icons": "^3.0.1",
+    "@material/tab-bar": "^0.39.0",
     "firebase": "^5.4.0",
     "material-ui": "^0.20.2",
     "react": "^16.4.2",
     "react-dom": "^16.4.2",
     "react-redux": "^5.0.7",
     "react-router-dom": "^4.3.1",
-    "react-scripts": "1.1.4",
+    "react-scripts": "1.1.5",
     "redux": "^4.0.0",
     "redux-form": "^7.4.2",
     "redux-form-material-ui": "^4.3.4",
@@ -28,10 +28,10 @@
   },
   "devDependencies": {
     "babel-core": "^6.26.3",
-    "babel-eslint": "^7.2.3",
-    "babel-loader": "^7.1.5",
+    "babel-eslint": "^9.0.0",
+    "babel-loader": "^8.0.0",
     "babel-preset-env": "^1.7.0",
     "babel-preset-react": "^6.24.1",
-    "eslint": "^4.19.1"
+    "eslint": "^5.4.0"
   }
 }
