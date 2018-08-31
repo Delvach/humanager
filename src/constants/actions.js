@@ -1,3 +1,6 @@
+// Template
+export const DEFAULT = 'DEFAULT';
+
 // Application
 export const INITIALIZE_APP = 'INITIALIZE_APP';
 export const API_ERROR = 'API_ERROR';

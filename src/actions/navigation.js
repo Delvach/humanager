@@ -75,3 +75,10 @@ export const submitHumanModalAction = () => {
     payload: {}
   };
 };
+
+export const defaultAction = () => {
+  return {
+    type: ACTIONS.DEFAULT,
+    payload: {}
+  };
+};
