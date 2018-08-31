@@ -6,7 +6,6 @@ import { bindActionCreators } from 'redux';
 import { initApp } from './actions';
 
 import './App.css';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import AppBar from '@material-ui/core/AppBar';
 
 import Toolbar from '@material-ui/core/Toolbar';
@@ -17,6 +16,9 @@ import EditHumanModal from './components/modals/human';
 import HumansView from './modules/HumansView';
 import RolesView from './modules/RolesView';
 
+import { MuiThemeProvider } from '@material-ui/core/styles';
+import theme from './themes/default';
+
 class App extends Component {
   componentDidMount = () => this.props.initApp();
 
@@ -26,7 +28,7 @@ class App extends Component {
 
   render() {
     return (
-      <MuiThemeProvider>
+      <MuiThemeProvider theme={this.props.theme}>
         <div className="App">
           <EditHumanModal />
           <AppBar position="static">
@@ -45,15 +47,18 @@ class App extends Component {
 }
 
 App.propTypes = {
-  tab: PropTypes.number
+  tab: PropTypes.number,
+  theme: PropTypes.object
 };
 
 App.defaultProps = {
-  tab: 0
+  tab: 0,
+  theme: {}
 };
 
 const mapStateToProps = ({ navigation }) => ({
-  tab: navigation.tab
+  tab: navigation.tab,
+  theme: theme
 });
 
 const mapDispatchToProps = dispatch =>
