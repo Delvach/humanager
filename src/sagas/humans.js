@@ -36,7 +36,7 @@ import { normalizeAllHumansData } from '../utils/humans';
 /*
  *  Load humans from api and normalize data
  */
-function* loadHumansData() {
+function* loadAllHumansData() {
   try {
     // Read master humans list from API
     const allHumans = yield call(api.database.read, DATABASE_NAMES.HUMANS);
@@ -69,15 +69,15 @@ function* loadHumanData({ payload }) {
 // Handle human create/edit open/close & related behaviors
 function* setHumanModalStatus({ payload }) {
   const { id, mode, open } = payload;
-  const isEditing = mode === HUMAN_MODAL_MODE_EDIT;
+  const editing = mode === HUMAN_MODAL_MODE_EDIT;
 
   // Set flag indicating modal mode
   yield put(setHumanModalModeAction(mode));
 
   // If editing, use ID to populate  data
-  yield put(setHumanModalEditIdAction(open && isEditing ? id : null));
+  yield put(setHumanModalEditIdAction(open && editing ? id : null));
 
-  if (open && isEditing) {
+  if (open && editing) {
     try {
       // Pull all humans from state
       const humans = yield select(state => state.humans);
@@ -116,7 +116,7 @@ function* handleHumanModalSubmit() {
     yield put(toggleHumanModalStatusAction(false));
 
     // Refresh master human list
-    yield* loadHumansData();
+    yield* loadAllHumansData();
   } catch (error) {
     yield put(apiError(error));
   }
@@ -171,7 +171,7 @@ function* deleteHuman({ payload }) {
     yield put(humanDeletedAction(payload.id));
 
     // Refresh master human list
-    yield* loadHumansData();
+    yield* loadAllHumansData();
   } catch (error) {
     yield put(apiError(error));
   }
@@ -181,7 +181,7 @@ function* deleteHuman({ payload }) {
  *  Define saga watchers
  */
 function* initializeHumanagerApp() {
-  yield takeEvery(ACTIONS.INITIALIZE_APP, loadHumansData);
+  yield takeEvery(ACTIONS.INITIALIZE_APP, loadAllHumansData);
 }
 
 function* watchHumanModalSubmission() {
@@ -192,8 +192,8 @@ function* watchHumanModalStatus() {
   yield takeEvery(ACTIONS.SET_HUMAN_MODAL_STATUS, setHumanModalStatus);
 }
 
-function* watchHumansLoad() {
-  yield takeEvery(ACTIONS.LOAD_HUMANS, loadHumansData);
+function* watchAllHumansLoad() {
+  yield takeEvery(ACTIONS.LOAD_HUMANS, loadAllHumansData);
 }
 
 function* watchHumanLoad() {
@@ -208,7 +208,7 @@ export const humansSagas = [
   initializeHumanagerApp(),
   watchHumanModalSubmission(),
   watchHumanModalStatus(),
-  watchHumansLoad(),
+  watchAllHumansLoad(),
   watchHumanLoad(),
   watchHumanDelete()
 ];
