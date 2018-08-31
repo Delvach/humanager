@@ -77,7 +77,7 @@ function* setHumanModalStatus({ payload }) {
   // If editing, use ID to populate  data
   yield put(setHumanModalEditIdAction(open && isEditing ? id : null));
 
-  if (isEditing) {
+  if (open && isEditing) {
     try {
       // Pull all humans from state
       const humans = yield select(state => state.humans);
