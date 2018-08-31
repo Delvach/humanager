@@ -39,6 +39,7 @@ const HumanModal = ({
 }) => {
   return (
     <Modal
+      disableRestoreFocus
       disableBackdropClick
       open={humanModalOpen}
       onClose={() => {
