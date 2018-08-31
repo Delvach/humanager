@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
@@ -19,6 +20,14 @@ const TabsNav = ({ changeTab, tab }) => {
       </Tabs>
     </div>
   );
+};
+
+TabsNav.propTypes = {
+  tab: PropTypes.number
+};
+
+TabsNav.defaultProps = {
+  tab: 0
 };
 
 const mapStateToProps = state => ({

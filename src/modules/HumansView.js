@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
@@ -22,6 +23,14 @@ const HumansView = ({ openCreateHumanModal }) => (
     <HumanList />
   </div>
 );
+
+HumansView.propTypes = {
+  humans: PropTypes.array
+};
+
+HumansView.defaultProps = {
+  humans: []
+};
 
 const mapStateToProps = ({ humans }) => ({ humans });
 

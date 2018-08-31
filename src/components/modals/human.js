@@ -1,7 +1,10 @@
 import React from 'react';
-import { withStyles } from '@material-ui/core/styles';
-import { bindActionCreators } from 'redux';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+
+import { withStyles } from '@material-ui/core/styles';
+
 import Modal from '@material-ui/core/Modal';
 import Grid from '@material-ui/core/Grid';
 
@@ -28,7 +31,12 @@ const styles = theme => ({
   }
 });
 
-const UserModal = ({ createNewUser, humanModalOpen, handleClose, classes }) => {
+const HumanModal = ({
+  createNewHuman,
+  humanModalOpen,
+  handleClose,
+  classes
+}) => {
   return (
     <Modal
       disableBackdropClick
@@ -56,7 +64,7 @@ const UserModal = ({ createNewUser, humanModalOpen, handleClose, classes }) => {
           <CloseIcon />
         </IconButton>
         <Grid>
-          <h2>{createNewUser ? 'Create' : 'Edit'} Human</h2>
+          <h2>{createNewHuman ? 'Create' : 'Edit'} Human</h2>
           <HumanForm />
         </Grid>
       </div>
@@ -64,8 +72,18 @@ const UserModal = ({ createNewUser, humanModalOpen, handleClose, classes }) => {
   );
 };
 
+HumanModal.propTypes = {
+  createNewHuman: PropTypes.bool,
+  humanModalOpen: PropTypes.bool
+};
+
+HumanModal.defaultProps = {
+  createNewHuman: true,
+  humanModalOpen: false
+};
+
 const mapStateToProps = ({ navigation }) => ({
-  createNewUser: navigation.humanModalEditId === null,
+  createNewHuman: navigation.humanModalEditId === null,
   humanModalOpen: navigation.humanModalOpen
 });
 
@@ -77,7 +95,7 @@ const mapDispatchToProps = dispatch =>
     dispatch
   );
 
-const ModalWrapped = withStyles(styles)(UserModal);
+const ModalWrapped = withStyles(styles)(HumanModal);
 
 export default connect(
   mapStateToProps,

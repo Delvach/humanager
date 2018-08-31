@@ -1,8 +1,8 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-// import Human from './Human';
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -55,6 +55,14 @@ const HumanList = ({ deleteHuman, editHuman, humans }) => (
     </Table>
   </Paper>
 );
+
+HumanList.propTypes = {
+  humans: PropTypes.array
+};
+
+HumanList.defaultProps = {
+  humans: []
+};
 
 const mapStateToProps = ({ humans }) => ({ humans });
 

@@ -1,5 +1,7 @@
 import React from 'react';
+// import PropTypes from 'prop-types';
 // import { connect } from 'react-redux';
+// import { bindActionCreators } from 'redux';
 
 // import { openEditHumanModal } from '../actions/navigation';
 // import { createHumanAction } from '../actions/humans';
@@ -16,6 +18,14 @@ const RolesView = ({ createHuman, openHumanEditModal }) => (
     </Button>
   </div>
 );
+
+// RolesView.propTypes = {
+//   roles: PropTypes.array
+// };
+
+// RolesView.defaultProps = {
+//   roles: []
+// };
 
 // const mapStateToProps = ({ humans }) => ({ humans });
 

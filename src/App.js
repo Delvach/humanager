@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import { initApp } from './actions';
-// import { changeTab } from './actions/navigation';
 
 import './App.css';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
@@ -43,6 +43,14 @@ class App extends Component {
     );
   }
 }
+
+App.propTypes = {
+  tab: PropTypes.number
+};
+
+App.defaultProps = {
+  tab: 0
+};
 
 const mapStateToProps = ({ navigation }) => ({
   tab: navigation.tab

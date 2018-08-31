@@ -1,8 +1,9 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import { reduxForm, Field } from 'redux-form';
-import { connect } from 'react-redux';
 
 import { TextField } from 'redux-form-material-ui';
 import Grid from '@material-ui/core/Grid';
@@ -103,6 +104,16 @@ const HumanReduxFormSubmittable = ({
     createNewUser={createNewUser}
   />
 );
+
+HumanReduxFormSubmittable.propTypes = {
+  createNewUser: PropTypes.bool,
+  initialValues: PropTypes.object
+};
+
+HumanReduxFormSubmittable.defaultProps = {
+  createNewUser: true,
+  initialValues: {}
+};
 
 // initialValues populates form when launched
 const mapStateToProps = ({ human, navigation }) => {
