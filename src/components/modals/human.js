@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import { withStyles } from '@material-ui/core/styles';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import Modal from '@material-ui/core/Modal';
 import Grid from '@material-ui/core/Grid';
@@ -38,38 +39,40 @@ const HumanModal = ({
   classes
 }) => {
   return (
-    <Modal
-      disableRestoreFocus
-      disableBackdropClick
-      open={humanModalOpen}
-      onClose={() => {
-        handleClose();
-      }}
-      onEscapeKeyDown={() => {
-        handleClose();
-      }}
-    >
-      <div style={getModalStyle()} className={classes.paper}>
-        <IconButton
-          onClick={() => {
-            handleClose();
-          }}
-          style={{
-            position: 'absolute',
-            right: 10,
-            top: 10
-          }}
-          className={classes.button}
-          aria-label="Close"
-        >
-          <CloseIcon />
-        </IconButton>
-        <Grid>
-          <h2>{createNewHuman ? 'Create' : 'Edit'} Human</h2>
-          <HumanForm />
-        </Grid>
-      </div>
-    </Modal>
+    <MuiThemeProvider>
+      <Modal
+        disableRestoreFocus
+        disableBackdropClick
+        open={humanModalOpen}
+        onClose={() => {
+          handleClose();
+        }}
+        onEscapeKeyDown={() => {
+          handleClose();
+        }}
+      >
+        <div style={getModalStyle()} className={classes.paper}>
+          <IconButton
+            onClick={() => {
+              handleClose();
+            }}
+            style={{
+              position: 'absolute',
+              right: 10,
+              top: 10
+            }}
+            className={classes.button}
+            aria-label="Close"
+          >
+            <CloseIcon />
+          </IconButton>
+          <Grid>
+            <h2>{createNewHuman ? 'Create' : 'Edit'} Human</h2>
+            <HumanForm />
+          </Grid>
+        </div>
+      </Modal>
+    </MuiThemeProvider>
   );
 };
 

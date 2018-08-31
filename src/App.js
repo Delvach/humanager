@@ -58,7 +58,7 @@ App.defaultProps = {
 
 const mapStateToProps = ({ navigation }) => ({
   tab: navigation.tab,
-  theme: theme
+  theme
 });
 
 const mapDispatchToProps = dispatch =>
