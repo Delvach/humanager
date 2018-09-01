@@ -16,21 +16,7 @@ import HumanForm from '../forms/human';
 
 import { closeHumanModalAction } from '../../actions/navigation';
 
-const getModalStyle = (top = 50, left = 50) => ({
-  top: `${top}%`,
-  left: `${left}%`,
-  transform: `translate(-${top}%, -${left}%)`
-});
-
-const styles = theme => ({
-  paper: {
-    position: 'absolute',
-    width: theme.spacing.unit * 60,
-    backgroundColor: theme.palette.background.paper,
-    boxShadow: theme.shadows[5],
-    padding: theme.spacing.unit * 4
-  }
-});
+import { getModalStyles, getModalPositionStyle } from '../../utils/style';
 
 const HumanModal = ({
   createNewHuman,
@@ -51,7 +37,7 @@ const HumanModal = ({
           handleClose();
         }}
       >
-        <div style={getModalStyle()} className={classes.paper}>
+        <div style={getModalPositionStyle()} className={classes.paper}>
           <IconButton
             onClick={() => {
               handleClose();
@@ -99,7 +85,7 @@ const mapDispatchToProps = dispatch =>
     dispatch
   );
 
-const ModalWrapped = withStyles(styles)(HumanModal);
+const ModalWrapped = withStyles(getModalStyles)(HumanModal);
 
 export default connect(
   mapStateToProps,

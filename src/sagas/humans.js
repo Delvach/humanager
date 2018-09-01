@@ -105,7 +105,7 @@ function* handleHumanModalSubmit() {
 
     const { username, email, age } = state.form.humanForm.values;
     const id = state.navigation.humanModalEditId;
-    console.log(id);
+
     if (id === null) {
       yield* createHuman({ username, email, age });
     } else {
