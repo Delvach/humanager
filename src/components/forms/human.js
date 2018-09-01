@@ -38,19 +38,12 @@ const HumanForm = ({ handleClose, handleSubmit, createNewUser, valid }) => (
       <Grid item xs={12}>
         <Grid container justify="flex-end" spacing={8}>
           <Grid item xs={3}>
-            <Button
-              disabled={!valid}
-              variant="contained"
-              color="primary"
-              type="submit"
-            >
+            <Button disabled={!valid} type="submit">
               {createNewUser ? 'Create' : 'Update'}
             </Button>
           </Grid>
           <Grid item xs={3}>
-            <Button onClick={handleClose} variant="contained" color="primary">
-              Cancel
-            </Button>
+            <Button onClick={handleClose}>Cancel</Button>
           </Grid>
         </Grid>
       </Grid>

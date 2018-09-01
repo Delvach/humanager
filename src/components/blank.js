@@ -4,11 +4,11 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import { withStyles } from '@material-ui/core/styles';
-
-import { defaultAction } from '../actions/navigation';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
-import { getStyles } from '../utils/style';
+import { defaultAction } from '../actions/navigation';
+
+import { getModalStyles } from '../utils/style';
 
 const NewComponent = ({
   myPropertyInComponent,
@@ -42,7 +42,7 @@ const mapDispatchToProps = dispatch =>
     dispatch
   );
 
-const NewComponentWrapped = withStyles(getStyles)(NewComponent);
+const NewComponentWrapped = withStyles(getModalStyles)(NewComponent);
 
 export default connect(
   mapStateToProps,
