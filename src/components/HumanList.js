@@ -9,48 +9,43 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import Button from '@material-ui/core/Button';
+import Button from './inputs/Button';
 
 import { deleteHumanAction } from '../actions/humans';
 import { toggleHumanModalStatusAction } from '../actions/navigation';
 
+import { HUMAN_LIST_FIELDS } from '../constants/humans';
+
+const TableHeader = () => (
+  <TableHead>
+    <TableRow>
+      {HUMAN_LIST_FIELDS.map(({ label, value }) => (
+        <TableCell key={value}>{label}</TableCell>
+      ))}
+      <TableCell>Actions</TableCell>
+    </TableRow>
+  </TableHead>
+);
+
 const HumanList = ({ deleteHuman, editHuman, humans }) => (
   <Paper>
     <Table>
-      <TableHead>
-        <TableRow>
-          <TableCell>Username</TableCell>
-          <TableCell>Email</TableCell>
-          <TableCell>Age</TableCell>
-          <TableCell numeric>ID</TableCell>
-          <TableCell>Actions</TableCell>
-        </TableRow>
-      </TableHead>
+      <TableHeader />
       <TableBody>
-        {humans.map(({ username, email, age, id }) => (
-          <TableRow key={id}>
-            <TableCell>{username}</TableCell>
-            <TableCell>{email}</TableCell>
-            <TableCell>{age}</TableCell>
-            <TableCell numeric>{id}</TableCell>
-            <TableCell>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => editHuman(true, id)}
-              >
-                Edit
-              </Button>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => deleteHuman(id)}
-              >
-                Delete
-              </Button>
-            </TableCell>
-          </TableRow>
-        ))}
+        {humans.map(human => {
+          const { id } = human;
+          return (
+            <TableRow key={id}>
+              {HUMAN_LIST_FIELDS.map(({ value }) => (
+                <TableCell key={value}>{human[value]}</TableCell>
+              ))}
+              <TableCell>
+                <Button onClick={() => editHuman(true, id)}>Edit</Button>
+                <Button onClick={() => deleteHuman(id)}>Delete</Button>
+              </TableCell>
+            </TableRow>
+          );
+        })}
       </TableBody>
     </Table>
   </Paper>

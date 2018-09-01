@@ -1,3 +1,8 @@
+/*
+ *  All validation & warning has been copied directly from examples
+ *  Customize as needed
+ */
+
 export const validateHuman = values => {
   const errors = {};
   if (!values.username) {
@@ -18,4 +23,12 @@ export const validateHuman = values => {
     errors.age = 'Sorry, you must be at least 18 years old';
   }
   return errors;
+};
+
+export const warnHuman = values => {
+  const warnings = {};
+  if (values.age < 19) {
+    warnings.age = 'Hmm, you seem a bit young...';
+  }
+  return warnings;
 };

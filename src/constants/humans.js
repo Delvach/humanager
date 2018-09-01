@@ -10,3 +10,26 @@ export const DEFAULT_STATE_NAVIGATION = {
   humanModalEditId: null,
   tab: 0
 };
+
+export const HUMAN_ATTRIBUTES = [
+  {
+    label: 'Username',
+    value: 'username'
+  },
+  {
+    label: 'Email',
+    value: 'email'
+  },
+  {
+    label: 'Age',
+    value: 'age'
+  }
+];
+
+export const HUMAN_LIST_FIELDS = [
+  ...HUMAN_ATTRIBUTES,
+  {
+    label: 'ID',
+    value: 'id'
+  }
+];

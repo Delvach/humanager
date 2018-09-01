@@ -1,4 +1,4 @@
-// Template
+// Used for blank template, does nothing
 export const DEFAULT = 'DEFAULT';
 
 // Application

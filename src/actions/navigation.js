@@ -76,6 +76,7 @@ export const submitHumanModalAction = () => {
   };
 };
 
+// Used for placeholder, prevent tests/type checks from breaking
 export const defaultAction = () => {
   return {
     type: ACTIONS.DEFAULT,

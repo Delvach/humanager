@@ -3,59 +3,37 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { reduxForm, Field } from 'redux-form';
+import { reduxForm } from 'redux-form';
 
-import { TextField } from 'redux-form-material-ui';
 import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
+
+import Button from '../inputs/Button';
+import TextField from '../inputs/TextField';
 
 import { submitHumanFormAction } from '../../actions/human';
 import { toggleHumanModalStatusAction } from '../../actions/navigation';
 
-import { validateHuman as validate } from '../../utils/validation';
+import { HUMAN_ATTRIBUTES } from '../../constants/humans';
 
-const warn = values => {
-  const warnings = {};
-  if (values.age < 19) {
-    warnings.age = 'Hmm, you seem a bit young...';
-  }
-  return warnings;
-};
+import {
+  validateHuman as validate,
+  warnHuman as warn
+} from '../../utils/validation';
 
 // Define component
 const HumanForm = ({ handleClose, handleSubmit, createNewUser, valid }) => (
   <form onSubmit={handleSubmit}>
     <Grid container spacing={8}>
-      <Grid item xs={6}>
-        Username
-      </Grid>
-      <Grid item xs={6}>
-        <Field
-          type="text"
-          name="username"
-          component={TextField}
-          hintText="Username"
-        />
-      </Grid>
-
-      <Grid item xs={6}>
-        Email
-      </Grid>
-      <Grid item xs={6}>
-        <Field
-          type="text"
-          name="email"
-          component={TextField}
-          hintText="Email"
-        />
-      </Grid>
-
-      <Grid item xs={6}>
-        Age
-      </Grid>
-      <Grid item xs={6}>
-        <Field type="text" name="age" component={TextField} hintText="Age" />
-      </Grid>
+      {HUMAN_ATTRIBUTES.map(({ label, value }) => (
+        <React.Fragment key={value}>
+          <Grid item xs={6}>
+            {label}
+          </Grid>
+          <Grid item xs={6}>
+            <TextField name={value} hintText={label} />
+          </Grid>
+        </React.Fragment>
+      ))}
 
       <Grid item xs={12}>
         <Grid container justify="flex-end" spacing={8}>
