@@ -11,7 +11,7 @@ import Button from '../inputs/Button';
 import TextField from '../inputs/TextField';
 
 import { submitHumanFormAction } from '../../actions/human';
-import { toggleHumanModalStatusAction } from '../../actions/navigation';
+import { closeHumanModalAction } from '../../actions/navigation';
 
 import { HUMAN_ATTRIBUTES } from '../../constants/humans';
 
@@ -47,7 +47,6 @@ const HumanForm = ({ handleClose, handleSubmit, createNewUser, valid }) => (
               {createNewUser ? 'Create' : 'Update'}
             </Button>
           </Grid>
-
           <Grid item xs={3}>
             <Button onClick={handleClose} variant="contained" color="primary">
               Cancel
@@ -76,9 +75,7 @@ const HumanReduxFormSubmittable = ({
   <HumanReduxForm
     initialValues={initialValues}
     onSubmit={values => submitHumanForm(values)}
-    handleClose={() => {
-      handleClose(false);
-    }}
+    handleClose={handleClose}
     createNewUser={createNewUser}
   />
 );
@@ -102,12 +99,11 @@ const mapStateToProps = ({ human, navigation }) => {
   };
 };
 
-//navigation.humanModalEditId === null
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
     {
       submitHumanForm: submitHumanFormAction,
-      handleClose: toggleHumanModalStatusAction
+      handleClose: closeHumanModalAction
     },
     dispatch
   );
