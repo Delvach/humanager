@@ -2,23 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Button from '@material-ui/core/Button';
 
-const FormattedButton = ({
-  children,
-  color,
-  disabled,
-  onClick,
-  type,
-  variant
-}) => (
-  <Button
-    disabled={disabled}
-    variant={variant}
-    color={color}
-    onClick={onClick}
-    type={type}
-  >
-    {children}
-  </Button>
+const FormattedButton = ({ children, ...props }) => (
+  <Button {...props}>{children}</Button>
 );
 
 FormattedButton.propTypes = {
@@ -26,7 +11,6 @@ FormattedButton.propTypes = {
   color: PropTypes.string,
   disabled: PropTypes.bool,
   onClick: PropTypes.func,
-
   type: PropTypes.string,
   variant: PropTypes.string
 };

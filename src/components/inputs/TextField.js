@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import { Field } from 'redux-form';
 import { TextField } from 'redux-form-material-ui';
 
-const ReduxFormTextField = ({ name, hintText }) => (
-  <Field type="text" name={name} component={TextField} hintText={hintText} />
+const ReduxFormTextField = ({ ...props }) => (
+  <Field type="text" component={TextField} {...props} />
 );
 
 ReduxFormTextField.propTypes = {
