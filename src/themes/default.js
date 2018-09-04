@@ -1,12 +1,12 @@
 import { createMuiTheme } from '@material-ui/core/styles';
-import indigo from '@material-ui/core/colors/indigo';
-import pink from '@material-ui/core/colors/pink';
+import deepPurple from '@material-ui/core/colors/deepPurple';
+import blue from '@material-ui/core/colors/blue';
 
 // Currently using default theme- determine good color palette
 export default createMuiTheme({
   palette: {
     type: 'light',
-    primary: indigo,
-    secondary: pink
+    primary: deepPurple,
+    secondary: blue
   }
 });

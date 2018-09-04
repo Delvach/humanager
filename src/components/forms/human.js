@@ -24,13 +24,13 @@ import {
 const HumanForm = ({ handleClose, handleSubmit, createNewUser, valid }) => (
   <form onSubmit={handleSubmit}>
     <Grid container spacing={8}>
-      {HUMAN_ATTRIBUTES.map(({ label, value }) => (
+      {HUMAN_ATTRIBUTES.map(({ label, value }, index) => (
         <React.Fragment key={value}>
           <Grid item xs={6}>
-            {label}
+            {label}:
           </Grid>
           <Grid item xs={6}>
-            <TextField name={value} hintText={label} />
+            <TextField autoFocus={index === 0} name={value} hintText={label} />
           </Grid>
         </React.Fragment>
       ))}

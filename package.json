@@ -19,6 +19,7 @@
     "redux-form-material-ui": "^4.3.4",
     "redux-saga": "^0.16.0",
     "redux-saga-firebase": "^0.14.1",
+    "svg-react-loader": "^0.4.5",
     "tape": "^4.9.1"
   },
   "scripts": {

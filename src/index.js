@@ -31,10 +31,10 @@ ReactDOM.render(
 // Hot module replacement
 if (module.hot) {
   module.hot.accept('./App', () => {
-    const NextApp = require('./App').default;
+    const HumanagerApp = require('./App').default;
     ReactDOM.render(
       <Provider store={store}>
-        <NextApp />
+        <HumanagerApp />
       </Provider>,
       document.getElementById('root')
     );

@@ -7,6 +7,7 @@ import { withStyles } from '@material-ui/core/styles';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import Modal from '@material-ui/core/Modal';
+import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 
 import IconButton from '@material-ui/core/IconButton';
@@ -37,7 +38,7 @@ const HumanModal = ({
           handleClose();
         }}
       >
-        <div style={getModalPositionStyle()} className={classes.paper}>
+        <Paper style={getModalPositionStyle()} className={classes.paper}>
           <IconButton
             onClick={() => {
               handleClose();
@@ -56,7 +57,7 @@ const HumanModal = ({
             <h2>{createNewHuman ? 'Create' : 'Edit'} Human</h2>
             <HumanForm />
           </Grid>
-        </div>
+        </Paper>
       </Modal>
     </MuiThemeProvider>
   );
