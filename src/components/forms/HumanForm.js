@@ -5,9 +5,12 @@ import { bindActionCreators } from 'redux';
 
 import { reduxForm } from 'redux-form';
 
-import Grid from '@material-ui/core/Grid';
-
-import Button from '../inputs/Button';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Button from '@material-ui/core/Button';
+// import Button from '../inputs/Button';
 import TextField from '../inputs/TextField';
 
 import { submitHumanFormAction } from '../../actions/human';
@@ -21,33 +24,43 @@ import {
 } from '../../utils/validation';
 
 // Define component
-const HumanForm = ({ handleClose, handleSubmit, createNewUser, valid }) => (
+const HumanForm = ({ handleClose, handleSubmit, createNewHuman, valid }) => (
   <form onSubmit={handleSubmit}>
-    <Grid container spacing={8}>
-      {HUMAN_ATTRIBUTES.map(({ label, value }, index) => (
-        <React.Fragment key={value}>
-          <Grid item xs={6}>
-            {label}:
-          </Grid>
-          <Grid item xs={6}>
-            <TextField autoFocus={index === 0} name={value} hintText={label} />
-          </Grid>
+    <DialogTitle id="form-dialog-title">
+      {createNewHuman ? 'Create' : 'Edit'} Human
+    </DialogTitle>
+    <DialogContent>
+      <DialogContentText>
+        <React.Fragment>
+          Please enter {createNewHuman || 'updated '}
+          information for your {createNewHuman && 'new '}
+          human.
         </React.Fragment>
+      </DialogContentText>
+      {HUMAN_ATTRIBUTES.map(({ label, value }, index) => (
+        <TextField
+          key={value}
+          autoFocus={index === 0}
+          margin="dense"
+          name={value}
+          label={label}
+          fullWidth
+        />
       ))}
-
-      <Grid item xs={12}>
-        <Grid container justify="flex-end" spacing={8}>
-          <Grid item xs={3}>
-            <Button disabled={!valid} type="submit">
-              {createNewUser ? 'Create' : 'Update'}
-            </Button>
-          </Grid>
-          <Grid item xs={3}>
-            <Button onClick={handleClose}>Cancel</Button>
-          </Grid>
-        </Grid>
-      </Grid>
-    </Grid>
+    </DialogContent>
+    <DialogActions>
+      <Button onClick={handleClose} color="primary">
+        Cancel
+      </Button>
+      <Button
+        onClick={handleClose}
+        color="primary"
+        disabled={!valid}
+        type="submit"
+      >
+        {createNewHuman ? 'Create' : 'Update'}
+      </Button>
+    </DialogActions>
   </form>
 );
 
@@ -63,23 +76,23 @@ const HumanReduxFormSubmittable = ({
   submitHumanForm,
   handleClose,
   initialValues,
-  createNewUser
+  createNewHuman
 }) => (
   <HumanReduxForm
     initialValues={initialValues}
     onSubmit={values => submitHumanForm(values)}
     handleClose={handleClose}
-    createNewUser={createNewUser}
+    createNewHuman={createNewHuman}
   />
 );
 
 HumanReduxFormSubmittable.propTypes = {
-  createNewUser: PropTypes.bool,
+  createNewHuman: PropTypes.bool,
   initialValues: PropTypes.object
 };
 
 HumanReduxFormSubmittable.defaultProps = {
-  createNewUser: true,
+  createNewHuman: true,
   initialValues: {}
 };
 
@@ -87,7 +100,7 @@ HumanReduxFormSubmittable.defaultProps = {
 const mapStateToProps = ({ human, navigation }) => {
   const { username, email, age } = human;
   return {
-    createNewUser: navigation.humanModalEditId === null,
+    createNewHuman: navigation.humanModalEditId === null,
     initialValues: { username, email, age }
   };
 };
