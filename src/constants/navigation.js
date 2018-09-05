@@ -10,4 +10,11 @@ export const TABS = [
   }
 ];
 
+export const DEFAULT_STATE_NAVIGATION = {
+  humanModalOpen: false,
+  humanModalEditId: null,
+  leftDrawerOpen: true,
+  tab: 0
+};
+
 export const HUMAN_EDIT_MODAL_OPEN_STATUS = 'HUMAN_EDIT_MODAL_OPEN_STATUS';

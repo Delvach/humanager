@@ -87,3 +87,11 @@ export const defaultAction = () => {
     payload: {}
   };
 };
+
+export const toggleLeftDrawerAction = (open = false) => ({
+  type: ACTIONS.SET_LEFT_DRAWER_OPEN_STATUS,
+  payload: { open }
+});
+
+export const openLeftDrawerAction = () => toggleLeftDrawerAction(true);
+export const closeLeftDrawerAction = () => toggleLeftDrawerAction(false);
