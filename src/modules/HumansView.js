@@ -1,23 +1,37 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
+
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { toggleHumanModalStatusAction } from '../actions/navigation';
+import PersonAddIcon from '@material-ui/icons/PersonAdd';
 
-import Button from '@material-ui/core/Button';
+import { openHumanModalAction } from '../actions/navigation';
+
+import Button from '../components/inputs/Button';
 
 import HumanList from '../components/HumanList';
 
-const HumansView = ({ openCreateHumanModal }) => (
+const styles = theme => ({
+  extendedIcon: {
+    marginRight: theme.spacing.unit
+  },
+  fab: {
+    position: 'absolute',
+    bottom: theme.spacing.unit * 2,
+    right: theme.spacing.unit * 2
+  }
+});
+
+const HumansView = ({ classes, openCreateHumanModal }) => (
   <div>
     <Button
-      variant="contained"
-      color="primary"
-      onClick={() => {
-        openCreateHumanModal(true);
-      }}
+      className={classes.fab}
+      variant="extendedFab"
+      onClick={openCreateHumanModal}
     >
+      <PersonAddIcon className={classes.extendedIcon} />
       Create Human
     </Button>
     <HumanList />
@@ -35,12 +49,11 @@ HumansView.defaultProps = {
 const mapStateToProps = ({ humans }) => ({ humans });
 
 const mapDispatchToProps = dispatch =>
-  bindActionCreators(
-    { openCreateHumanModal: toggleHumanModalStatusAction },
-    dispatch
-  );
+  bindActionCreators({ openCreateHumanModal: openHumanModalAction }, dispatch);
+
+const WrappedHumanView = withStyles(styles)(HumansView);
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(HumansView);
+)(WrappedHumanView);

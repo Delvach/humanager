@@ -24,6 +24,10 @@ export const toggleHumanModalStatusAction = (open = false, id = null) => ({
   }
 });
 
+export const openHumanModalAction = () => {
+  return toggleHumanModalStatusAction(true);
+};
+
 export const closeHumanModalAction = () => {
   return toggleHumanModalStatusAction(false);
 };
