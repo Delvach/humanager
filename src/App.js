@@ -3,46 +3,49 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
+import { withStyles } from '@material-ui/core/styles';
+
 import { initApp } from './actions';
 
 import './App.css';
-import AppBar from '@material-ui/core/AppBar';
 
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
+import AppBar from './components/layout/Appbar';
+import Contents from './components/layout/Contents';
+import Drawer from './components/layout/Drawer';
 
-import TabsNav from './components/TabsNav';
-import EditHumanModal from './components/dialogs/HumanDialog';
+import EditHumanDialog from './components/dialogs/DialogForm';
 import HumansView from './modules/HumansView';
 import RolesView from './modules/RolesView';
 
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import theme from './themes/default';
 
-import Logo from './components/assets/Logo';
+const styles = theme => ({
+  root: {
+    flexGrow: 1,
+    height: 440,
+    zIndex: 1,
+    overflow: 'hidden',
+    position: 'relative',
+    display: 'flex'
+  }
+});
 
 class App extends Component {
   componentDidMount = () => this.props.initApp();
 
-  tabViews = idx => {
-    return [<HumansView />, <RolesView />, <div>Item Three</div>][idx];
-  };
+  tabViews = idx => [<HumansView />, <RolesView />, <div>Item Three</div>][idx];
 
   render() {
     return (
       <MuiThemeProvider theme={this.props.theme}>
         <div className="App">
-          <EditHumanModal />
-          <AppBar position="static">
-            <Toolbar>
-              <Logo />
-              <Typography variant="title" color="inherit">
-                Humanager
-              </Typography>
-            </Toolbar>
-          </AppBar>
-          <TabsNav />
-          {this.tabViews(this.props.tab)}
+          <EditHumanDialog />
+          <div className={this.props.classes.root}>
+            <AppBar />
+            <Drawer />
+            <Contents>{this.tabViews(this.props.tab)}</Contents>
+          </div>
         </div>
       </MuiThemeProvider>
     );
@@ -59,10 +62,6 @@ App.defaultProps = {
   theme: {}
 };
 
-// type Props = {
-//   message: string | number | Message,
-// };
-
 const mapStateToProps = ({ navigation }) => ({
   tab: navigation.tab,
   theme
@@ -71,7 +70,9 @@ const mapStateToProps = ({ navigation }) => ({
 const mapDispatchToProps = dispatch =>
   bindActionCreators({ initApp }, dispatch);
 
+const AppWrapped = withStyles(styles, { withTheme: true })(App);
+
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(App);
+)(AppWrapped);
