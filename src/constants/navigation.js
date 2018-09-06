@@ -13,6 +13,8 @@ export const TABS = [
 export const DEFAULT_STATE_NAVIGATION = {
   humanModalOpen: false,
   humanModalEditId: null,
+  roleModalOpen: false,
+  roleModalEditId: null,
   leftDrawerOpen: true,
   tab: 0
 };

@@ -5,7 +5,8 @@ import { withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import AddIcon from '@material-ui/icons/GroupAdd';
+import AddPersonIcon from '@material-ui/icons/PersonAdd';
+import AddRoleIcon from '@material-ui/icons/GroupAdd';
 
 import { openCreateEditDialogAction } from '../actions/navigation';
 
@@ -24,7 +25,14 @@ const styles = theme => ({
   }
 });
 
-const RolesView = ({ classes, openCreationDialog }) => (
+const AddIcon = ({ module, ...props }) =>
+  module === 'human' ? (
+    <AddPersonIcon {...props} />
+  ) : (
+    <AddRoleIcon {...props} />
+  );
+
+const ModuleView = ({ classes, openCreationDialog, module }) => (
   <div>
     <Button
       className={classes.fab}
@@ -32,15 +40,19 @@ const RolesView = ({ classes, openCreationDialog }) => (
       onClick={openCreationDialog}
     >
       <AddIcon className={classes.extendedIcon} />
-      Create Role
+      Create {module === 'human' ? 'Human' : 'Role'}
     </Button>
     <HumanList />
   </div>
 );
 
-RolesView.propTypes = {};
+ModuleView.propTypes = {
+  module: PropTypes.string
+};
 
-RolesView.defaultProps = {};
+ModuleView.defaultProps = {
+  module: 'human'
+};
 
 const mapStateToProps = () => ({});
 
@@ -50,9 +62,9 @@ const mapDispatchToProps = dispatch =>
     dispatch
   );
 
-const WrappedRolesView = withStyles(styles)(RolesView);
+const WrappedModuleView = withStyles(styles)(ModuleView);
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(WrappedRolesView);
+)(WrappedModuleView);

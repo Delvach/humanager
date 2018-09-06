@@ -5,9 +5,9 @@ import { withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import PersonAddIcon from '@material-ui/icons/PersonAdd';
+import AddIcon from '@material-ui/icons/PersonAdd';
 
-import { openHumanModalAction } from '../actions/navigation';
+import { openCreateEditDialogAction } from '../actions/navigation';
 
 import Button from '../components/inputs/Button';
 
@@ -24,32 +24,31 @@ const styles = theme => ({
   }
 });
 
-const HumansView = ({ classes, openCreateHumanModal }) => (
+const HumansView = ({ classes, openCreationDialog }) => (
   <div>
     <Button
       className={classes.fab}
       variant="extendedFab"
-      onClick={openCreateHumanModal}
+      onClick={openCreationDialog}
     >
-      <PersonAddIcon className={classes.extendedIcon} />
+      <AddIcon className={classes.extendedIcon} />
       Create Human
     </Button>
     <HumanList />
   </div>
 );
 
-HumansView.propTypes = {
-  humans: PropTypes.array
-};
+HumansView.propTypes = {};
 
-HumansView.defaultProps = {
-  humans: []
-};
+HumansView.defaultProps = {};
 
-const mapStateToProps = ({ humans }) => ({ humans });
+const mapStateToProps = () => ({});
 
 const mapDispatchToProps = dispatch =>
-  bindActionCreators({ openCreateHumanModal: openHumanModalAction }, dispatch);
+  bindActionCreators(
+    { openCreationDialog: openCreateEditDialogAction },
+    dispatch
+  );
 
 const WrappedHumanView = withStyles(styles)(HumansView);
 

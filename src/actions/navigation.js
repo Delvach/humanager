@@ -24,11 +24,11 @@ export const toggleHumanModalStatusAction = (open = false, id = null) => ({
   }
 });
 
-export const openHumanModalAction = () => {
+export const openCreateEditDialogAction = () => {
   return toggleHumanModalStatusAction(true);
 };
 
-export const closeHumanModalAction = () => {
+export const closeCreateEditDialogAction = () => {
   return toggleHumanModalStatusAction(false);
 };
 
