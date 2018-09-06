@@ -23,7 +23,8 @@ import theme from './themes/default';
 const styles = theme => ({
   root: {
     flexGrow: 1,
-    height: 440,
+    flexShrink: 0,
+    height: '100%',
     zIndex: 1,
     overflow: 'hidden',
     position: 'relative',
