@@ -29,7 +29,9 @@ const RolesView = ({ classes, openCreationDialog }) => (
     <Button
       className={classes.fab}
       variant="extendedFab"
-      onClick={openCreationDialog}
+      onClick={() => {
+        openCreationDialog('roles');
+      }}
     >
       <AddIcon className={classes.extendedIcon} />
       Create Role

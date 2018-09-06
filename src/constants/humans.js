@@ -2,8 +2,8 @@ export const DEFAULT_STATE_HUMANS = [];
 
 export const DEFAULT_STATE_HUMAN = { name: '', email: '', age: '' };
 
-export const HUMAN_MODAL_MODE_CREATE = 'create';
-export const HUMAN_MODAL_MODE_EDIT = 'edit';
+export const DIALOG_MODE_CREATE = 'create';
+export const DIALOG_MODE_EDIT = 'edit';
 
 export const HUMAN_ATTRIBUTES = [
   {

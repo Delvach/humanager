@@ -7,8 +7,15 @@ export default function navigation(
 ) {
   const newState = Object.assign({}, state);
   switch (type) {
+    // Main navigation
     case ACTIONS.CHANGE_TAB:
       return Object.assign(newState, { tab: payload.tab });
+
+    // Dialog
+    case ACTIONS.SET_DIALOG_DATATYPE:
+      return Object.assign(newState, {
+        dialogDatatype: payload.moduleId
+      });
 
     case ACTIONS.SET_HUMAN_MODAL_OPEN_STATUS:
       return Object.assign(newState, {

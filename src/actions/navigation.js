@@ -1,8 +1,5 @@
 import * as ACTIONS from '../constants/actions';
-import {
-  HUMAN_MODAL_MODE_CREATE,
-  HUMAN_MODAL_MODE_EDIT
-} from '../constants/humans';
+import { DIALOG_MODE_CREATE, DIALOG_MODE_EDIT } from '../constants/humans';
 
 export const changeTab = tab => {
   return {
@@ -15,40 +12,69 @@ export const changeTab = tab => {
 
 // Open or close human modal
 // Determine whether human modal functions as create or edit by inclusion of ID
-export const toggleCreateEditDialogStatusAction = (
-  open = false,
-  id = null
+export const toggleCreateDialogStatusAction = (
+  moduleId = 'humans',
+  open = false
 ) => ({
-  type: ACTIONS.SET_HUMAN_MODAL_STATUS,
+  type: ACTIONS.SET_DIALOG_STATUS,
   payload: {
-    id,
-    mode: id === null ? HUMAN_MODAL_MODE_CREATE : HUMAN_MODAL_MODE_EDIT,
+    mode: DIALOG_MODE_CREATE,
+    moduleId,
     open
   }
 });
 
-export const openCreationDialogAction = () => {
-  return toggleCreateEditDialogStatusAction(true);
-};
-
-export const closeCreationDialogAction = () => {
-  return toggleCreateEditDialogStatusAction(false);
-};
-
-export const openEditingDialogAction = id => {
-  return toggleCreateEditDialogStatusAction(true, id);
-};
-
-export const closeEditingDialogAction = () => {
-  return toggleCreateEditDialogStatusAction(false);
-};
-
-export const setCreateEditDialogModeAction = (
-  mode = HUMAN_MODAL_MODE_CREATE
+export const toggleEditDialogStatusAction = (
+  moduleId = 'humans',
+  open = false,
+  id = null
 ) => ({
-  type: ACTIONS.SET_HUMAN_MODAL_MODE,
+  type: ACTIONS.SET_DIALOG_STATUS,
+  payload: {
+    id,
+    mode: DIALOG_MODE_EDIT,
+    moduleId,
+    open
+  }
+});
+
+export const openCreationDialogAction = (moduleId = 'humans') => {
+  return toggleCreateDialogStatusAction(moduleId, true);
+};
+
+// export const closeCreationDialogAction = (moduleId = 'humans') => {
+//   return toggleCreateDialogStatusAction(moduleId, false);
+// };
+
+export const openEditingDialogAction = (moduleId = 'humans', id) => {
+  return toggleEditDialogStatusAction(moduleId, true, id);
+};
+
+// export const closeEditingDialogAction = (moduleId = 'humans') => {
+//   return toggleEditDialogStatusAction(moduleId, false);
+// };
+
+export const closeDialogAction = () => ({
+  type: ACTIONS.SET_DIALOG_STATUS,
+  payload: {
+    mode: DIALOG_MODE_CREATE,
+    moduleId: null,
+    id: null,
+    open: false
+  }
+});
+
+export const setDialogModeAction = (mode = DIALOG_MODE_CREATE) => ({
+  type: ACTIONS.SET_DIALOG_MODE,
   payload: {
     mode
+  }
+});
+
+export const setDialogDatatypeAction = (moduleId = 'humans') => ({
+  type: ACTIONS.SET_DIALOG_DATATYPE,
+  payload: {
+    moduleId
   }
 });
 
@@ -104,7 +130,7 @@ export const submitCreateEditDialogAction = ({
   age = ''
 }) => {
   return {
-    type: ACTIONS.SUBMIT_CREATE_EDIT_DIALOG,
+    type: ACTIONS.SUBMIT_DIALOG,
     payload: {
       name,
       email,

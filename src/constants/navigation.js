@@ -11,6 +11,7 @@ export const TABS = [
 ];
 
 export const DEFAULT_STATE_NAVIGATION = {
+  dialogDatatype: 'humans',
   humanModalOpen: false,
   humanModalEditId: null,
   roleModalOpen: false,
