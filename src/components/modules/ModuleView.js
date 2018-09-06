@@ -8,11 +8,9 @@ import { bindActionCreators } from 'redux';
 import AddPersonIcon from '@material-ui/icons/PersonAdd';
 import AddRoleIcon from '@material-ui/icons/GroupAdd';
 
-import { openCreationDialogAction } from '../actions/navigation';
+import { openCreationDialogAction } from '../../actions/navigation';
 
-import Button from '../components/inputs/Button';
-
-import HumanList from '../components/modules/humans/HumansList';
+import Button from '../inputs/Button';
 
 const styles = theme => ({
   extendedIcon: {
@@ -25,33 +23,41 @@ const styles = theme => ({
   }
 });
 
-const AddIcon = ({ module, ...props }) =>
-  module === 'human' ? (
+const AddIcon = ({ moduleId, ...props }) =>
+  moduleId === 'humans' ? (
     <AddPersonIcon {...props} />
   ) : (
     <AddRoleIcon {...props} />
   );
 
-const ModuleView = ({ classes, openCreationDialog, module }) => (
+const ModuleView = ({ children, classes, openCreationDialog, moduleId }) => (
   <div>
     <Button
       className={classes.fab}
       variant="extendedFab"
-      onClick={openCreationDialog}
+      onClick={() => {
+        openCreationDialog(moduleId);
+      }}
     >
       <AddIcon className={classes.extendedIcon} />
-      Create {module === 'human' ? 'Human' : 'Role'}
+      Create {moduleId === 'humans' ? 'Human' : 'Role'}
     </Button>
-    <HumanList />
+    {children}
   </div>
 );
 
 ModuleView.propTypes = {
-  module: PropTypes.string
+  children: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.array,
+    PropTypes.object
+  ]),
+  moduleId: PropTypes.string
 };
 
 ModuleView.defaultProps = {
-  module: 'human'
+  children: '',
+  moduleId: 'humans'
 };
 
 const mapStateToProps = () => ({});

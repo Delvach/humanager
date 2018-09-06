@@ -12,7 +12,6 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
 import TextField from '../inputs/TextField';
 
-// import { submitCreateEditDialogAction } from '../../actions/human';
 import {
   closeDialogAction,
   submitCreateEditDialogAction

@@ -8,10 +8,11 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Dialog from '@material-ui/core/Dialog';
 
 import HumanForm from '../forms/HumanForm';
+import RoleForm from '../forms/RoleForm';
 
-import { closeCreationDialogAction } from '../../actions/navigation';
+import { closeDialogAction } from '../../actions/navigation';
 
-const DialogForm = ({ open, handleClose }) => {
+const DialogForm = ({ open, handleClose, datatype }) => {
   return (
     <MuiThemeProvider>
       <Dialog
@@ -21,7 +22,7 @@ const DialogForm = ({ open, handleClose }) => {
         onClose={handleClose}
         onEscapeKeyDown={handleClose}
       >
-        <HumanForm />
+        {datatype === 'humans' ? <HumanForm /> : <RoleForm />}
       </Dialog>
     </MuiThemeProvider>
   );
@@ -36,13 +37,14 @@ DialogForm.defaultProps = {
 };
 
 const mapStateToProps = ({ navigation }) => ({
-  open: navigation.humanModalOpen
+  open: navigation.humanModalOpen,
+  datatype: navigation.dialogDatatype
 });
 
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
     {
-      handleClose: closeCreationDialogAction
+      handleClose: closeDialogAction
     },
     dispatch
   );

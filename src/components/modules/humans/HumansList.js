@@ -40,7 +40,7 @@ const HumanList = ({ deleteItem, editItem, humans }) => (
                 <TableCell key={value}>{human[value]}</TableCell>
               ))}
               <TableCell>
-                <Button onClick={() => editItem(id)}>Edit</Button>
+                <Button onClick={() => editItem('humans', id)}>Edit</Button>
                 <Button onClick={() => deleteItem(id)}>Delete</Button>
               </TableCell>
             </TableRow>

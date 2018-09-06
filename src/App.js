@@ -13,9 +13,14 @@ import AppBar from './components/layout/Appbar';
 import Contents from './components/layout/Contents';
 import Drawer from './components/layout/Drawer';
 
-import EditHumanDialog from './components/dialogs/DialogForm';
-import HumansView from './modules/HumansView';
-import RolesView from './modules/RolesView';
+import CreateEditDialog from './components/dialogs/DialogForm';
+
+import ModuleView from './components/modules/ModuleView';
+
+// import HumansView from './modules/HumansView';
+// import RolesView from './modules/RolesView';
+
+import HumanList from './components/modules/humans/HumansList';
 
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import theme from './themes/default';
@@ -32,16 +37,23 @@ const styles = theme => ({
   }
 });
 
+const Humans = () => (
+  <ModuleView moduleId="humans">
+    <HumanList />
+  </ModuleView>
+);
+const Roles = () => <ModuleView moduleId="roles" />;
+
 class App extends Component {
   componentDidMount = () => this.props.initApp();
 
-  tabViews = idx => [<HumansView />, <RolesView />, <div>Item Three</div>][idx];
+  tabViews = idx => [<Humans />, <Roles />][idx];
 
   render() {
     return (
       <MuiThemeProvider theme={this.props.theme}>
         <div className="App">
-          <EditHumanDialog />
+          <CreateEditDialog />
           <div className={this.props.classes.root}>
             <AppBar />
             <Drawer />
