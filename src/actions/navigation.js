@@ -15,7 +15,10 @@ export const changeTab = tab => {
 
 // Open or close human modal
 // Determine whether human modal functions as create or edit by inclusion of ID
-export const toggleHumanModalStatusAction = (open = false, id = null) => ({
+export const toggleCreateEditDialogStatusAction = (
+  open = false,
+  id = null
+) => ({
   type: ACTIONS.SET_HUMAN_MODAL_STATUS,
   payload: {
     id,
@@ -24,61 +27,63 @@ export const toggleHumanModalStatusAction = (open = false, id = null) => ({
   }
 });
 
-export const openCreateEditDialogAction = () => {
-  return toggleHumanModalStatusAction(true);
+export const openCreationDialogAction = () => {
+  return toggleCreateEditDialogStatusAction(true);
 };
 
-export const closeCreateEditDialogAction = () => {
-  return toggleHumanModalStatusAction(false);
+export const closeCreationDialogAction = () => {
+  return toggleCreateEditDialogStatusAction(false);
 };
 
-export const setHumanModalModeAction = (mode = HUMAN_MODAL_MODE_CREATE) => ({
+export const openEditingDialogAction = id => {
+  return toggleCreateEditDialogStatusAction(true, id);
+};
+
+export const closeEditingDialogAction = () => {
+  return toggleCreateEditDialogStatusAction(false);
+};
+
+export const setCreateEditDialogModeAction = (
+  mode = HUMAN_MODAL_MODE_CREATE
+) => ({
   type: ACTIONS.SET_HUMAN_MODAL_MODE,
   payload: {
     mode
   }
 });
 
-export const setHumanModalEditIdAction = id => ({
+export const setCreateEditDialogEditIdAction = id => ({
   type: ACTIONS.SET_HUMAN_MODAL_EDIT_ID,
   payload: {
     id
   }
 });
 
-export const setHumanModalInitDataAction = human => {
-  const { username, email, age } = human;
+export const setCreateEditDialogInitDataAction = human => {
+  const { name, email, age } = human;
   return {
     type: ACTIONS.SET_HUMAN_MODAL_INIT_VALUES,
     payload: {
-      username,
+      name,
       email,
       age
     }
   };
 };
 
-export const resetHumanModalInitDataAction = human => {
+export const resetCreateEditDialogInitDataAction = human => {
   return {
     type: ACTIONS.RESET_HUMAN_MODAL_INIT_VALUES,
     payload: {}
   };
 };
 
-export const setHumanModalOpenStatusAction = open => ({
+export const setCreateEditDialogOpenStatusAction = open => ({
   type: ACTIONS.SET_HUMAN_MODAL_OPEN_STATUS,
   payload: {
     open
   }
 });
-
-// Human form submission
-export const submitHumanModalAction = () => {
-  return {
-    type: ACTIONS.SUBMIT_HUMAN_MODAL,
-    payload: {}
-  };
-};
 
 // Used for placeholder, prevent tests/type checks from breaking
 export const defaultAction = () => {
@@ -92,6 +97,21 @@ export const toggleLeftDrawerAction = (open = false) => ({
   type: ACTIONS.SET_LEFT_DRAWER_OPEN_STATUS,
   payload: { open }
 });
+
+export const submitCreateEditDialogAction = ({
+  name = '',
+  email = '',
+  age = ''
+}) => {
+  return {
+    type: ACTIONS.SUBMIT_CREATE_EDIT_DIALOG,
+    payload: {
+      name,
+      email,
+      age
+    }
+  };
+};
 
 export const openLeftDrawerAction = () => toggleLeftDrawerAction(true);
 export const closeLeftDrawerAction = () => toggleLeftDrawerAction(false);

@@ -20,6 +20,16 @@ export default function navigation(
         humanModalEditId: payload.id
       });
 
+    case ACTIONS.SET_ROLE_MODAL_OPEN_STATUS:
+      return Object.assign(newState, {
+        roleModalOpen: payload.open
+      });
+
+    case ACTIONS.SET_ROLE_MODAL_EDIT_ID:
+      return Object.assign(newState, {
+        roleModalEditId: payload.id
+      });
+
     case ACTIONS.SET_LEFT_DRAWER_OPEN_STATUS:
       return Object.assign(newState, {
         leftDrawerOpen: payload.open

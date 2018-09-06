@@ -10,11 +10,13 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
-// import Button from '../inputs/Button';
 import TextField from '../inputs/TextField';
 
-import { submitHumanFormAction } from '../../actions/human';
-import { closeHumanModalAction } from '../../actions/navigation';
+// import { submitCreateEditDialogAction } from '../../actions/human';
+import {
+  closeCreationDialogAction,
+  submitCreateEditDialogAction
+} from '../../actions/navigation';
 
 import { HUMAN_ATTRIBUTES } from '../../constants/humans';
 
@@ -53,7 +55,7 @@ const HumanForm = ({ handleClose, handleSubmit, createNewHuman, valid }) => (
         Cancel
       </Button>
       <Button
-        onClick={handleClose}
+        // onClick={handleClose}
         color="primary"
         disabled={!valid}
         type="submit"
@@ -98,18 +100,18 @@ HumanReduxFormSubmittable.defaultProps = {
 
 // initialValues populates form when launched
 const mapStateToProps = ({ human, navigation }) => {
-  const { username, email, age } = human;
+  const { name, email, age } = human;
   return {
     createNewHuman: navigation.humanModalEditId === null,
-    initialValues: { username, email, age }
+    initialValues: { name, email, age }
   };
 };
 
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
     {
-      submitHumanForm: submitHumanFormAction,
-      handleClose: closeHumanModalAction
+      submitHumanForm: submitCreateEditDialogAction,
+      handleClose: closeCreationDialogAction
     },
     dispatch
   );

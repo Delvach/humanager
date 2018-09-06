@@ -8,11 +8,11 @@ import { bindActionCreators } from 'redux';
 import AddPersonIcon from '@material-ui/icons/PersonAdd';
 import AddRoleIcon from '@material-ui/icons/GroupAdd';
 
-import { openCreateEditDialogAction } from '../actions/navigation';
+import { openCreationDialogAction } from '../actions/navigation';
 
 import Button from '../components/inputs/Button';
 
-import HumanList from '../components/HumanList';
+import HumanList from '../components/modules/humans/HumansList';
 
 const styles = theme => ({
   extendedIcon: {
@@ -58,7 +58,7 @@ const mapStateToProps = () => ({});
 
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
-    { openCreationDialog: openCreateEditDialogAction },
+    { openCreationDialog: openCreationDialogAction },
     dispatch
   );
 

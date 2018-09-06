@@ -9,12 +9,12 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import Button from './inputs/Button';
+import Button from './../../inputs/Button';
 
-import { deleteHumanAction } from '../actions/humans';
-import { openEditingDialogAction } from '../actions/navigation';
+import { deleteHumanAction } from '../../../actions/humans';
+import { openEditingDialogAction } from '../../../actions/navigation';
 
-import { HUMAN_LIST_FIELDS } from '../constants/humans';
+import { HUMAN_LIST_FIELDS } from '../../../constants/humans';
 
 const TableHeader = () => (
   <TableHead>
@@ -27,7 +27,7 @@ const TableHeader = () => (
   </TableHead>
 );
 
-const HumanList = ({ deleteHuman, editHuman, humans }) => (
+const HumanList = ({ deleteItem, editItem, humans }) => (
   <Paper>
     <Table>
       <TableHeader />
@@ -40,8 +40,8 @@ const HumanList = ({ deleteHuman, editHuman, humans }) => (
                 <TableCell key={value}>{human[value]}</TableCell>
               ))}
               <TableCell>
-                <Button onClick={() => editHuman(id)}>Edit</Button>
-                <Button onClick={() => deleteHuman(id)}>Delete</Button>
+                <Button onClick={() => editItem(id)}>Edit</Button>
+                <Button onClick={() => deleteItem(id)}>Delete</Button>
               </TableCell>
             </TableRow>
           );
@@ -64,8 +64,8 @@ const mapStateToProps = ({ humans }) => ({ humans });
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
     {
-      deleteHuman: deleteHumanAction,
-      editHuman: openEditingDialogAction
+      deleteItem: deleteHumanAction,
+      editItem: openEditingDialogAction
     },
     dispatch
   );

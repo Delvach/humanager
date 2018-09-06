@@ -1,19 +1,19 @@
-import * as ACTIONS from '../constants/actions';
+import { SUBMIT_CREATE_EDIT_DIALOG } from '../constants/actions';
 
-export const submitHumanFormAction = ({ name = '', email = '', age = '' }) => {
+// Use this to populate default values
+// import { HUMAN_ATTRIBUTES } from '../constants/humans';
+
+export const submitCreateEditDialogAction = ({
+  name = '',
+  email = '',
+  age = ''
+}) => {
   return {
-    type: ACTIONS.SUBMIT_HUMAN_MODAL,
+    type: SUBMIT_CREATE_EDIT_DIALOG,
     payload: {
       name,
       email,
       age
     }
-  };
-};
-
-export const initializeHumanFormAction = () => {
-  return {
-    type: 'INITIALIZE',
-    payload: {}
   };
 };

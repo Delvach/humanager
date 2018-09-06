@@ -7,7 +7,7 @@ import { bindActionCreators } from 'redux';
 
 import AddIcon from '@material-ui/icons/PersonAdd';
 
-import { openCreateEditDialogAction } from '../actions/navigation';
+import { openCreationDialogAction } from '../actions/navigation';
 
 import Button from '../components/inputs/Button';
 
@@ -46,7 +46,7 @@ const mapStateToProps = () => ({});
 
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
-    { openCreationDialog: openCreateEditDialogAction },
+    { openCreationDialog: openCreationDialogAction },
     dispatch
   );
 

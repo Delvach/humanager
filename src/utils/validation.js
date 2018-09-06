@@ -5,10 +5,10 @@
 
 export const validateHuman = values => {
   const errors = {};
-  if (!values.username) {
-    errors.username = 'Required';
-  } else if (values.username.length > 15) {
-    errors.username = 'Must be 15 characters or less';
+  if (!values.name) {
+    errors.name = 'Required';
+  } else if (values.name.length > 15) {
+    errors.name = 'Must be 15 characters or less';
   }
   if (!values.email) {
     errors.email = 'Required';

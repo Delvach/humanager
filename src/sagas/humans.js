@@ -4,11 +4,11 @@ import api from '../api';
 
 import { apiError } from '../actions';
 import {
-  setHumanModalModeAction,
-  setHumanModalEditIdAction,
-  setHumanModalOpenStatusAction,
-  setHumanModalInitDataAction,
-  resetHumanModalInitDataAction
+  setCreateEditDialogModeAction,
+  setCreateEditDialogEditIdAction,
+  setCreateEditDialogOpenStatusAction,
+  setCreateEditDialogInitDataAction,
+  resetCreateEditDialogInitDataAction
 } from '../actions/navigation';
 
 import {
@@ -21,7 +21,7 @@ import {
 
 import { uiErrorHandler } from '../utils/core';
 
-import { toggleHumanModalStatusAction } from '../actions/navigation';
+import { closeEditingDialogAction } from '../actions/navigation';
 
 import * as ACTIONS from '../constants/actions';
 import * as DATABASE_NAMES from '../constants/api';
@@ -72,10 +72,10 @@ function* setHumanModalStatus({ payload }) {
   const editing = mode === HUMAN_MODAL_MODE_EDIT;
 
   // Set flag indicating modal mode
-  yield put(setHumanModalModeAction(mode));
+  yield put(setCreateEditDialogModeAction(mode));
 
   // If editing, use ID to populate  data
-  yield put(setHumanModalEditIdAction(open && editing ? id : null));
+  yield put(setCreateEditDialogEditIdAction(open && editing ? id : null));
 
   if (open && editing) {
     try {
@@ -86,34 +86,34 @@ function* setHumanModalStatus({ payload }) {
       const human = humans.find(hum => hum.id === id);
 
       // Set data used by initialValues during form render
-      yield put(setHumanModalInitDataAction(human));
+      yield put(setCreateEditDialogInitDataAction(human));
     } catch (error) {
       uiErrorHandler(`ERROR: Unable to load user ${id}`);
     }
   }
 
   // Set flag used for modal open/close status
-  yield put(setHumanModalOpenStatusAction(open));
+  yield put(setCreateEditDialogOpenStatusAction(open));
 
   // When closing, reset human data used for initialValues
-  if (!open) yield put(resetHumanModalInitDataAction());
+  if (!open) yield put(resetCreateEditDialogInitDataAction());
 }
 
 function* handleHumanModalSubmit() {
   try {
     const state = yield select(state => state);
 
-    const { username, email, age } = state.form.humanForm.values;
+    const { name, email, age } = state.form.humanForm.values;
     const id = state.navigation.humanModalEditId;
 
     if (id === null) {
-      yield* createHuman({ username, email, age });
+      yield* createHuman({ name, email, age });
     } else {
-      yield* updateHuman({ username, email, age, id });
+      yield* updateHuman({ name, email, age, id });
     }
 
     // Close human modal
-    yield put(toggleHumanModalStatusAction(false));
+    yield put(closeEditingDialogAction());
 
     // Refresh master human list
     yield* loadAllHumansData();
@@ -146,11 +146,11 @@ function* createHuman(data) {
  */
 function* updateHuman(data) {
   try {
-    const { username, email, age } = data;
+    const { name, email, age } = data;
 
     // Submit updated human to API
     yield call(api.database.patch, `${DATABASE_NAMES.HUMANS}/${data.id}`, {
-      username,
+      name,
       email,
       age
     });
@@ -185,7 +185,7 @@ function* initializeHumanagerApp() {
 }
 
 function* watchHumanModalSubmission() {
-  yield takeEvery(ACTIONS.SUBMIT_HUMAN_MODAL, handleHumanModalSubmit);
+  yield takeEvery(ACTIONS.SUBMIT_CREATE_EDIT_DIALOG, handleHumanModalSubmit);
 }
 
 function* watchHumanModalStatus() {

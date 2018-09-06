@@ -9,15 +9,15 @@ import Dialog from '@material-ui/core/Dialog';
 
 import HumanForm from '../forms/HumanForm';
 
-import { closeHumanModalAction } from '../../actions/navigation';
+import { closeCreationDialogAction } from '../../actions/navigation';
 
-const HumanDialog = ({ humanModalOpen, handleClose }) => {
+const DialogForm = ({ open, handleClose }) => {
   return (
     <MuiThemeProvider>
       <Dialog
         disableRestoreFocus
         disableBackdropClick
-        open={humanModalOpen}
+        open={open}
         onClose={handleClose}
         onEscapeKeyDown={handleClose}
       >
@@ -27,25 +27,22 @@ const HumanDialog = ({ humanModalOpen, handleClose }) => {
   );
 };
 
-HumanDialog.propTypes = {
-  createNewHuman: PropTypes.bool,
-  humanModalOpen: PropTypes.bool
+DialogForm.propTypes = {
+  open: PropTypes.bool
 };
 
-HumanDialog.defaultProps = {
-  createNewHuman: true,
-  humanModalOpen: false
+DialogForm.defaultProps = {
+  open: false
 };
 
 const mapStateToProps = ({ navigation }) => ({
-  createNewHuman: navigation.humanModalEditId === null,
-  humanModalOpen: navigation.humanModalOpen
+  open: navigation.humanModalOpen
 });
 
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
     {
-      handleClose: closeHumanModalAction
+      handleClose: closeCreationDialogAction
     },
     dispatch
   );
@@ -53,4 +50,4 @@ const mapDispatchToProps = dispatch =>
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(HumanDialog);
+)(DialogForm);

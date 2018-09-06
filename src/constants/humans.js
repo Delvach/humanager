@@ -1,14 +1,14 @@
 export const DEFAULT_STATE_HUMANS = [];
 
-export const DEFAULT_STATE_HUMAN = { username: '', email: '', age: '' };
+export const DEFAULT_STATE_HUMAN = { name: '', email: '', age: '' };
 
 export const HUMAN_MODAL_MODE_CREATE = 'create';
 export const HUMAN_MODAL_MODE_EDIT = 'edit';
 
 export const HUMAN_ATTRIBUTES = [
   {
-    label: 'Username',
-    value: 'username'
+    label: 'Name',
+    value: 'name'
   },
   {
     label: 'Email',
