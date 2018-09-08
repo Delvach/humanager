@@ -13,11 +13,24 @@ import {
 
 import { createHuman, updateHuman, loadAllHumansData } from './humans';
 
+import { loadUserPreferenceData } from './preferences';
+
 import { uiErrorHandler } from '../utils/core';
 
 import * as ACTIONS from '../constants/actions';
 
 import { DIALOG_MODE_EDIT } from '../constants/humans';
+
+function* initializeAppData() {
+  try {
+    yield* loadUserPreferenceData();
+
+    // Refresh master human list
+    yield* loadAllHumansData();
+  } catch (error) {
+    yield put(apiError(error));
+  }
+}
 
 /* Handle dialog status
  * human/role create/edit open/close & related behaviors
@@ -82,6 +95,13 @@ function* handleDialogSubmit() {
   }
 }
 
+/*
+ *  Define saga watchers
+ */
+function* initializeHumanagerApp() {
+  yield takeEvery(ACTIONS.INITIALIZE_APP, initializeAppData);
+}
+
 function* watchDialogStatus() {
   yield takeEvery(ACTIONS.SET_DIALOG_STATUS, setDialogStatus);
 }
@@ -90,4 +110,8 @@ function* watchDialogSubmission() {
   yield takeEvery(ACTIONS.SUBMIT_DIALOG, handleDialogSubmit);
 }
 
-export const navigationSagas = [watchDialogStatus(), watchDialogSubmission()];
+export const navigationSagas = [
+  initializeHumanagerApp(),
+  watchDialogStatus(),
+  watchDialogSubmission()
+];

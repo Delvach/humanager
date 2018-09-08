@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-
 import { reduxForm } from 'redux-form';
 
 import DialogActions from '@material-ui/core/DialogActions';
@@ -12,99 +12,124 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
 import TextField from '../inputs/TextField';
 
+import MultiSelect from '../inputs/MultiSelect';
+
 import {
   closeDialogAction,
   submitCreateEditDialogAction
 } from '../../actions/navigation';
 
-import { HUMAN_ATTRIBUTES } from '../../constants/humans';
-
 import {
-  validateHuman as validate,
-  warnHuman as warn
+  validateRole as validate,
+  warnRole as warn
 } from '../../utils/validation';
 
+const rawHumans = [
+  { name: 'Alpha', id: 0 },
+  { name: 'Beta', id: 1 },
+  { name: 'Charlie', id: 2 },
+  { name: 'Delta', id: 3 },
+  { name: 'Echo', id: 4 },
+  { name: 'Foxtrot', id: 5 },
+  { name: 'Gamma', id: 6 }
+];
+
+const memberHumanIds = [1, 3, 4];
+
+const handleMultiselectChange = event => {
+  const toggledValue = event.target.value[event.target.value.length - 1];
+  const isAlreadySelected = memberHumanIds.indexOf(toggledValue) > -1;
+  if (!isAlreadySelected) memberHumanIds.push(toggledValue);
+};
+
 // Define component
-const HumanForm = ({ handleClose, handleSubmit, createNewHuman, valid }) => (
+const RoleForm = ({ handleClose, handleSubmit, createNew, valid }) => (
   <form onSubmit={handleSubmit}>
     <DialogTitle id="form-dialog-title">
-      {createNewHuman ? 'Create' : 'Edit'} Human
+      {createNew ? 'Create' : 'Edit'} Role
     </DialogTitle>
     <DialogContent>
       <DialogContentText>
         <React.Fragment>
-          Please enter {createNewHuman || 'updated '}
-          information for your {createNewHuman && 'new '}
-          human.
+          Please enter {createNew || 'updated '}
+          information for your {createNew && 'new '}
+          role.
         </React.Fragment>
       </DialogContentText>
-      {HUMAN_ATTRIBUTES.map(({ label, value }, index) => (
-        <TextField
-          key={value}
-          autoFocus={index === 0}
-          margin="dense"
-          name={value}
-          label={label}
-          fullWidth
-        />
-      ))}
+
+      <TextField autoFocus margin="dense" name="name" label="Name" fullWidth />
+
+      <MultiSelect
+        name="members"
+        label="Member Humans"
+        items={rawHumans}
+        memberIds={memberHumanIds}
+        onChange={handleMultiselectChange}
+      />
     </DialogContent>
     <DialogActions>
       <Button onClick={handleClose} color="primary">
         Cancel
       </Button>
       <Button color="primary" disabled={!valid} type="submit">
-        {createNewHuman ? 'Create' : 'Update'}
+        {createNew ? 'Create' : 'Update'}
       </Button>
     </DialogActions>
   </form>
 );
 
 // Wrap component in redux-form for validation
-const HumanReduxForm = reduxForm({
-  form: 'humanForm',
+const RoleReduxForm = reduxForm({
+  form: 'roleForm',
   validate,
   warn
-})(HumanForm);
+})(RoleForm);
 
 // Connected redux-form-wrapped component with initialValues mapped
-const HumanReduxFormSubmittable = ({
-  submitHumanForm,
+const RoleReduxFormSubmittable = ({
+  submitRoleForm,
   handleClose,
   initialValues,
-  createNewHuman
+  createNew,
+  humans
 }) => (
-  <HumanReduxForm
+  <RoleReduxForm
     initialValues={initialValues}
-    onSubmit={values => submitHumanForm(values)}
+    onSubmit={values => submitRoleForm(values)}
     handleClose={handleClose}
-    createNewHuman={createNewHuman}
+    createNew={createNew}
+    humans={humans}
   />
 );
 
-HumanReduxFormSubmittable.propTypes = {
-  createNewHuman: PropTypes.bool,
-  initialValues: PropTypes.object
+RoleReduxFormSubmittable.propTypes = {
+  createNew: PropTypes.bool,
+  initialValues: PropTypes.object,
+  humans: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
+  members: PropTypes.oneOfType([PropTypes.array, PropTypes.object])
 };
 
-HumanReduxFormSubmittable.defaultProps = {
-  createNewHuman: true,
-  initialValues: {}
+RoleReduxFormSubmittable.defaultProps = {
+  createNew: true,
+  initialValues: {},
+  humans: [],
+  members: []
 };
 
 // initialValues populates form when launched
-const mapStateToProps = ({ human, navigation }) => {
-  const { name, email, age } = human;
+const mapStateToProps = ({ role, navigation, humans }) => {
+  const { name, members } = role;
   return {
-    createNewHuman: navigation.humanModalEditId === null,
-    initialValues: { name, email, age }
+    createNew: navigation.roleModalEditId === null,
+    initialValues: { name, members },
+    humans
   };
 };
 
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
     {
-      submitHumanForm: submitCreateEditDialogAction,
+      submitRoleForm: submitCreateEditDialogAction,
       handleClose: closeDialogAction
     },
     dispatch
@@ -113,4 +138,4 @@ const mapDispatchToProps = dispatch =>
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(HumanReduxFormSubmittable);
+)(RoleReduxFormSubmittable);

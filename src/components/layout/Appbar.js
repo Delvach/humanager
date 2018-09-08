@@ -6,7 +6,6 @@ import { bindActionCreators } from 'redux';
 import classNames from 'classnames';
 
 import { withStyles } from '@material-ui/core/styles';
-// import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import IconButton from '@material-ui/core/IconButton';
 import AppBarComponent from '@material-ui/core/AppBar';

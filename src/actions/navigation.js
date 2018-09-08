@@ -42,17 +42,9 @@ export const openCreationDialogAction = (moduleId = 'humans') => {
   return toggleCreateDialogStatusAction(moduleId, true);
 };
 
-// export const closeCreationDialogAction = (moduleId = 'humans') => {
-//   return toggleCreateDialogStatusAction(moduleId, false);
-// };
-
 export const openEditingDialogAction = (moduleId = 'humans', id) => {
   return toggleEditDialogStatusAction(moduleId, true, id);
 };
-
-// export const closeEditingDialogAction = (moduleId = 'humans') => {
-//   return toggleEditDialogStatusAction(moduleId, false);
-// };
 
 export const closeDialogAction = () => ({
   type: ACTIONS.SET_DIALOG_STATUS,

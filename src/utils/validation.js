@@ -32,3 +32,18 @@ export const warnHuman = values => {
   }
   return warnings;
 };
+
+export const validateRole = values => {
+  const errors = {};
+  if (!values.name) {
+    errors.name = 'Required';
+  }
+
+  return errors;
+};
+
+export const warnRole = values => {
+  const warnings = {};
+
+  return warnings;
+};

@@ -7,6 +7,7 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import Dialog from '@material-ui/core/Dialog';
 
+// Temporary solution; content should be children prop
 import HumanForm from '../forms/HumanForm';
 import RoleForm from '../forms/RoleForm';
 

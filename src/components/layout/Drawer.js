@@ -6,7 +6,6 @@ import { bindActionCreators } from 'redux';
 import classNames from 'classnames';
 
 import { withStyles } from '@material-ui/core/styles';
-// import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import Drawer from '@material-ui/core/Drawer';
 import Divider from '@material-ui/core/Divider';
@@ -26,6 +25,7 @@ import RolesIcon from '@material-ui/icons/List';
 import { TABS } from '../../constants/navigation';
 
 import { changeTab, closeLeftDrawerAction } from '../../actions/navigation';
+import { storePreferenceDataAction } from '../../actions/preferences';
 
 const drawerWidth = 240;
 
@@ -68,6 +68,7 @@ const Sidebar = props => {
     theme,
     open,
     changeTab,
+    storeTab,
     handleDrawerClose,
     tab,
     variant
@@ -101,6 +102,7 @@ const Sidebar = props => {
             <ListItem
               onClick={() => {
                 changeTab(value);
+                storeTab(value);
               }}
               key={value}
               selected={value === tab}
@@ -142,7 +144,8 @@ const mapDispatchToProps = dispatch =>
   bindActionCreators(
     {
       handleDrawerClose: closeLeftDrawerAction,
-      changeTab
+      changeTab,
+      storeTab: storePreferenceDataAction
     },
     dispatch
   );

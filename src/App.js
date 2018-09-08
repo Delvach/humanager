@@ -17,9 +17,6 @@ import CreateEditDialog from './components/dialogs/DialogForm';
 
 import ModuleView from './components/modules/ModuleView';
 
-// import HumansView from './modules/HumansView';
-// import RolesView from './modules/RolesView';
-
 import HumanList from './components/modules/humans/HumansList';
 
 import { MuiThemeProvider } from '@material-ui/core/styles';

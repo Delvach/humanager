@@ -109,13 +109,6 @@ export function* deleteHuman({ payload }) {
   }
 }
 
-/*
- *  Define saga watchers
- */
-function* initializeHumanagerApp() {
-  yield takeEvery(ACTIONS.INITIALIZE_APP, loadAllHumansData);
-}
-
 function* watchAllHumansLoad() {
   yield takeEvery(ACTIONS.LOAD_HUMANS, loadAllHumansData);
 }
@@ -129,8 +122,6 @@ function* watchHumanDelete() {
 }
 
 export const humansSagas = [
-  initializeHumanagerApp(),
-
   watchAllHumansLoad(),
   watchHumanLoad(),
   watchHumanDelete()

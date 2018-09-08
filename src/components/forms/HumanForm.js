@@ -12,7 +12,6 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
 import TextField from '../inputs/TextField';
 
-// import { submitCreateEditDialogAction } from '../../actions/human';
 import {
   closeDialogAction,
   submitCreateEditDialogAction
@@ -26,16 +25,16 @@ import {
 } from '../../utils/validation';
 
 // Define component
-const HumanForm = ({ handleClose, handleSubmit, createNewHuman, valid }) => (
+const HumanForm = ({ handleClose, handleSubmit, createNew, valid }) => (
   <form onSubmit={handleSubmit}>
     <DialogTitle id="form-dialog-title">
-      {createNewHuman ? 'Create' : 'Edit'} Human
+      {createNew ? 'Create' : 'Edit'} Human
     </DialogTitle>
     <DialogContent>
       <DialogContentText>
         <React.Fragment>
-          Please enter {createNewHuman || 'updated '}
-          information for your {createNewHuman && 'new '}
+          Please enter {createNew || 'updated '}
+          information for your {createNew && 'new '}
           human.
         </React.Fragment>
       </DialogContentText>
@@ -55,7 +54,7 @@ const HumanForm = ({ handleClose, handleSubmit, createNewHuman, valid }) => (
         Cancel
       </Button>
       <Button color="primary" disabled={!valid} type="submit">
-        {createNewHuman ? 'Create' : 'Update'}
+        {createNew ? 'Create' : 'Update'}
       </Button>
     </DialogActions>
   </form>
@@ -73,23 +72,23 @@ const HumanReduxFormSubmittable = ({
   submitHumanForm,
   handleClose,
   initialValues,
-  createNewHuman
+  createNew
 }) => (
   <HumanReduxForm
     initialValues={initialValues}
     onSubmit={values => submitHumanForm(values)}
     handleClose={handleClose}
-    createNewHuman={createNewHuman}
+    createNew={createNew}
   />
 );
 
 HumanReduxFormSubmittable.propTypes = {
-  createNewHuman: PropTypes.bool,
+  createNew: PropTypes.bool,
   initialValues: PropTypes.object
 };
 
 HumanReduxFormSubmittable.defaultProps = {
-  createNewHuman: true,
+  createNew: true,
   initialValues: {}
 };
 
@@ -97,7 +96,7 @@ HumanReduxFormSubmittable.defaultProps = {
 const mapStateToProps = ({ human, navigation }) => {
   const { name, email, age } = human;
   return {
-    createNewHuman: navigation.humanModalEditId === null,
+    createNew: navigation.humanModalEditId === null,
     initialValues: { name, email, age }
   };
 };
