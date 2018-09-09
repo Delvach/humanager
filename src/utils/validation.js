@@ -39,6 +39,10 @@ export const validateRole = values => {
     errors.name = 'Required';
   }
 
+  if (!values.members) {
+    errors.members = 'Required';
+  }
+
   return errors;
 };
 

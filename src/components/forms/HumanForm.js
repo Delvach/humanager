@@ -25,7 +25,13 @@ import {
 } from '../../utils/validation';
 
 // Define component
-const HumanForm = ({ handleClose, handleSubmit, createNew, valid }) => (
+const HumanForm = ({
+  handleClose,
+  handleSubmit,
+  createNew,
+  valid,
+  pristine
+}) => (
   <form onSubmit={handleSubmit}>
     <DialogTitle id="form-dialog-title">
       {createNew ? 'Create' : 'Edit'} Human
@@ -53,7 +59,7 @@ const HumanForm = ({ handleClose, handleSubmit, createNew, valid }) => (
       <Button onClick={handleClose} color="primary">
         Cancel
       </Button>
-      <Button color="primary" disabled={!valid} type="submit">
+      <Button color="primary" disabled={pristine || !valid} type="submit">
         {createNew ? 'Create' : 'Update'}
       </Button>
     </DialogActions>

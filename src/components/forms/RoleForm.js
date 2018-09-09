@@ -25,25 +25,25 @@ import {
 } from '../../utils/validation';
 
 const rawHumans = [
-  { name: 'Alpha', id: 0 },
-  { name: 'Beta', id: 1 },
-  { name: 'Charlie', id: 2 },
-  { name: 'Delta', id: 3 },
-  { name: 'Echo', id: 4 },
-  { name: 'Foxtrot', id: 5 },
-  { name: 'Gamma', id: 6 }
+  { text: 'Alpha', value: 0 },
+  { text: 'Beta', value: 1 },
+  { text: 'Charlie', value: 2 },
+  { text: 'Delta', value: 3 },
+  { text: 'Echo', value: 4 },
+  { text: 'Foxtrot', value: 5 },
+  { text: 'Gamma', value: 6 }
 ];
 
 const memberHumanIds = [1, 3, 4];
 
-const handleMultiselectChange = event => {
-  const toggledValue = event.target.value[event.target.value.length - 1];
-  const isAlreadySelected = memberHumanIds.indexOf(toggledValue) > -1;
-  if (!isAlreadySelected) memberHumanIds.push(toggledValue);
-};
-
 // Define component
-const RoleForm = ({ handleClose, handleSubmit, createNew, valid }) => (
+const RoleForm = ({
+  handleClose,
+  handleSubmit,
+  createNew,
+  valid,
+  pristine
+}) => (
   <form onSubmit={handleSubmit}>
     <DialogTitle id="form-dialog-title">
       {createNew ? 'Create' : 'Edit'} Role
@@ -57,21 +57,21 @@ const RoleForm = ({ handleClose, handleSubmit, createNew, valid }) => (
         </React.Fragment>
       </DialogContentText>
 
-      <TextField autoFocus margin="dense" name="name" label="Name" fullWidth />
-
-      <MultiSelect
-        name="members"
-        label="Member Humans"
-        items={rawHumans}
-        memberIds={memberHumanIds}
-        onChange={handleMultiselectChange}
+      <TextField
+        autoFocus
+        margin="dense"
+        name="title"
+        label="Title"
+        fullWidth
       />
+      <TextField autoFocus margin="dense" name="name" label="Name" fullWidth />
+      <MultiSelect name="members" data={rawHumans} />
     </DialogContent>
     <DialogActions>
       <Button onClick={handleClose} color="primary">
         Cancel
       </Button>
-      <Button color="primary" disabled={!valid} type="submit">
+      <Button color="primary" disabled={pristine || !valid} type="submit">
         {createNew ? 'Create' : 'Update'}
       </Button>
     </DialogActions>
@@ -118,10 +118,10 @@ RoleReduxFormSubmittable.defaultProps = {
 
 // initialValues populates form when launched
 const mapStateToProps = ({ role, navigation, humans }) => {
-  const { name, members } = role;
+  const { name } = role;
   return {
     createNew: navigation.roleModalEditId === null,
-    initialValues: { name, members },
+    initialValues: { name, members: memberHumanIds, title: '' },
     humans
   };
 };
