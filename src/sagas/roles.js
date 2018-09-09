@@ -76,8 +76,12 @@ export function* createRole(data) {
 /*
  *  Update existing role in api
  */
-export function* updateRole({ name, members, id }) {
+export function* updateRole({ payload }) {
+  const { name, members, id } = payload;
   try {
+    if (!id) {
+      throw new Error('updateRole requires valid ID');
+    }
     // Submit updated role to API
     yield call(api.database.patch, `${DATABASE_NAMES.ROLES}/${id}`, {
       name,
@@ -118,8 +122,13 @@ function* watchRoleDelete() {
   yield takeEvery(ACTIONS.DELETE_ROLE, deleteRole);
 }
 
+function* watchRoleUpdate() {
+  yield takeEvery(ACTIONS.UPDATE_ROLE, updateRole);
+}
+
 export const rolesSagas = [
   watchAllRolesLoad(),
   watchRoleLoad(),
-  watchRoleDelete()
+  watchRoleDelete(),
+  watchRoleUpdate()
 ];

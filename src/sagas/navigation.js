@@ -128,10 +128,14 @@ function* handleRoleDialogSubmit() {
 
     const memberIds = members.map(human => human.value);
 
+    const payload = { name, members: memberIds };
+
     if (id === null) {
       yield* createRole({ name, members: memberIds });
     } else {
-      yield* updateRole({ name, members: memberIds, id });
+      payload.id = id;
+
+      yield* updateRole({ payload });
     }
 
     // Close human modal

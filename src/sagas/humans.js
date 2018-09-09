@@ -1,4 +1,4 @@
-import { call, put, takeEvery } from 'redux-saga/effects';
+import { call, put, takeEvery, select } from 'redux-saga/effects';
 
 import api from '../api';
 
@@ -11,6 +11,8 @@ import {
   humanLoadedAction,
   humanUpdatedAction
 } from '../actions/humans';
+
+import { roleUpdateAction } from '../actions/roles';
 
 import * as ACTIONS from '../constants/actions';
 import * as DATABASE_NAMES from '../constants/api';
@@ -99,6 +101,20 @@ export function* updateHuman(data) {
  */
 export function* deleteHuman({ payload }) {
   try {
+    // Is this human a member of any roles?
+    const roles = yield select(state => state.roles);
+    const rolesWithMemberId = roles.filter(
+      ({ members }) => members.indexOf(payload.id) > -1
+    );
+
+    // List of roles that need to be updated; trigger sagas from here? Best way to batch them?
+    for (let i = 0; i < rolesWithMemberId.length; i++) {
+      const role = Object.assign({}, rolesWithMemberId[i]);
+      role.members.splice(role.members.indexOf(payload.id), 1);
+      yield put(roleUpdateAction(role));
+    }
+    // return;
+
     yield call(api.database.delete, `${DATABASE_NAMES.HUMANS}/${payload.id}`);
     yield put(humanDeletedAction(payload.id));
 

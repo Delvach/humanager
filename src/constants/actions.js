@@ -24,6 +24,7 @@ export const LOAD_HUMAN = 'LOAD_HUMAN';
 
 export const DELETE_ROLE = 'DELETE_ROLE';
 export const LOAD_ROLE = 'LOAD_ROLE';
+export const UPDATE_ROLE = 'UPDATE_ROLE';
 
 // Individual actions - notifications
 export const HUMAN_CREATED = 'HUMAN_CREATED';
