@@ -28,3 +28,6 @@ export const normalizeCreateHumanData = ({
   email,
   age
 });
+
+export const normalizeHumansDataForSelect = humans =>
+  humans.map(({ name, id }) => ({ text: name, value: id }));

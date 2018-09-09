@@ -4,14 +4,16 @@ import { apiError } from '../actions';
 import {
   setDialogModeAction,
   setDialogDatatypeAction,
-  setCreateEditDialogEditIdAction,
+  setDialogEditIdAction,
   setCreateEditDialogOpenStatusAction,
-  setCreateEditDialogInitDataAction,
+  setHumanEditingDialogAction,
+  setRoleEditingDialogAction,
   resetCreateEditDialogInitDataAction,
   closeDialogAction
 } from '../actions/navigation';
 
 import { createHuman, updateHuman, loadAllHumansData } from './humans';
+import { createRole, updateRole, loadAllRolesData } from './roles';
 
 import { loadUserPreferenceData } from './preferences';
 
@@ -25,11 +27,36 @@ function* initializeAppData() {
   try {
     yield* loadUserPreferenceData();
 
-    // Refresh master human list
+    // Load master humans list
     yield* loadAllHumansData();
+
+    // Load master roles list
+    yield* loadAllRolesData();
   } catch (error) {
     yield put(apiError(error));
   }
+}
+
+function* initializeHumanEditingDialog(id = null) {
+  // Pull all humans from state
+  const humans = yield select(state => state.humans);
+
+  // Identify specified human by id
+  const human = humans.find(hum => hum.id === id);
+
+  // Set data used by initialValues during form render
+  yield put(setHumanEditingDialogAction(human));
+}
+
+function* initializeRoleEditingDialog(id = null) {
+  // Pull all roles from state
+  const roles = yield select(state => state.roles);
+
+  // Identify specified role by id
+  const role = roles.find(rol => rol.id === id);
+
+  // Set data used by initialValues during form render
+  yield put(setRoleEditingDialogAction(role));
 }
 
 /* Handle dialog status
@@ -48,18 +75,15 @@ function* setDialogStatus({ payload }) {
   yield put(setDialogModeAction(mode));
 
   // If editing, use ID to populate  data
-  yield put(setCreateEditDialogEditIdAction(open && editing ? id : null));
+  yield put(setDialogEditIdAction(open && editing ? id : null, moduleId));
 
   if (open && editing) {
     try {
-      // Pull all humans from state
-      const humans = yield select(state => state.humans);
-
-      // Identify specified user by id
-      const human = humans.find(hum => hum.id === id);
-
-      // Set data used by initialValues during form render
-      yield put(setCreateEditDialogInitDataAction(human));
+      if (moduleId === 'humans') {
+        yield* initializeHumanEditingDialog(id);
+      } else {
+        yield* initializeRoleEditingDialog(id);
+      }
     } catch (error) {
       uiErrorHandler(`ERROR: Unable to load user ${id}`);
     }
@@ -72,7 +96,7 @@ function* setDialogStatus({ payload }) {
   if (!open) yield put(resetCreateEditDialogInitDataAction());
 }
 
-function* handleDialogSubmit() {
+function* handleHumanDialogSubmit() {
   try {
     const state = yield select(state => state);
 
@@ -95,6 +119,31 @@ function* handleDialogSubmit() {
   }
 }
 
+function* handleRoleDialogSubmit() {
+  try {
+    const state = yield select(state => state);
+
+    const { name, members } = state.form.roleForm.values;
+    const id = state.navigation.roleModalEditId;
+
+    const memberIds = members.map(human => human.value);
+
+    if (id === null) {
+      yield* createRole({ name, members: memberIds });
+    } else {
+      yield* updateRole({ name, members: memberIds, id });
+    }
+
+    // Close human modal
+    yield put(closeDialogAction());
+
+    // Refresh master human list
+    yield* loadAllRolesData();
+  } catch (error) {
+    yield put(apiError(error));
+  }
+}
+
 /*
  *  Define saga watchers
  */
@@ -106,12 +155,17 @@ function* watchDialogStatus() {
   yield takeEvery(ACTIONS.SET_DIALOG_STATUS, setDialogStatus);
 }
 
-function* watchDialogSubmission() {
-  yield takeEvery(ACTIONS.SUBMIT_DIALOG, handleDialogSubmit);
+function* watchHumanDialogSubmission() {
+  yield takeEvery(ACTIONS.SUBMIT_HUMAN_DIALOG, handleHumanDialogSubmit);
+}
+
+function* watchRoleDialogSubmission() {
+  yield takeEvery(ACTIONS.SUBMIT_ROLE_DIALOG, handleRoleDialogSubmit);
 }
 
 export const navigationSagas = [
   initializeHumanagerApp(),
   watchDialogStatus(),
-  watchDialogSubmission()
+  watchHumanDialogSubmission(),
+  watchRoleDialogSubmission()
 ];

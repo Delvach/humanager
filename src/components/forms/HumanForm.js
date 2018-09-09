@@ -14,7 +14,7 @@ import TextField from '../inputs/TextField';
 
 import {
   closeDialogAction,
-  submitCreateEditDialogAction
+  submitHumanDialogAction
 } from '../../actions/navigation';
 
 import { HUMAN_ATTRIBUTES } from '../../constants/humans';
@@ -110,7 +110,7 @@ const mapStateToProps = ({ human, navigation }) => {
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
     {
-      submitHumanForm: submitCreateEditDialogAction,
+      submitHumanForm: submitHumanDialogAction,
       handleClose: closeDialogAction
     },
     dispatch

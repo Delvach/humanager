@@ -70,14 +70,17 @@ export const setDialogDatatypeAction = (moduleId = 'humans') => ({
   }
 });
 
-export const setCreateEditDialogEditIdAction = id => ({
-  type: ACTIONS.SET_HUMAN_MODAL_EDIT_ID,
+export const setDialogEditIdAction = (id, moduleId) => ({
+  type:
+    moduleId === 'humans'
+      ? ACTIONS.SET_HUMAN_MODAL_EDIT_ID
+      : ACTIONS.SET_ROLE_MODAL_EDIT_ID,
   payload: {
     id
   }
 });
 
-export const setCreateEditDialogInitDataAction = human => {
+export const setHumanEditingDialogAction = human => {
   const { name, email, age } = human;
   return {
     type: ACTIONS.SET_HUMAN_MODAL_INIT_VALUES,
@@ -85,6 +88,17 @@ export const setCreateEditDialogInitDataAction = human => {
       name,
       email,
       age
+    }
+  };
+};
+
+export const setRoleEditingDialogAction = role => {
+  const { name, members } = role;
+  return {
+    type: ACTIONS.SET_ROLE_MODAL_INIT_VALUES,
+    payload: {
+      name,
+      members
     }
   };
 };
@@ -116,17 +130,27 @@ export const toggleLeftDrawerAction = (open = false) => ({
   payload: { open }
 });
 
-export const submitCreateEditDialogAction = ({
+export const submitHumanDialogAction = ({
   name = '',
   email = '',
   age = ''
 }) => {
   return {
-    type: ACTIONS.SUBMIT_DIALOG,
+    type: ACTIONS.SUBMIT_HUMAN_DIALOG,
     payload: {
       name,
       email,
       age
+    }
+  };
+};
+
+export const submitRoleDialogAction = ({ name = '', members = [] }) => {
+  return {
+    type: ACTIONS.SUBMIT_ROLE_DIALOG,
+    payload: {
+      name,
+      members
     }
   };
 };

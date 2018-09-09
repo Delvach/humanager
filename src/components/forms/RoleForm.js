@@ -16,28 +16,19 @@ import MultiSelect from '../inputs/MultiSelect';
 
 import {
   closeDialogAction,
-  submitCreateEditDialogAction
+  submitRoleDialogAction
 } from '../../actions/navigation';
+
+import { normalizeHumansDataForSelect } from '../../utils/humans';
 
 import {
   validateRole as validate,
   warnRole as warn
 } from '../../utils/validation';
 
-const rawHumans = [
-  { text: 'Alpha', value: 0 },
-  { text: 'Beta', value: 1 },
-  { text: 'Charlie', value: 2 },
-  { text: 'Delta', value: 3 },
-  { text: 'Echo', value: 4 },
-  { text: 'Foxtrot', value: 5 },
-  { text: 'Gamma', value: 6 }
-];
-
-const memberHumanIds = [1, 3, 4];
-
 // Define component
 const RoleForm = ({
+  allHumans,
   handleClose,
   handleSubmit,
   createNew,
@@ -57,15 +48,8 @@ const RoleForm = ({
         </React.Fragment>
       </DialogContentText>
 
-      <TextField
-        autoFocus
-        margin="dense"
-        name="title"
-        label="Title"
-        fullWidth
-      />
       <TextField autoFocus margin="dense" name="name" label="Name" fullWidth />
-      <MultiSelect name="members" data={rawHumans} />
+      <MultiSelect name="members" data={allHumans} />
     </DialogContent>
     <DialogActions>
       <Button onClick={handleClose} color="primary">
@@ -87,22 +71,23 @@ const RoleReduxForm = reduxForm({
 
 // Connected redux-form-wrapped component with initialValues mapped
 const RoleReduxFormSubmittable = ({
+  allHumans,
   submitRoleForm,
   handleClose,
   initialValues,
-  createNew,
-  humans
+  createNew
 }) => (
   <RoleReduxForm
     initialValues={initialValues}
     onSubmit={values => submitRoleForm(values)}
     handleClose={handleClose}
     createNew={createNew}
-    humans={humans}
+    allHumans={allHumans}
   />
 );
 
 RoleReduxFormSubmittable.propTypes = {
+  allHumans: PropTypes.array,
   createNew: PropTypes.bool,
   initialValues: PropTypes.object,
   humans: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
@@ -110,6 +95,7 @@ RoleReduxFormSubmittable.propTypes = {
 };
 
 RoleReduxFormSubmittable.defaultProps = {
+  allHumans: [],
   createNew: true,
   initialValues: {},
   humans: [],
@@ -118,18 +104,18 @@ RoleReduxFormSubmittable.defaultProps = {
 
 // initialValues populates form when launched
 const mapStateToProps = ({ role, navigation, humans }) => {
-  const { name } = role;
+  const { name, members } = role;
   return {
     createNew: navigation.roleModalEditId === null,
-    initialValues: { name, members: memberHumanIds, title: '' },
-    humans
+    initialValues: { name, members },
+    allHumans: normalizeHumansDataForSelect(humans)
   };
 };
 
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
     {
-      submitRoleForm: submitCreateEditDialogAction,
+      submitRoleForm: submitRoleDialogAction,
       handleClose: closeDialogAction
     },
     dispatch

@@ -17,7 +17,8 @@ import CreateEditDialog from './components/dialogs/DialogForm';
 
 import ModuleView from './components/modules/ModuleView';
 
-import HumanList from './components/modules/humans/HumansList';
+import HumansList from './components/modules/humans/HumansList';
+import RolesList from './components/modules/roles/RolesList';
 
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import theme from './themes/default';
@@ -36,10 +37,14 @@ const styles = theme => ({
 
 const Humans = () => (
   <ModuleView moduleId="humans">
-    <HumanList />
+    <HumansList />
   </ModuleView>
 );
-const Roles = () => <ModuleView moduleId="roles" />;
+const Roles = () => (
+  <ModuleView moduleId="roles">
+    <RolesList />
+  </ModuleView>
+);
 
 class App extends Component {
   componentDidMount = () => this.props.initApp();
