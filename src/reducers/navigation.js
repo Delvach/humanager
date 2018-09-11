@@ -7,6 +7,14 @@ export default function navigation(
 ) {
   const newState = Object.assign({}, state);
   switch (type) {
+    case ACTIONS.SET_NAVIGATION_FROM_PREFS:
+      const { tab, leftDrawerOpen, topPaneHeight } = payload;
+      return Object.assign(newState, {
+        tab,
+        leftDrawerOpen,
+        topPaneHeight
+      });
+
     // Main navigation
     case ACTIONS.CHANGE_TAB:
       return Object.assign(newState, { tab: payload.tab });

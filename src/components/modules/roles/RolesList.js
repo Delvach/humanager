@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import Paper from '@material-ui/core/Paper';
+// import Paper ßfrom '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -35,35 +35,33 @@ const displayRoleField = ({ fieldValue, fieldId }, humans) => {
 
 const RoleList = ({ deleteItem, editItem, roles, humans }) => {
   return (
-    <Paper>
-      <Table>
-        <TableHeader />
-        <TableBody>
-          {roles.map(role => {
-            const { id } = role;
-            return (
-              <TableRow key={id}>
-                {ROLE_LIST_FIELDS.map(({ label, value }) => (
-                  <TableCell key={value}>
-                    {displayRoleField(
-                      {
-                        fieldValue: role[value],
-                        fieldId: value
-                      },
-                      humans
-                    )}
-                  </TableCell>
-                ))}
-                <TableCell>
-                  <Button onClick={() => editItem('roles', id)}>Edit</Button>
-                  <Button onClick={() => deleteItem(id)}>Delete</Button>
+    <Table>
+      <TableHeader />
+      <TableBody>
+        {roles.map(role => {
+          const { id } = role;
+          return (
+            <TableRow key={id}>
+              {ROLE_LIST_FIELDS.map(({ label, value }) => (
+                <TableCell key={value}>
+                  {displayRoleField(
+                    {
+                      fieldValue: role[value],
+                      fieldId: value
+                    },
+                    humans
+                  )}
                 </TableCell>
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
-    </Paper>
+              ))}
+              <TableCell>
+                <Button onClick={() => editItem('roles', id)}>Edit</Button>
+                <Button onClick={() => deleteItem(id)}>Delete</Button>
+              </TableCell>
+            </TableRow>
+          );
+        })}
+      </TableBody>
+    </Table>
   );
 };
 

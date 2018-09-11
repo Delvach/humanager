@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import Paper from '@material-ui/core/Paper';
+// import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -28,27 +28,25 @@ const TableHeader = () => (
 );
 
 const HumanList = ({ deleteItem, editItem, humans }) => (
-  <Paper>
-    <Table>
-      <TableHeader />
-      <TableBody>
-        {humans.map(human => {
-          const { id } = human;
-          return (
-            <TableRow key={id}>
-              {HUMAN_LIST_FIELDS.map(({ value }) => (
-                <TableCell key={value}>{human[value]}</TableCell>
-              ))}
-              <TableCell>
-                <Button onClick={() => editItem('humans', id)}>Edit</Button>
-                <Button onClick={() => deleteItem(id)}>Delete</Button>
-              </TableCell>
-            </TableRow>
-          );
-        })}
-      </TableBody>
-    </Table>
-  </Paper>
+  <Table>
+    <TableHeader />
+    <TableBody>
+      {humans.map(human => {
+        const { id } = human;
+        return (
+          <TableRow key={id}>
+            {HUMAN_LIST_FIELDS.map(({ value }) => (
+              <TableCell key={value}>{human[value]}</TableCell>
+            ))}
+            <TableCell>
+              <Button onClick={() => editItem('humans', id)}>Edit</Button>
+              <Button onClick={() => deleteItem(id)}>Delete</Button>
+            </TableCell>
+          </TableRow>
+        );
+      })}
+    </TableBody>
+  </Table>
 );
 
 HumanList.propTypes = {

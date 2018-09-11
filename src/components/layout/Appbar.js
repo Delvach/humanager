@@ -7,7 +7,10 @@ import classNames from 'classnames';
 
 import { withStyles } from '@material-ui/core/styles';
 
+import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
+import AddPersonIcon from '@material-ui/icons/PersonAdd';
+import AddRoleIcon from '@material-ui/icons/GroupAdd';
 import AppBarComponent from '@material-ui/core/AppBar';
 
 import Toolbar from '@material-ui/core/Toolbar';
@@ -16,7 +19,12 @@ import MenuIcon from '@material-ui/icons/Menu';
 
 import Logo from '../assets/Logo';
 
-import { openLeftDrawerAction } from '../../actions/navigation';
+import {
+  openLeftDrawerAction,
+  openCreationDialogAction
+} from '../../actions/navigation';
+
+import { storeLeftDrawerOpenPreferenceAction } from '../../actions/preferences';
 
 const drawerWidth = 240;
 
@@ -36,6 +44,9 @@ const styles = theme => ({
       duration: theme.transitions.duration.enteringScreen
     })
   },
+  extendedIcon: {
+    marginRight: theme.spacing.unit
+  },
   menuButton: {
     marginLeft: 12,
     marginRight: 36
@@ -50,11 +61,28 @@ const styles = theme => ({
     justifyContent: 'flex-end',
     padding: '0 8px',
     ...theme.mixins.toolbar
+  },
+
+  root: {
+    flexGrow: 1
+  },
+  grow: {
+    flexGrow: 1
   }
 });
 
+const AddIcon = ({ tab, ...props }) =>
+  tab === 0 ? <AddPersonIcon {...props} /> : <AddRoleIcon {...props} />;
+
 const AppBar = props => {
-  const { classes, open, handleDrawerOpen } = props;
+  const {
+    classes,
+    open,
+    handleDrawerOpen,
+    storeDrawerOpenStatus,
+    openCreationDialog,
+    tab
+  } = props;
 
   return (
     <AppBarComponent
@@ -65,36 +93,58 @@ const AppBar = props => {
         <IconButton
           color="inherit"
           aria-label="Open drawer"
-          onClick={handleDrawerOpen}
+          onClick={() => {
+            handleDrawerOpen();
+            storeDrawerOpenStatus(true);
+          }}
           className={classNames(classes.menuButton, open && classes.hide)}
         >
           <MenuIcon />
         </IconButton>
         <Logo />
-        <Typography variant="title" color="inherit" noWrap>
+        <Typography
+          variant="title"
+          color="inherit"
+          className={classes.grow}
+          noWrap
+        >
           Humanager
         </Typography>
+        <Button
+          color="inherit"
+          onClick={() => {
+            openCreationDialog(tab === 0 ? 'humans' : 'roles');
+          }}
+        >
+          <AddIcon className={classes.extendedIcon} />
+          Create {tab === 0 ? 'Human' : 'Role'}
+        </Button>
       </Toolbar>
     </AppBarComponent>
   );
 };
 
 AppBar.propTypes = {
-  open: PropTypes.bool
+  open: PropTypes.bool,
+  tab: PropTypes.number
 };
 
 AppBar.defaultProps = {
-  open: false
+  open: false,
+  tab: 0
 };
 
 const mapStateToProps = ({ navigation }) => ({
-  open: navigation.leftDrawerOpen
+  open: navigation.leftDrawerOpen,
+  tab: navigation.tab
 });
 
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
     {
-      handleDrawerOpen: openLeftDrawerAction
+      handleDrawerOpen: openLeftDrawerAction,
+      storeDrawerOpenStatus: storeLeftDrawerOpenPreferenceAction,
+      openCreationDialog: openCreationDialogAction
     },
     dispatch
   );

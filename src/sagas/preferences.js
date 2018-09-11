@@ -1,41 +1,59 @@
-import { put, takeEvery } from 'redux-saga/effects';
+import { put, takeEvery, select } from 'redux-saga/effects';
 import { DEFAULT_PREFERENCES } from '../constants/preferences';
-import { changeTab } from '../actions/navigation';
+import { setNavigationFromPreferencesAction } from '../actions/navigation';
 import {
-  setPreferenceDataAction,
-  notifySetPreferences
+  setPreferencesAction,
+  notifySetPreferencesAction
 } from '../actions/preferences';
 
 import * as ACTIONS from '../constants/actions';
 
 export function* loadUserPreferenceData() {
-  const storedPrefs = {};
+  const storedPrefs = Object.assign({}, DEFAULT_PREFERENCES);
   let validPrefs = false;
   for (const prefName in DEFAULT_PREFERENCES) {
     let prefValue = localStorage.getItem(prefName);
     const valid = prefValue && prefValue !== 'undefined';
-    if (valid && prefName === 'tab') {
-      prefValue = parseInt(prefValue, 10);
+    if (valid) {
+      switch (prefName) {
+        case 'leftDrawerOpen':
+          prefValue = prefValue.toLowerCase() === 'true';
+          break;
+        case 'tab':
+        case 'topPaneHeight':
+        default:
+          prefValue = parseInt(prefValue, 10);
+          break;
+      }
     }
-    if (valid) validPrefs = true;
-    storedPrefs[prefName] = valid ? prefValue : DEFAULT_PREFERENCES[prefName];
+    if (valid) {
+      storedPrefs[prefName] = prefValue;
+      validPrefs = true;
+    }
   }
 
   // Store prefs loaded from localstate
   if (validPrefs) {
-    yield put(setPreferenceDataAction(storedPrefs));
+    yield put(setPreferencesAction(storedPrefs));
   }
+}
 
-  // Set navigation from prefs
-  // (redundant - consolidate or leave 'preferences' as separate source of truth?)
-  yield put(changeTab(storedPrefs['tab']));
+// Set navigation from prefs
+export function* setNavigationFromLoadedPreferenceData() {
+  const { tab, leftDrawerOpen, topPaneHeight } = yield select(
+    state => state.preferences
+  );
+
+  yield put(
+    setNavigationFromPreferencesAction(tab, leftDrawerOpen, topPaneHeight)
+  );
 }
 
 export function* setUserPreferenceData({ payload }) {
-  const { tab } = payload;
-  localStorage.setItem('tab', tab);
-
-  yield put(notifySetPreferences('tab', tab));
+  for (const prefName in payload) {
+    localStorage.setItem(prefName, payload[prefName]);
+    yield put(notifySetPreferencesAction(prefName, payload[prefName]));
+  }
 }
 
 function* watchlLoadUserPreferenceData() {

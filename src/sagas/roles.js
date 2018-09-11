@@ -57,13 +57,14 @@ export function* loadRoleData({ payload }) {
 /*
  *  Save new role to api
  */
-export function* createRole(data) {
+export function* createRole({ payload }) {
+  // const { name, members } = payload;
   try {
     // Submit new role to API
     const newRoleID = yield call(
       api.database.create,
       DATABASE_NAMES.ROLES,
-      data
+      payload
     );
 
     // Dispatch role creation success notification

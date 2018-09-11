@@ -24,8 +24,15 @@ import RolesIcon from '@material-ui/icons/List';
 
 import { TABS } from '../../constants/navigation';
 
-import { changeTab, closeLeftDrawerAction } from '../../actions/navigation';
-import { storePreferenceDataAction } from '../../actions/preferences';
+import {
+  changeTabAction,
+  closeLeftDrawerAction
+} from '../../actions/navigation';
+
+import {
+  storeTabPreferenceAction,
+  storeLeftDrawerOpenPreferenceAction
+} from '../../actions/preferences';
 
 const drawerWidth = 240;
 
@@ -70,6 +77,7 @@ const Sidebar = props => {
     changeTab,
     storeTab,
     handleDrawerClose,
+    storeLeftDrawerOpen,
     tab,
     variant
   } = props;
@@ -87,7 +95,12 @@ const Sidebar = props => {
       open={open}
     >
       <div className={classes.drawerHeader}>
-        <IconButton onClick={handleDrawerClose}>
+        <IconButton
+          onClick={() => {
+            handleDrawerClose();
+            storeLeftDrawerOpen(false);
+          }}
+        >
           {theme.direction === 'rtl' ? (
             <ChevronRightIcon />
           ) : (
@@ -144,8 +157,9 @@ const mapDispatchToProps = dispatch =>
   bindActionCreators(
     {
       handleDrawerClose: closeLeftDrawerAction,
-      changeTab,
-      storeTab: storePreferenceDataAction
+      storeLeftDrawerOpen: storeLeftDrawerOpenPreferenceAction,
+      changeTab: changeTabAction,
+      storeTab: storeTabPreferenceAction
     },
     dispatch
   );

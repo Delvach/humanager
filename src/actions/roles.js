@@ -16,6 +16,7 @@ export const deleteRoleAction = id => {
 };
 
 export const roleUpdateAction = ({ name, members, id }) => {
+  console.log(name, members, id);
   return {
     type: ACTIONS.UPDATE_ROLE,
     payload: {

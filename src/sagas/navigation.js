@@ -1,6 +1,16 @@
-import { put, select, takeEvery } from 'redux-saga/effects';
+import { delay } from 'redux-saga';
+import {
+  put,
+  select,
+  takeEvery,
+  call,
+  take,
+  cancel,
+  fork
+} from 'redux-saga/effects';
 
 import { apiError } from '../actions';
+import { storeTopPaneHeightPreferenceAction } from '../actions/preferences';
 import {
   setDialogModeAction,
   setDialogDatatypeAction,
@@ -8,16 +18,21 @@ import {
   setCreateEditDialogOpenStatusAction,
   setHumanEditingDialogAction,
   setRoleEditingDialogAction,
-  resetCreateEditDialogInitDataAction,
+  resetHumanEditingDialogInitDataAction,
+  resetRoleEditingDialogInitDataAction,
   closeDialogAction
 } from '../actions/navigation';
 
 import { createHuman, updateHuman, loadAllHumansData } from './humans';
 import { createRole, updateRole, loadAllRolesData } from './roles';
 
-import { loadUserPreferenceData } from './preferences';
+import {
+  loadUserPreferenceData,
+  setNavigationFromLoadedPreferenceData
+} from './preferences';
 
 import { uiErrorHandler } from '../utils/core';
+import { normalizeRoleData } from '../utils/roles';
 
 import * as ACTIONS from '../constants/actions';
 
@@ -26,6 +41,7 @@ import { DIALOG_MODE_EDIT } from '../constants/humans';
 function* initializeAppData() {
   try {
     yield* loadUserPreferenceData();
+    yield* setNavigationFromLoadedPreferenceData();
 
     // Load master humans list
     yield* loadAllHumansData();
@@ -93,7 +109,13 @@ function* setDialogStatus({ payload }) {
   yield put(setCreateEditDialogOpenStatusAction(open));
 
   // When closing, reset human data used for initialValues
-  if (!open) yield put(resetCreateEditDialogInitDataAction());
+  if (!open) {
+    if (moduleId === 'humans') {
+      yield put(resetHumanEditingDialogInitDataAction());
+    } else {
+      yield put(resetRoleEditingDialogInitDataAction());
+    }
+  }
 }
 
 function* handleHumanDialogSubmit() {
@@ -126,12 +148,10 @@ function* handleRoleDialogSubmit() {
     const { name, members } = state.form.roleForm.values;
     const id = state.navigation.roleModalEditId;
 
-    const memberIds = members.map(human => human.value);
-
-    const payload = { name, members: memberIds };
+    const payload = normalizeRoleData(name, members);
 
     if (id === null) {
-      yield* createRole({ name, members: memberIds });
+      yield* createRole({ payload });
     } else {
       payload.id = id;
 
@@ -146,6 +166,11 @@ function* handleRoleDialogSubmit() {
   } catch (error) {
     yield put(apiError(error));
   }
+}
+
+function* handleTopPaneResize(size) {
+  yield call(delay, 300);
+  yield put(storeTopPaneHeightPreferenceAction(size));
 }
 
 /*
@@ -167,9 +192,30 @@ function* watchRoleDialogSubmission() {
   yield takeEvery(ACTIONS.SUBMIT_ROLE_DIALOG, handleRoleDialogSubmit);
 }
 
+// Debounce resizing
+function* watchTopPaneResize() {
+  // Placeholder for task ref
+  let task;
+
+  // Loopy loop loop
+  while (true) {
+    // Blocking, receive trigger action and retrieve value(s)
+    const { payload } = yield take(ACTIONS.HANDLE_TOP_PANE_RESIZE);
+
+    // Cancel any existing task associated with this reference
+    if (task) {
+      yield cancel(task);
+    }
+    // Async, trigger final task on a delay that will be cancelled
+    //if take() is triggered by loop before delay completes
+    task = yield fork(handleTopPaneResize, payload.size);
+  }
+}
+
 export const navigationSagas = [
   initializeHumanagerApp(),
   watchDialogStatus(),
   watchHumanDialogSubmission(),
-  watchRoleDialogSubmission()
+  watchRoleDialogSubmission(),
+  watchTopPaneResize()
 ];

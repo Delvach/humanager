@@ -12,9 +12,9 @@ const styles = theme => ({
     ...theme.mixins.toolbar
   },
   content: {
+    position: 'relative',
     flexGrow: 1,
-    backgroundColor: theme.palette.background.default,
-    padding: theme.spacing.unit * 3
+    backgroundColor: theme.palette.background.default
   }
 });
 

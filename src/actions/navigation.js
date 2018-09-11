@@ -1,11 +1,29 @@
 import * as ACTIONS from '../constants/actions';
 import { DIALOG_MODE_CREATE, DIALOG_MODE_EDIT } from '../constants/humans';
 
-export const changeTab = tab => {
+import { normalizeRoleData } from '../utils/roles';
+
+export const changeTabAction = tab => {
   return {
     type: ACTIONS.CHANGE_TAB,
     payload: {
       tab
+    }
+  };
+};
+
+//SET_NAVIGATION_FROM_PREFS
+export const setNavigationFromPreferencesAction = (
+  tab,
+  leftDrawerOpen,
+  topPaneHeight
+) => {
+  return {
+    type: ACTIONS.SET_NAVIGATION_FROM_PREFS,
+    payload: {
+      tab,
+      leftDrawerOpen,
+      topPaneHeight
     }
   };
 };
@@ -103,12 +121,15 @@ export const setRoleEditingDialogAction = role => {
   };
 };
 
-export const resetCreateEditDialogInitDataAction = human => {
-  return {
-    type: ACTIONS.RESET_HUMAN_MODAL_INIT_VALUES,
-    payload: {}
-  };
-};
+export const resetHumanEditingDialogInitDataAction = () => ({
+  type: ACTIONS.RESET_HUMAN_MODAL_INIT_VALUES,
+  payload: {}
+});
+
+export const resetRoleEditingDialogInitDataAction = () => ({
+  type: ACTIONS.RESET_ROLE_MODAL_INIT_VALUES,
+  payload: {}
+});
 
 export const setCreateEditDialogOpenStatusAction = open => ({
   type: ACTIONS.SET_HUMAN_MODAL_OPEN_STATUS,
@@ -148,12 +169,14 @@ export const submitHumanDialogAction = ({
 export const submitRoleDialogAction = ({ name = '', members = [] }) => {
   return {
     type: ACTIONS.SUBMIT_ROLE_DIALOG,
-    payload: {
-      name,
-      members
-    }
+    payload: normalizeRoleData(name, members)
   };
 };
 
 export const openLeftDrawerAction = () => toggleLeftDrawerAction(true);
 export const closeLeftDrawerAction = () => toggleLeftDrawerAction(false);
+
+export const resizeHandlerAction = size => ({
+  type: ACTIONS.HANDLE_TOP_PANE_RESIZE,
+  payload: { size }
+});

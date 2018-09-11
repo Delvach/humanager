@@ -7,6 +7,8 @@ import { withStyles } from '@material-ui/core/styles';
 
 import { initApp } from './actions';
 
+import SplitPane from 'react-split-pane';
+
 import './App.css';
 
 import AppBar from './components/layout/Appbar';
@@ -22,6 +24,10 @@ import RolesList from './components/modules/roles/RolesList';
 
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import theme from './themes/default';
+
+import { resizeHandlerAction } from './actions/navigation';
+
+// import { debounce } from 'debounce';
 
 const styles = theme => ({
   root: {
@@ -56,10 +62,54 @@ class App extends Component {
       <MuiThemeProvider theme={this.props.theme}>
         <div className="App">
           <CreateEditDialog />
+
           <div className={this.props.classes.root}>
             <AppBar />
             <Drawer />
-            <Contents>{this.tabViews(this.props.tab)}</Contents>
+            <Contents>
+              <SplitPane
+                split="horizontal"
+                minSize={200}
+                defaultSize={this.props.defaultTopPaneHeight}
+                onChange={this.props.resizeHandler}
+                style={{
+                  width: 'auto',
+                  height: 'auto',
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  top: 0
+                }}
+              >
+                <div
+                  style={{
+                    display: 'flex',
+                    flexGrow: 1,
+                    marginTop: '65px'
+                  }}
+                >
+                  {this.tabViews(this.props.tab)}
+                </div>
+
+                <div
+                  style={{
+                    display: 'block',
+                    position: 'absolute',
+                    left: 0,
+                    right: 0,
+                    top: 0,
+                    bottom: 0,
+                    flexGrow: 1,
+                    flexDirection: 'row',
+                    justifyContent: 'flex-start',
+                    alignItems: 'stretch',
+                    alignContent: 'stretch'
+                  }}
+                >
+                  Visualization space
+                </div>
+              </SplitPane>
+            </Contents>
           </div>
         </div>
       </MuiThemeProvider>
@@ -79,11 +129,12 @@ App.defaultProps = {
 
 const mapStateToProps = ({ navigation }) => ({
   tab: navigation.tab,
+  defaultTopPaneHeight: navigation.topPaneHeight,
   theme
 });
 
 const mapDispatchToProps = dispatch =>
-  bindActionCreators({ initApp }, dispatch);
+  bindActionCreators({ initApp, resizeHandler: resizeHandlerAction }, dispatch);
 
 const AppWrapped = withStyles(styles, { withTheme: true })(App);
 

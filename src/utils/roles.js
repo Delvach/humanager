@@ -15,3 +15,11 @@ export const normalizeAllRolesData = (allRoles = {}) => {
 
   return sortedRoles;
 };
+
+export const normalizeRoleData = (name = '', members = []) => ({
+  name,
+  members:
+    members.length && typeof members[0] === 'object'
+      ? members.map(human => human.value)
+      : members
+});

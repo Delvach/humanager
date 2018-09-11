@@ -8,8 +8,8 @@ export default function preferences(
   const newState = Object.assign({}, state);
   switch (type) {
     case SET_PREFERENCES:
-      const { tabs } = payload;
-      return Object.assign(newState, tabs);
+      // const { tabs /* , leftDrawerOpen, topPaneHeight: */ } = payload;
+      return Object.assign(newState, payload);
     default:
       break;
   }

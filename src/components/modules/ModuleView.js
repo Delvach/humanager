@@ -5,12 +5,9 @@ import { withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import AddPersonIcon from '@material-ui/icons/PersonAdd';
-import AddRoleIcon from '@material-ui/icons/GroupAdd';
+// import { openCreationDialogAction } from '../../actions/navigation';
 
-import { openCreationDialogAction } from '../../actions/navigation';
-
-import Button from '../inputs/Button';
+// import Button from '../inputs/Button';
 
 const styles = theme => ({
   extendedIcon: {
@@ -19,29 +16,20 @@ const styles = theme => ({
   fab: {
     position: 'absolute',
     bottom: theme.spacing.unit * 2,
-    right: theme.spacing.unit * 2
+    // right: theme.spacing.unit * 2
+    right: '150px'
   }
 });
 
-const AddIcon = ({ moduleId, ...props }) =>
-  moduleId === 'humans' ? (
-    <AddPersonIcon {...props} />
-  ) : (
-    <AddRoleIcon {...props} />
-  );
-
-const ModuleView = ({ children, classes, openCreationDialog, moduleId }) => (
-  <div>
-    <Button
-      className={classes.fab}
-      variant="extendedFab"
-      onClick={() => {
-        openCreationDialog(moduleId);
-      }}
-    >
-      <AddIcon className={classes.extendedIcon} />
-      Create {moduleId === 'humans' ? 'Human' : 'Role'}
-    </Button>
+const ModuleView = ({ children }) => (
+  <div
+    style={{
+      overflowX: 'hide',
+      overflowY: 'auto',
+      flexGrow: 1,
+      display: 'flex'
+    }}
+  >
     {children}
   </div>
 );
@@ -62,11 +50,7 @@ ModuleView.defaultProps = {
 
 const mapStateToProps = () => ({});
 
-const mapDispatchToProps = dispatch =>
-  bindActionCreators(
-    { openCreationDialog: openCreationDialogAction },
-    dispatch
-  );
+const mapDispatchToProps = dispatch => bindActionCreators({}, dispatch);
 
 const WrappedModuleView = withStyles(styles)(ModuleView);
 
