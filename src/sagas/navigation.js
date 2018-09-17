@@ -20,7 +20,8 @@ import {
   setRoleEditingDialogAction,
   resetHumanEditingDialogInitDataAction,
   resetRoleEditingDialogInitDataAction,
-  closeDialogAction
+  closeDialogAction,
+  toggleVisualizationResizeAction
 } from '../actions/navigation';
 
 import { createHuman, updateHuman, loadAllHumansData } from './humans';
@@ -173,6 +174,11 @@ function* handleTopPaneResize(size) {
   yield put(storeTopPaneHeightPreferenceAction(size));
 }
 
+function* handleContentPanelsResize(size) {
+  yield* handleTopPaneResize(size);
+  yield put(toggleVisualizationResizeAction(true));
+}
+
 /*
  *  Define saga watchers
  */
@@ -208,7 +214,7 @@ function* watchTopPaneResize() {
     }
     // Async, trigger final task on a delay that will be cancelled
     //if take() is triggered by loop before delay completes
-    task = yield fork(handleTopPaneResize, payload.size);
+    task = yield fork(handleContentPanelsResize, payload.size);
   }
 }
 

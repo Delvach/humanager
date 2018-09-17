@@ -17,7 +17,8 @@ export const DEFAULT_STATE_NAVIGATION = {
   roleModalOpen: false,
   roleModalEditId: null,
   leftDrawerOpen: true,
-  tab: 0
+  tab: 0,
+  triggerVisualizationResize: false
 };
 
 export const HUMAN_EDIT_MODAL_OPEN_STATUS = 'HUMAN_EDIT_MODAL_OPEN_STATUS';

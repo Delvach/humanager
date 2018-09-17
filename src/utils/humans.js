@@ -46,3 +46,6 @@ export const getFauxHumansData = numItems => {
   }
   return humans;
 };
+
+export const getFauxAvatarImageURL = ({ email, size }) =>
+  `https://api.adorable.io/avatars/${size}/${email}.png`;

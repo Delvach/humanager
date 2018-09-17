@@ -50,6 +50,11 @@ export default function navigation(
         leftDrawerOpen: payload.open
       });
 
+    case ACTIONS.TRIGGER_VISUALIZATION_RESIZE:
+      return Object.assign(newState, {
+        triggerVisualizationResize: payload.resize
+      });
+
     default:
       break;
   }

@@ -17,7 +17,11 @@ import { roleUpdateAction } from '../actions/roles';
 import * as ACTIONS from '../constants/actions';
 import * as DATABASE_NAMES from '../constants/api';
 
-import { normalizeAllHumansData, getFauxHumansData } from '../utils/humans';
+import {
+  normalizeAllHumansData,
+  getFauxHumansData,
+  getFauxAvatarImageURL
+} from '../utils/humans';
 
 /*
  *  Define saga tasks
@@ -76,12 +80,16 @@ export function* generateFauxHumans({ payload }) {
  *  Save new human to api
  */
 export function* createHuman(data) {
+  const { email } = data;
+  const avatar = getFauxAvatarImageURL(email);
+  const userData = { ...data, avatar };
+
   try {
     // Submit new human to API
     const newHumanID = yield call(
       api.database.create,
       DATABASE_NAMES.HUMANS,
-      data
+      userData
     );
 
     // Dispatch human creation success notification
