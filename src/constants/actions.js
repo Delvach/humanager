@@ -1,6 +1,9 @@
 // Used for blank template, does nothing
 export const DEFAULT = 'DEFAULT';
 
+export const TEST = 'TEST';
+export const TEST_OUTPUT = 'TEST_OUTPUT';
+
 // Application
 export const INITIALIZE_APP = 'INITIALIZE_APP';
 export const SET_PREFERENCES = 'SET_PREFERENCES';
@@ -68,3 +71,7 @@ export const SET_LEFT_DRAWER_OPEN_STATUS = 'SET_LEFT_DRAWER_OPEN_STATUS';
 
 // Resizeable pane
 export const HANDLE_TOP_PANE_RESIZE = 'HANDLE_TOP_PANE_RESIZE';
+
+export const SET_VISUAL_CONTAINER_SIZE = 'SET_VISUAL_CONTAINER_SIZE';
+
+export const AUTO_GENERATE_FAUX_HUMANS = 'AUTO_GENERATE_FAUX_HUMANS';

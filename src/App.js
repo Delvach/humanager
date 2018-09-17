@@ -27,7 +27,7 @@ import theme from './themes/default';
 
 import { resizeHandlerAction } from './actions/navigation';
 
-// import { debounce } from 'debounce';
+import HumansVisualizer from './components/modules/humans/HumansVisualizer';
 
 const styles = theme => ({
   root: {
@@ -106,7 +106,7 @@ class App extends Component {
                     alignContent: 'stretch'
                   }}
                 >
-                  Visualization space
+                  <HumansVisualizer />
                 </div>
               </SplitPane>
             </Contents>

@@ -17,7 +17,7 @@ import { roleUpdateAction } from '../actions/roles';
 import * as ACTIONS from '../constants/actions';
 import * as DATABASE_NAMES from '../constants/api';
 
-import { normalizeAllHumansData } from '../utils/humans';
+import { normalizeAllHumansData, getFauxHumansData } from '../utils/humans';
 
 /*
  *  Define saga tasks
@@ -54,6 +54,22 @@ export function* loadHumanData({ payload }) {
   } catch (error) {
     yield put(apiError(error));
   }
+}
+
+/*
+ * Generate X number of faux users
+ */
+export function* generateFauxHumans({ payload }) {
+  const { numItems } = payload;
+
+  // Not checking for uniqueness. Need a while loop that checks faux humans against existing ones
+  const fauxHumans = getFauxHumansData(numItems);
+  for (let i = 0; i < numItems; i++) {
+    const { name, email, age } = fauxHumans[i];
+    yield* createHuman({ name, email, age });
+  }
+  // Refresh master human list
+  yield* loadAllHumansData();
 }
 
 /*
@@ -137,8 +153,13 @@ function* watchHumanDelete() {
   yield takeEvery(ACTIONS.DELETE_HUMAN, deleteHuman);
 }
 
+function* watchFauxHumanDataGeneration() {
+  yield takeEvery(ACTIONS.AUTO_GENERATE_FAUX_HUMANS, generateFauxHumans);
+}
+
 export const humansSagas = [
   watchAllHumansLoad(),
   watchHumanLoad(),
-  watchHumanDelete()
+  watchHumanDelete(),
+  watchFauxHumanDataGeneration()
 ];

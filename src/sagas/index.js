@@ -4,6 +4,7 @@ import { humansSagas } from './humans';
 import { navigationSagas } from './navigation';
 import { rolesSagas } from './roles';
 import { preferenceSagas } from './preferences';
+import { visualizationSagas } from './visualizations';
 
 import { apiErrorHandler } from '../utils/core';
 
@@ -27,6 +28,7 @@ export default function* rootSaga() {
     ...humansSagas,
     ...navigationSagas,
     ...rolesSagas,
-    ...preferenceSagas
+    ...preferenceSagas,
+    ...visualizationSagas
   ]);
 }

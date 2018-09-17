@@ -7,6 +7,7 @@ import humans from './humans';
 import human from './human';
 import roles from './roles';
 import role from './role';
+import visualizations from './visualizations';
 
 export default combineReducers({
   preferences,
@@ -15,5 +16,6 @@ export default combineReducers({
   human,
   roles,
   role,
+  visualizations,
   form: formReducer
 });
