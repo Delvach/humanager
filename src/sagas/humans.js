@@ -12,6 +12,8 @@ import {
   humanUpdatedAction
 } from '../actions/humans';
 
+import { resetItemAction } from '../actions/visualizations';
+
 import { roleUpdateAction } from '../actions/roles';
 
 import * as ACTIONS from '../constants/actions';
@@ -126,21 +128,29 @@ export function* updateHuman(data) {
 export function* deleteHuman({ payload }) {
   try {
     // Is this human a member of any roles?
-    const roles = yield select(state => state.roles);
+
+    const { id } = payload;
+    const state = yield select(state => state);
+    const { roles, visualizations } = state;
     const rolesWithMemberId = roles.filter(
-      ({ members }) => members.indexOf(payload.id) > -1
+      ({ members }) => members.indexOf(id) > -1
     );
+
+    // Check that this id is not currently selected in visualization
+    if (id === visualizations.selectedItemId) {
+      yield put(resetItemAction());
+    }
 
     // List of roles that need to be updated; trigger sagas from here? Best way to batch them?
     for (let i = 0; i < rolesWithMemberId.length; i++) {
       const role = Object.assign({}, rolesWithMemberId[i]);
-      role.members.splice(role.members.indexOf(payload.id), 1);
+      role.members.splice(role.members.indexOf(id), 1);
       yield put(roleUpdateAction(role));
     }
     // return;
 
-    yield call(api.database.delete, `${DATABASE_NAMES.HUMANS}/${payload.id}`);
-    yield put(humanDeletedAction(payload.id));
+    yield call(api.database.delete, `${DATABASE_NAMES.HUMANS}/${id}`);
+    yield put(humanDeletedAction(id));
 
     // Refresh master human list
     yield* loadAllHumansData();

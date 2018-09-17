@@ -15,6 +15,14 @@ export default function visualizations(
     case ACTIONS.TEST_OUTPUT:
       const bit = !state.bit;
       return Object.assign({}, state, { bit });
+
+    case ACTIONS.SELECT_VISUALIZATION_ITEM:
+      const { id } = payload;
+      return Object.assign({}, state, { selectedItemId: id });
+
+    case ACTIONS.RESET_VISUALIZATION_ITEM:
+      return Object.assign({}, state, { selectedItemId: null });
+
     default:
       return state;
   }

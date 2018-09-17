@@ -4,6 +4,9 @@ export const DEFAULT = 'DEFAULT';
 export const TEST = 'TEST';
 export const TEST_OUTPUT = 'TEST_OUTPUT';
 
+export const SELECT_VISUALIZATION_ITEM = 'SELECT_VISUALIZATION_ITEM';
+export const RESET_VISUALIZATION_ITEM = 'RESET_VISUALIZATION_ITEM';
+
 // Application
 export const INITIALIZE_APP = 'INITIALIZE_APP';
 export const SET_PREFERENCES = 'SET_PREFERENCES';
