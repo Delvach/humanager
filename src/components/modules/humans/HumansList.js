@@ -14,11 +14,14 @@ import Button from './../../inputs/Button';
 import { deleteHumanAction } from '../../../actions/humans';
 import { openEditingDialogAction } from '../../../actions/navigation';
 
+import { getFauxAvatarImageURL } from '../../../utils/humans';
+
 import { HUMAN_LIST_FIELDS } from '../../../constants/humans';
 
 const TableHeader = () => (
   <TableHead>
     <TableRow>
+      <TableCell>Avatar</TableCell>
       {HUMAN_LIST_FIELDS.map(({ label, value }) => (
         <TableCell key={value}>{label}</TableCell>
       ))}
@@ -32,9 +35,15 @@ const HumanList = ({ deleteItem, editItem, humans }) => (
     <TableHeader />
     <TableBody>
       {humans.map(human => {
-        const { id } = human;
+        const { id, email, name } = human;
         return (
           <TableRow key={id}>
+            <TableCell>
+              <img
+                alt={`Avatar for ${name}`}
+                src={getFauxAvatarImageURL({ email, size: 24 })}
+              />
+            </TableCell>
             {HUMAN_LIST_FIELDS.map(({ value }) => (
               <TableCell key={value}>{human[value]}</TableCell>
             ))}
