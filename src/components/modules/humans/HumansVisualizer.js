@@ -5,7 +5,10 @@ import { bindActionCreators } from 'redux';
 
 import HumansVisualizerComponent from '../../visualizations/Humans';
 
-import { setVisualContainerSizeAction } from '../../../actions/navigation';
+import {
+  setVisualContainerSizeAction,
+  toggleVisualizationResizeAction
+} from '../../../actions/navigation';
 
 class VisualizationWrapper extends React.PureComponent {
   constructor(props) {
@@ -19,21 +22,24 @@ class VisualizationWrapper extends React.PureComponent {
   }
 
   componentDidMount() {
-    this.updateStoreWithCurrVisualizationDimensions();
+    this.storeDimensions();
   }
 
   componentDidUpdate() {
-    this.updateStoreWithCurrVisualizationDimensions();
+    if (this.props.triggerResize) {
+      this.props.toggleVisualizationResizeAction(false);
+    }
+    this.storeDimensions();
   }
 
   visualizationDimensionsMatchStore(height = null, width = null) {
     if (height === null || width === null) return false;
-    return height === this.props.currHeight || width === this.props.currWidth;
+    return height === this.props.currHeight && width === this.props.currWidth;
   }
 
   // TODO: This should be handled by a saga that debounces it;
   // otherwise resize event that may trigger this behavior will need to debounce it
-  updateStoreWithCurrVisualizationDimensions() {
+  storeDimensions() {
     this.updateStoreWithVisualizationDimensions(
       this.refs.humansVisual.clientHeight,
       this.refs.humansVisual.clientWidth
@@ -41,6 +47,7 @@ class VisualizationWrapper extends React.PureComponent {
   }
 
   updateStoreWithVisualizationDimensions(height = null, width = null) {
+    console.log(height, width);
     if (height === null || width === null) return;
     if (!this.visualizationDimensionsMatchStore(height, width)) {
       this.props.setContainerSize({
@@ -75,14 +82,18 @@ VisualizationWrapper.defaultProps = {
   currWidth: 100
 };
 
-const mapStateToProps = ({ visualizations }) => ({
+const mapStateToProps = ({ navigation, visualizations }) => ({
   currHeight: visualizations.height,
-  currWidth: visualizations.width
+  currWidth: visualizations.width,
+  triggerResize: navigation.triggerVisualizationResize
 });
 
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
-    { setContainerSize: setVisualContainerSizeAction },
+    {
+      setContainerSize: setVisualContainerSizeAction,
+      toggleVisualizationResizeAction
+    },
     dispatch
   );
 

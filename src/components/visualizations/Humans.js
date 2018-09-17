@@ -1,10 +1,9 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import classNames from 'classnames';
+// import classNames from 'classnames';
 
 import * as d3 from 'd3';
 
@@ -27,34 +26,34 @@ class Visualizer extends React.Component {
 
   //   maxRadius = this.props.humans.length ? this.props.humans.length * 10 : 10;
 
-  componentDidUpdate = function() {
+  updateVisualizationDefault = function() {
     const x = d3
       .scaleLinear()
-      .domain([0, this.props.humans.length - 1])
+      .domain([0, this.props.items.length - 1])
       .range([100, this.props.width - 100]);
 
     const y = d3
       .scaleLinear()
       .domain([0, 1])
-      .range([150, this.props.height - 150]);
+      .range([150, this.props.height - 300]);
 
     const r = d3
       .scaleLinear()
-      .domain([0, this.props.humans.length - 1])
-      .range([
-        10,
-        this.props.humans.length ? this.props.humans.length * 10 : 10
-      ]);
+      .domain([0, this.props.items.length - 1])
+      .range([10, this.props.items.length ? this.props.items.length * 10 : 10]);
     var item = d3
       .select(this.visualRef.current)
       .selectAll('circle')
-      .data(this.props.humans, function(h) {
+      .data(this.props.items, function(h) {
         return h.id;
       });
 
     item
       .transition()
       .duration(1000)
+      .delay((d, i) => {
+        return i * 350;
+      })
       .attr('r', function(d, i) {
         return r(i);
       })
@@ -74,8 +73,14 @@ class Visualizer extends React.Component {
       })
       .attr('cy', 0)
       .style('stroke', '#3E6E9C')
+      .style('fill', 'red')
       .transition()
+      .delay((d, i) => {
+        return i * 350;
+      })
       .duration(1000)
+      .ease(d3.easeBounceOut)
+      .style('fill', 'pink')
       .attr('cy', function(d) {
         return y(Math.random());
       })
@@ -92,6 +97,124 @@ class Visualizer extends React.Component {
       .remove();
   };
 
+  /* 
+   * Implementing d3 general update pattern
+   */
+  updateVisualizationGrouped = function() {
+    const x = d3
+      .scaleLinear()
+      .domain([0, this.props.items.length - 1])
+      .range([100, this.props.width - 100]);
+
+    const y = d3
+      .scaleLinear()
+      .domain([0, 1])
+      .range([150, this.props.height - 300]);
+
+    const r = d3
+      .scaleLinear()
+      .domain([0, this.props.items.length - 1])
+      .range([10, this.props.items.length ? this.props.items.length * 10 : 10]);
+
+    // Step 1 - Grab collection of containers (or automagically create later)
+    const humanGroups = d3
+      .select(this.visualRef.current)
+      .selectAll('g')
+      .data(this.props.items, function(h) {
+        return h.id;
+      });
+
+    // Step 2 - If updating existing containers, adjust properties with transition
+    const containerUpdater = humanGroups.transition().duration(1000);
+    // .ease(d3.easeBounceOut);
+
+    // 2.1 Update circles
+    containerUpdater
+      .select('circle')
+      .attr('r', function(d, i) {
+        return r(i);
+      })
+      .attr('cx', function(d, i) {
+        return x(i);
+      });
+
+    // 2.2 Update text
+    containerUpdater.select('text').attr('x', function(d, i) {
+      return x(i);
+    });
+
+    // Step 3 - If containers don't exist, create and initialize
+    const containerEnter = humanGroups
+      .enter()
+      .append('g')
+      .attr('class', 'human');
+
+    // 3.1 Add (image cropping) circle
+    // 3.1.1 Initial state when appearing
+    containerEnter
+      .append('circle')
+      .attr('class', 'item')
+      .attr('r', function(d, i) {
+        return r(i);
+      })
+      .attr('cx', function(d, i) {
+        return x(i);
+      })
+      .attr('cy', 0)
+      .style('stroke', '#3E6E9C')
+      .style('fill', 'red')
+      // 3.1.2 Updated state after appearing
+      .transition()
+      .duration(1000)
+      .ease(d3.easeBounceOut)
+      .style('fill', 'green')
+      .attr('cy', function(d) {
+        return y(Math.random());
+      });
+
+    // 4.1 Add name text
+    // 4.1.1 Initial state when appearing
+    containerEnter
+      .append('text')
+      .attr('class', 'name')
+      .text(human => human.name)
+      .attr('x', function(d, i) {
+        return x(i);
+      })
+      .attr('y', 100)
+      .style('stroke', '#3E6E9C')
+      .style('fill', 'red')
+      // 4.1.2 Updated state after appearing
+      .transition()
+      .duration(1000)
+      .ease(d3.easeBounceOut)
+      .style('fill', 'green')
+      .attr('y', function(d) {
+        return y(Math.random());
+      });
+
+    const containerExit = humanGroups
+      .exit()
+      .filter(':not(.exiting)') // Don't select already exiting nodes
+      .classed('exiting', true)
+      .transition()
+      .duration(1000);
+
+    containerExit
+      .style('fill-opacity', function(d, i) {
+        return 0;
+      })
+      .style('stroke-opacity', function(d, i) {
+        return 0;
+      })
+      .remove();
+  };
+
+  componentDidUpdate = function() {
+    // this.updateVisualizationDefault();
+    this.updateVisualizationGrouped();
+  };
+
   render() {
     return (
       <svg
@@ -105,21 +228,22 @@ class Visualizer extends React.Component {
 }
 
 Visualizer.propTypes = {
-  humans: PropTypes.array,
+  items: PropTypes.array,
 
   height: PropTypes.number,
   width: PropTypes.number
 };
 
 Visualizer.defaultProps = {
-  humans: [],
+  items: [],
   height: 100,
   width: 100
 };
 
-const mapStateToProps = ({ humans, visualizations }) => ({
-  humans,
-  bit: visualizations.bit
+const mapStateToProps = ({ humans, roles, navigation, visualizations }) => ({
+  items: navigation.tab === 0 ? humans : roles,
+  bit: visualizations.bit,
+  tab: navigation.tab
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({}, dispatch);
