@@ -1,4 +1,4 @@
-import { call, put, takeEvery } from 'redux-saga/effects';
+import { call, put, takeEvery, select } from 'redux-saga/effects';
 
 import api from '../api';
 
@@ -12,8 +12,15 @@ import {
   roleUpdatedAction
 } from '../actions/roles';
 
+import {
+  updateVisualizationItemPositionsAction,
+  deleteVisualizationItemPositionAction
+} from '../actions/visualizations';
+
 import * as ACTIONS from '../constants/actions';
 import * as DATABASE_NAMES from '../constants/api';
+
+import { getRandomPosition } from '../utils/visualizations';
 
 import { normalizeAllRolesData } from '../utils/roles';
 
@@ -26,11 +33,28 @@ import { normalizeAllRolesData } from '../utils/roles';
  */
 export function* loadAllRolesData() {
   try {
+    // Get current positions data
+    const { visualizations } = yield select(state => state);
+    const itemsPositions = Object.assign({}, visualizations.itemsPositions);
+
     // Read master roles list from API
     const allRoles = yield call(api.database.read, DATABASE_NAMES.ROLES);
 
+    for (const i in allRoles) {
+      if (!itemsPositions[i]) {
+        itemsPositions[i] = getRandomPosition();
+      }
+
+      allRoles[i].x = itemsPositions[i].x;
+      allRoles[i].y = itemsPositions[i].y;
+    }
+
+    yield put(updateVisualizationItemPositionsAction({ itemsPositions }));
+
     // Update state with master roles list data
-    yield put(rolesLoadedAction(normalizeAllRolesData(allRoles)));
+    yield put(
+      rolesLoadedAction(normalizeAllRolesData(allRoles), Object.keys(allRoles))
+    );
   } catch (error) {
     yield put(apiError(error));
   }
@@ -101,8 +125,10 @@ export function* updateRole({ payload }) {
  */
 export function* deleteRole({ payload }) {
   try {
-    yield call(api.database.delete, `${DATABASE_NAMES.ROLES}/${payload.id}`);
-    yield put(roleDeletedAction(payload.id));
+    const { id } = payload;
+    yield call(api.database.delete, `${DATABASE_NAMES.ROLES}/${id}`);
+    yield put(roleDeletedAction(id));
+    yield put(deleteVisualizationItemPositionAction([id]));
 
     // Refresh master role list
     yield* loadAllRolesData();

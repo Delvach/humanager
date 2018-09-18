@@ -1,15 +1,129 @@
-import { put, takeEvery } from 'redux-saga/effects';
+import { put, takeEvery, select } from 'redux-saga/effects';
 
 import * as ACTIONS from '../constants/actions';
 
-import { testOutputAction } from '../actions/visualizations';
+import { getRandomPosition } from '../utils/visualizations';
 
-function* handleTestAction() {
+import {
+  testOutputAction,
+  setItemsPositionsAction,
+  updateVisualizationItemPositionsAction
+} from '../actions/visualizations';
+
+function* handleTest() {
   yield put(testOutputAction());
 }
 
-function* watchTestAction() {
-  yield takeEvery(ACTIONS.TEST, handleTestAction);
+function* handleRandomizePositions() {
+  const state = yield select(state => state);
+  const { humans, roles } = state;
+
+  const humansPositions = {};
+  const rolesPositions = {};
+
+  for (let i = 0; i < humans.length; i++) {
+    humansPositions[humans[i].id] = getRandomPosition();
+  }
+
+  for (let i = 0; i < roles.length; i++) {
+    rolesPositions[roles[i].id] = getRandomPosition();
+  }
+
+  yield put(
+    setItemsPositionsAction({
+      humans: humansPositions,
+      roles: rolesPositions
+    })
+  );
 }
 
-export const visualizationSagas = [watchTestAction()];
+/*
+ *  Position data needs to be maintained independent of humans &
+ *  roles data for it to persist across reloads. This could happen
+ *  a component state, but it's better to have a saga manage it for
+ *  consistency. Plus, this way all possible events can be easily
+ *  captured for updating.
+ * 
+ *  NOTE - this is currently only dealing with random positions
+ */
+function* updateVisualizationSettings({ type, payload }) {
+  const state = yield select(state => state);
+  const { visualizations } = state;
+  const itemsPositions = Object.assign({}, visualizations.itemsPositions);
+
+  switch (type) {
+    case ACTIONS.HUMANS_LOADED:
+    case ACTIONS.ROLES_LOADED:
+      // Process all items
+      const { allItemsKeys } = payload;
+      // const allItemsKeys = Object.keys({ ...humans, ...roles });
+      for (let i in allItemsKeys) {
+        const key = allItemsKeys[i];
+        if (!itemsPositions[key]) {
+          itemsPositions[key] = getRandomPosition();
+        }
+      }
+      break;
+    case ACTIONS.HUMAN_CREATED:
+    case ACTIONS.ROLE_CREATED:
+      // Process new item
+      itemsPositions[payload.id] = getRandomPosition();
+
+      break;
+    case ACTIONS.HUMAN_DELETED:
+    case ACTIONS.ROLE_DELETED:
+      // Remove item
+      delete itemsPositions[payload.id];
+      break;
+    default:
+      break;
+  }
+
+  yield put(updateVisualizationItemPositionsAction({ itemsPositions }));
+
+  // update visualization settings
+
+  // const targetKeys = Object.keys({ ...humans, ...roles });
+
+  // Cleanup - Remove any deleted items from list
+
+  // Maintain list of item positions
+  // Add newly created items to list
+  //
+}
+
+function* watchTest() {
+  yield takeEvery(ACTIONS.TEST, handleTest);
+}
+
+function* watchRandomizeItemsPositions() {
+  yield takeEvery(
+    ACTIONS.RANDOMIZE_VISUALIZATION_POSITIONS,
+    handleRandomizePositions
+  );
+}
+
+function* watchVisualizerData() {
+  yield takeEvery(
+    [
+      ACTIONS.HUMANS_LOADED,
+      ACTIONS.HUMAN_CREATED,
+      ACTIONS.HUMAN_DELETED,
+      ACTIONS.ROLES_LOADED,
+      ACTIONS.ROLE_CREATED,
+      ACTIONS.ROLE_DELETED,
+      ACTIONS.RANDOMIZE_VISUALIZATION_POSITIONS
+    ],
+    updateVisualizationSettings
+  );
+}
+
+export const visualizationSagas = [
+  watchTest(),
+  watchRandomizeItemsPositions(),
+  watchVisualizerData()
+];
+
+// Humans loaded
+
+// Human created

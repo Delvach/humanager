@@ -6,6 +6,8 @@ export const normalizeAllRolesData = (allRoles = {}) => {
   const sortedRoles = [];
   for (const id in allRoles) {
     const role = allRoles[id];
+    // role.randomX = Math.random();
+    // role.randomY = Math.random();
     if (!role.members) role.members = [];
     sortedRoles.push({
       ...role,

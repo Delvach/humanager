@@ -23,6 +23,31 @@ export default function visualizations(
     case ACTIONS.RESET_VISUALIZATION_ITEM:
       return Object.assign({}, state, { selectedItemId: null });
 
+    // Allow more incremental position storage?
+    case ACTIONS.STORE_VISUALIZATION_POSITIONS:
+      const { positions } = payload;
+      return Object.assign({}, state, { positions });
+
+    case ACTIONS.STORE_VISUALIZATION_ITEMS_POSITIONS:
+      const { itemsPositions } = payload;
+      const newItemsPositions = Object.assign(
+        {},
+        state.itemsPositions,
+        itemsPositions
+      );
+      return Object.assign({}, state, { itemsPositions: newItemsPositions });
+
+    case ACTIONS.DELETE_VISUALIZATION_ITEMS_POSITIONS:
+      const { itemIds } = payload;
+      const updatedItemsPositions = Object.assign({}, state.itemsPositions);
+      for (let i = 0; i < itemIds.length; i++) {
+        delete updatedItemsPositions[itemIds[i]];
+      }
+
+      return Object.assign({}, state, {
+        itemsPositions: updatedItemsPositions
+      });
+
     default:
       return state;
   }

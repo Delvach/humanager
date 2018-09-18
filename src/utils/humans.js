@@ -7,6 +7,8 @@ export const normalizeAllHumansData = (allHumans = {}) => {
   const sortedHumans = [];
   for (const id in allHumans) {
     const human = allHumans[id];
+    // human.randomX = Math.random();
+    // human.randomY = Math.random();
     sortedHumans.push({
       ...human,
       ...{ id }

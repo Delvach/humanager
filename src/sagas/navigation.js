@@ -24,6 +24,8 @@ import {
   toggleVisualizationResizeAction
 } from '../actions/navigation';
 
+import { randomizeItemsPositionsAction } from '../actions/visualizations';
+
 import { createHuman, updateHuman, loadAllHumansData } from './humans';
 import { createRole, updateRole, loadAllRolesData } from './roles';
 
@@ -49,6 +51,8 @@ function* initializeAppData() {
 
     // Load master roles list
     yield* loadAllRolesData();
+
+    yield put(randomizeItemsPositionsAction());
   } catch (error) {
     yield put(apiError(error));
   }

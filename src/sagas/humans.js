@@ -12,17 +12,23 @@ import {
   humanUpdatedAction
 } from '../actions/humans';
 
-import { resetItemAction } from '../actions/visualizations';
+import {
+  resetItemAction,
+  updateVisualizationItemPositionsAction,
+  deleteVisualizationItemPositionAction
+} from '../actions/visualizations';
 
 import { roleUpdateAction } from '../actions/roles';
 
 import * as ACTIONS from '../constants/actions';
 import * as DATABASE_NAMES from '../constants/api';
 
+import { getRandomPosition } from '../utils/visualizations';
+
 import {
   normalizeAllHumansData,
-  getFauxHumansData,
-  getFauxAvatarImageURL
+  getFauxHumansData
+  // getFauxAvatarImageURL
 } from '../utils/humans';
 
 /*
@@ -34,11 +40,31 @@ import {
  */
 export function* loadAllHumansData() {
   try {
+    // Get current positions data
+    const { visualizations } = yield select(state => state);
+    const itemsPositions = Object.assign({}, visualizations.itemsPositions);
+
     // Read master humans list from API
     const allHumans = yield call(api.database.read, DATABASE_NAMES.HUMANS);
 
+    for (const i in allHumans) {
+      if (!itemsPositions[i]) {
+        itemsPositions[i] = getRandomPosition();
+      }
+
+      allHumans[i].x = itemsPositions[i].x;
+      allHumans[i].y = itemsPositions[i].y;
+    }
+
+    yield put(updateVisualizationItemPositionsAction({ itemsPositions }));
+
     // Update state with master humans list data
-    yield put(humansLoadedAction(normalizeAllHumansData(allHumans)));
+    yield put(
+      humansLoadedAction(
+        normalizeAllHumansData(allHumans),
+        Object.keys(allHumans)
+      )
+    );
   } catch (error) {
     yield put(apiError(error));
   }
@@ -82,9 +108,9 @@ export function* generateFauxHumans({ payload }) {
  *  Save new human to api
  */
 export function* createHuman(data) {
-  const { email } = data;
-  const avatar = getFauxAvatarImageURL(email);
-  const userData = { ...data, avatar };
+  // const { email } = data;
+  // const avatar = getFauxAvatarImageURL(email);
+  const userData = { ...data };
 
   try {
     // Submit new human to API
@@ -127,11 +153,11 @@ export function* updateHuman(data) {
  */
 export function* deleteHuman({ payload }) {
   try {
-    // Is this human a member of any roles?
-
     const { id } = payload;
     const state = yield select(state => state);
     const { roles, visualizations } = state;
+
+    // Is this human a member of any roles?
     const rolesWithMemberId = roles.filter(
       ({ members }) => members.indexOf(id) > -1
     );
@@ -151,6 +177,7 @@ export function* deleteHuman({ payload }) {
 
     yield call(api.database.delete, `${DATABASE_NAMES.HUMANS}/${id}`);
     yield put(humanDeletedAction(id));
+    yield put(deleteVisualizationItemPositionAction([id]));
 
     // Refresh master human list
     yield* loadAllHumansData();

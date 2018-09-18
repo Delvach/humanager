@@ -19,3 +19,23 @@ export const resetItemAction = () => ({
   type: ACTIONS.RESET_VISUALIZATION_ITEM,
   payload: {}
 });
+
+export const setItemsPositionsAction = positions => ({
+  type: ACTIONS.STORE_VISUALIZATION_POSITIONS,
+  payload: { positions }
+});
+
+export const randomizeItemsPositionsAction = () => ({
+  type: ACTIONS.RANDOMIZE_VISUALIZATION_POSITIONS,
+  payload: {}
+});
+
+export const updateVisualizationItemPositionsAction = ({ itemsPositions }) => ({
+  type: ACTIONS.STORE_VISUALIZATION_ITEMS_POSITIONS,
+  payload: { itemsPositions }
+});
+
+export const deleteVisualizationItemPositionAction = itemIds => ({
+  type: ACTIONS.DELETE_VISUALIZATION_ITEMS_POSITIONS,
+  payload: { itemIds }
+});

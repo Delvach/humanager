@@ -33,11 +33,12 @@ export const humanDeletedAction = id => {
   };
 };
 
-export const humansLoadedAction = humans => {
+export const humansLoadedAction = (humans, allItemsKeys) => {
   return {
     type: ACTIONS.HUMANS_LOADED,
     payload: {
-      humans
+      humans,
+      allItemsKeys
     }
   };
 };

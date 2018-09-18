@@ -30,12 +30,15 @@ class Visualizer extends React.Component {
 
   //   maxRadius = this.props.humans.length ? this.props.humans.length * 10 : 10;
 
-  prepareItemsForDisplay = (items, selectedItemId = null, sortBy = null) => {
+  prepareItemsForDisplay = (
+    items,
+    // itemsPositions,
+    selectedItemId = null,
+    sortBy = null
+  ) => {
     let updatedItems = items.map(item => {
-      const randomX = Math.random();
-      const randomY = Math.random();
       const selected = item.id === selectedItemId;
-      return { ...item, selected, randomX, randomY };
+      return { ...item, selected };
     });
 
     if (sortBy) {
@@ -50,15 +53,37 @@ class Visualizer extends React.Component {
     return updatedItems;
   };
 
+  updateImageMapDefinitions = itemsData => {
+    // Step 1 - Grab collection of patterns (or automagically create later)
+    const imageDefs = d3
+      .select(this.visualRef.current)
+      .append('defs')
+      .attr('id', 'image-definitions');
+
+    imageDefs
+      .selectAll('pattern')
+      .data(itemsData)
+      .enter()
+      .append('pattern')
+      .attr('id', ({ id }) => {
+        return `patterndef-${id}`;
+      })
+      .attr('patternUnits', 'userSpaceOnUse');
+  };
+
   /* 
    * Implementing d3 general update pattern
    */
-  updateVisualizationGrouped = function() {
+  updateVisualization = function() {
+    // console.log(this.props.itemsPositions);
     const displayData = this.prepareItemsForDisplay(
       this.props.items,
+      // this.props.itemsPositions,
       this.props.selectedItemId,
       'name'
     );
+
+    this.updateImageMapDefinitions(displayData);
 
     const x = d3
       .scaleLinear()
@@ -70,10 +95,13 @@ class Visualizer extends React.Component {
       .domain([0, 1])
       .range([150, this.props.height - 300]);
 
-    const r = d3
-      .scaleLinear()
-      .domain([0, this.props.items.length - 1])
-      .range([10, this.props.items.length ? this.props.items.length * 10 : 10]);
+    // const r = d3
+    //   .scaleLinear()
+    //   .domain([0, this.props.items.length - 1])
+    //   .range([10, this.props.items.length ? this.props.items.length * 10 : 10]);
+    const r = d => {
+      return d.selected ? 64 : 32;
+    };
 
     // Step 1 - Grab collection of containers (or automagically create later)
     const humanGroups = d3
@@ -94,16 +122,21 @@ class Visualizer extends React.Component {
         return d.selected ? 'green' : 'blue';
       })
       .attr('r', function(d, i) {
-        return r(i);
+        return r(d);
       })
       .attr('cx', function(d, i) {
         return x(i);
       });
 
     // 2.2 Update text
-    containerUpdater.select('text').attr('x', function(d, i) {
-      return x(i);
-    });
+    containerUpdater
+      .select('text')
+      .attr('x', function(d, i) {
+        return x(i);
+      })
+      .attr('y', function(d, i) {
+        return y(d.y) + r(d) + 18;
+      });
 
     // 2.3 Update images
     containerUpdater.select('image').attr('x', function(d, i) {
@@ -123,7 +156,7 @@ class Visualizer extends React.Component {
       .append('circle')
       .attr('class', 'item')
       .attr('r', function(d, i) {
-        return r(i);
+        return r(d);
       })
       .attr('cx', function(d, i) {
         return x(i);
@@ -135,11 +168,11 @@ class Visualizer extends React.Component {
       .transition()
       .duration(1000)
       .ease(d3.easeBounceOut)
+      .attr('cy', function(d) {
+        return y(d.y);
+      })
       .style('fill', d => {
         return d.selected ? 'green' : 'blue';
-      })
-      .attr('cy', function(d) {
-        return y(d.randomY);
       });
 
     // 4.1 Add name text
@@ -161,7 +194,7 @@ class Visualizer extends React.Component {
       .ease(d3.easeBounceOut)
       .style('fill', 'green')
       .attr('y', function(d, i) {
-        return y(d.randomY) + r(i) + 18;
+        return y(d.y) + r(d) + 18;
       });
 
     // 5.1 Add avatar images
@@ -184,7 +217,7 @@ class Visualizer extends React.Component {
       .ease(d3.easeBounceOut)
 
       .attr('y', function(d, i) {
-        return y(d.randomY);
+        return y(d.y);
       });
 
     const containerExit = humanGroups
@@ -208,8 +241,7 @@ class Visualizer extends React.Component {
   };
 
   componentDidUpdate = function() {
-    // this.updateVisualizationDefault();
-    this.updateVisualizationGrouped();
+    this.updateVisualization();
   };
 
   render() {
@@ -226,6 +258,7 @@ class Visualizer extends React.Component {
 
 Visualizer.propTypes = {
   items: PropTypes.array,
+  // itemsPositions: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
   selectedItemId: PropTypes.string,
   height: PropTypes.number,
   width: PropTypes.number
@@ -233,6 +266,7 @@ Visualizer.propTypes = {
 
 Visualizer.defaultProps = {
   items: [],
+  // itemsPositions: [],
   selectedItemId: null,
   height: 100,
   width: 100
@@ -240,6 +274,7 @@ Visualizer.defaultProps = {
 
 const mapStateToProps = ({ humans, roles, navigation, visualizations }) => ({
   items: navigation.tab === 0 ? humans : roles,
+  // itemsPositions: visualizations.itemsPositions,
   selectedItemId: visualizations.selectedItemId,
   bit: visualizations.bit,
   tab: navigation.tab
