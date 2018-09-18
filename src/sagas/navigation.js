@@ -1,4 +1,5 @@
 import { delay } from 'redux-saga';
+
 import {
   put,
   select,
@@ -21,10 +22,12 @@ import {
   resetHumanEditingDialogInitDataAction,
   resetRoleEditingDialogInitDataAction,
   closeDialogAction,
-  toggleVisualizationResizeFlagAction,
-  triggerVisualizationResizeAction,
-  completeVisualizationResizeAction
+  toggleVisualizationResizeFlagAction
+  // triggerVisualizationResizeAction,
+  // completeVisualizationResizeAction
 } from '../actions/navigation';
+
+import { setUserIDAction } from '../actions/user';
 
 import { randomizeItemsPositionsAction } from '../actions/visualizations';
 
@@ -43,8 +46,15 @@ import * as ACTIONS from '../constants/actions';
 
 import { DIALOG_MODE_EDIT } from '../constants/humans';
 
+import rsf, { provider } from '../api';
+
 function* initializeAppData() {
   try {
+    // Use anonymous authentication to get a persistent user token
+    // (Will integrate optional account integration/creation later)
+    const { user } = yield call(rsf.auth.signInAnonymously, provider);
+    yield put(setUserIDAction(user.uid));
+
     yield* loadUserPreferenceData();
     yield* setNavigationFromLoadedPreferenceData();
 

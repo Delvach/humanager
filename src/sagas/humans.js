@@ -40,20 +40,30 @@ import {
  */
 export function* loadAllHumansData() {
   try {
+    const { uid } = yield select(state => state.user);
+
     // Get current positions data
     const { visualizations } = yield select(state => state);
     const itemsPositions = Object.assign({}, visualizations.itemsPositions);
 
     // Read master humans list from API
     const allHumans = yield call(api.database.read, DATABASE_NAMES.HUMANS);
+    const myHumans = {};
 
+    // World's least secure and least efficient means of individual retrievals
     for (const i in allHumans) {
+      if (allHumans[i].uid === uid) {
+        myHumans[i] = allHumans[i];
+      }
+    }
+
+    for (const i in myHumans) {
       if (!itemsPositions[i]) {
         itemsPositions[i] = getRandomPosition();
       }
 
-      allHumans[i].x = itemsPositions[i].x;
-      allHumans[i].y = itemsPositions[i].y;
+      myHumans[i].x = itemsPositions[i].x;
+      myHumans[i].y = itemsPositions[i].y;
     }
 
     yield put(updateVisualizationItemPositionsAction({ itemsPositions }));
@@ -61,8 +71,8 @@ export function* loadAllHumansData() {
     // Update state with master humans list data
     yield put(
       humansLoadedAction(
-        normalizeAllHumansData(allHumans),
-        Object.keys(allHumans)
+        normalizeAllHumansData(myHumans),
+        Object.keys(myHumans)
       )
     );
   } catch (error) {
@@ -110,14 +120,16 @@ export function* generateFauxHumans({ payload }) {
 export function* createHuman(data) {
   // const { email } = data;
   // const avatar = getFauxAvatarImageURL(email);
-  const userData = { ...data };
 
   try {
+    const { uid } = yield select(state => state.user);
+
+    const humanData = { ...data, uid };
     // Submit new human to API
     const newHumanID = yield call(
       api.database.create,
       DATABASE_NAMES.HUMANS,
-      userData
+      humanData
     );
 
     // Dispatch human creation success notification
@@ -133,12 +145,14 @@ export function* createHuman(data) {
 export function* updateHuman(data) {
   try {
     const { name, email, age } = data;
+    const { uid } = yield select(state => state.user);
 
     // Submit updated human to API
     yield call(api.database.patch, `${DATABASE_NAMES.HUMANS}/${data.id}`, {
       name,
       email,
-      age
+      age,
+      uid
     });
 
     // Dispatch human update success notification

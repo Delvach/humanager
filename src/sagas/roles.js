@@ -33,27 +33,37 @@ import { normalizeAllRolesData } from '../utils/roles';
  */
 export function* loadAllRolesData() {
   try {
+    const { uid } = yield select(state => state.user);
+
     // Get current positions data
     const { visualizations } = yield select(state => state);
     const itemsPositions = Object.assign({}, visualizations.itemsPositions);
 
     // Read master roles list from API
     const allRoles = yield call(api.database.read, DATABASE_NAMES.ROLES);
+    const myRoles = {};
 
+    // World's least secure and least efficient means of individual retrievals
     for (const i in allRoles) {
+      if (allRoles[i].uid === uid) {
+        myRoles[i] = allRoles[i];
+      }
+    }
+
+    for (const i in myRoles) {
       if (!itemsPositions[i]) {
         itemsPositions[i] = getRandomPosition();
       }
 
-      allRoles[i].x = itemsPositions[i].x;
-      allRoles[i].y = itemsPositions[i].y;
+      myRoles[i].x = itemsPositions[i].x;
+      myRoles[i].y = itemsPositions[i].y;
     }
 
     yield put(updateVisualizationItemPositionsAction({ itemsPositions }));
 
     // Update state with master roles list data
     yield put(
-      rolesLoadedAction(normalizeAllRolesData(allRoles), Object.keys(allRoles))
+      rolesLoadedAction(normalizeAllRolesData(myRoles), Object.keys(myRoles))
     );
   } catch (error) {
     yield put(apiError(error));
@@ -84,11 +94,14 @@ export function* loadRoleData({ payload }) {
 export function* createRole({ payload }) {
   // const { name, members } = payload;
   try {
+    const { uid } = yield select(state => state.user);
+    const roleData = { ...payload, uid };
+
     // Submit new role to API
     const newRoleID = yield call(
       api.database.create,
       DATABASE_NAMES.ROLES,
-      payload
+      roleData
     );
 
     // Dispatch role creation success notification
@@ -102,15 +115,17 @@ export function* createRole({ payload }) {
  *  Update existing role in api
  */
 export function* updateRole({ payload }) {
-  const { name, members, id } = payload;
   try {
+    const { name, members, id } = payload;
+    const { uid } = yield select(state => state.user);
     if (!id) {
       throw new Error('updateRole requires valid ID');
     }
     // Submit updated role to API
     yield call(api.database.patch, `${DATABASE_NAMES.ROLES}/${id}`, {
       name,
-      members
+      members,
+      uid
     });
 
     // Dispatch role update success notification

@@ -1,6 +1,9 @@
 // Used for blank template, does nothing
 export const DEFAULT = 'DEFAULT';
 
+// User (pending) authentication
+export const SET_USER_UID = 'SET_USER_UID';
+
 export const TEST = 'TEST';
 export const TEST_OUTPUT = 'TEST_OUTPUT';
 

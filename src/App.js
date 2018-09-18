@@ -59,6 +59,9 @@ class App extends Component {
   componentDidMount = () => {
     this.props.initApp();
     window.addEventListener('resize', this.updateAppSize);
+
+    // Without an immediate resize, visualization does not recalculate dimensions relative to drawer status
+    this.props.windowResizeHandler();
   };
 
   componentWillUnmount() {
