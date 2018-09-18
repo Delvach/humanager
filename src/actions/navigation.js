@@ -199,7 +199,28 @@ export const setVisualContainerSizeAction = ({
   payload: { height, width }
 });
 
-export const toggleVisualizationResizeAction = shouldResize => ({
+// Trigger visualization container recalculation from
+// window, panel, or drawer resize/change events
+export const triggerVisualizationResizeAction = shouldResize => ({
   type: ACTIONS.TRIGGER_VISUALIZATION_RESIZE,
+  payload: {}
+});
+
+export const toggleVisualizationResizeFlagAction = shouldResize => ({
+  type: ACTIONS.TOGGLE_VISUALIZATION_RESIZE_FLAG,
   payload: { resize: shouldResize }
 });
+
+export const completeVisualizationResizeAction = () => ({
+  type: ACTIONS.COMPLETE_VISUALIZATION_RESIZE,
+  payload: {}
+});
+
+/*
+
+export const toggleVisualizationResizeAction = shouldResize => ({
+  type: ACTIONS.,
+  payload: { resize: shouldResize }
+});
+
+*/

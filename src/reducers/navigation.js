@@ -50,9 +50,16 @@ export default function navigation(
         leftDrawerOpen: payload.open
       });
 
-    case ACTIONS.TRIGGER_VISUALIZATION_RESIZE:
+    // Action has triggered a
+
+    case ACTIONS.TOGGLE_VISUALIZATION_RESIZE_FLAG:
       return Object.assign(newState, {
         triggerVisualizationResize: payload.resize
+      });
+
+    case ACTIONS.COMPLETE_VISUALIZATION_RESIZE:
+      return Object.assign(newState, {
+        triggerVisualizationResize: false
       });
 
     default:

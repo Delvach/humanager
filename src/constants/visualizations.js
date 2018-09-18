@@ -8,5 +8,7 @@ export const DEFAULT_STATE_VISUALIZATIONS = {
     humans: [],
     roles: []
   },
-  itemsPositions: {}
+  itemsPositions: {},
+  itemSizeBase: 32,
+  itemSizeActive: 48
 };

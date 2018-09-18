@@ -25,7 +25,10 @@ import RolesList from './components/modules/roles/RolesList';
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import theme from './themes/default';
 
-import { resizeHandlerAction } from './actions/navigation';
+import {
+  resizeHandlerAction,
+  triggerVisualizationResizeAction
+} from './actions/navigation';
 
 import HumansVisualizer from './components/modules/humans/HumansVisualizer';
 
@@ -53,7 +56,18 @@ const Roles = () => (
 );
 
 class App extends Component {
-  componentDidMount = () => this.props.initApp();
+  componentDidMount = () => {
+    this.props.initApp();
+    window.addEventListener('resize', this.updateAppSize);
+  };
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.updateAppSize);
+  }
+
+  updateAppSize = e => {
+    this.props.windowResizeHandler();
+  };
 
   tabViews = idx => [<Humans />, <Roles />][idx];
 
@@ -134,7 +148,14 @@ const mapStateToProps = ({ navigation }) => ({
 });
 
 const mapDispatchToProps = dispatch =>
-  bindActionCreators({ initApp, resizeHandler: resizeHandlerAction }, dispatch);
+  bindActionCreators(
+    {
+      initApp,
+      resizeHandler: resizeHandlerAction,
+      windowResizeHandler: triggerVisualizationResizeAction
+    },
+    dispatch
+  );
 
 const AppWrapped = withStyles(styles, { withTheme: true })(App);
 

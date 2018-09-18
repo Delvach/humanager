@@ -7,6 +7,10 @@ import classNames from 'classnames';
 
 import { withStyles } from '@material-ui/core/styles';
 
+import FormControl from '@material-ui/core/FormControl';
+import FormGroup from '@material-ui/core/FormGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+
 import Drawer from '@material-ui/core/Drawer';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
@@ -14,6 +18,7 @@ import IconButton from '@material-ui/core/IconButton';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 
+import Switch from '@material-ui/core/Switch';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -26,7 +31,8 @@ import { TABS } from '../../constants/navigation';
 
 import {
   changeTabAction,
-  closeLeftDrawerAction
+  closeLeftDrawerAction,
+  triggerVisualizationResizeAction
 } from '../../actions/navigation';
 
 import {
@@ -68,6 +74,27 @@ const styles = theme => ({
   }
 });
 
+const Controls = () => {
+  return (
+    <FormControl component="fieldset">
+      <FormGroup>
+        <ListItem>
+          <FormControlLabel
+            control={
+              <Switch
+                // checked={this.state.gilad}
+                // onChange={this.handleChange('gilad')}
+                value="random"
+              />
+            }
+            label="Randomize"
+          />
+        </ListItem>
+      </FormGroup>
+    </FormControl>
+  );
+};
+
 const Sidebar = props => {
   const {
     anchor,
@@ -77,6 +104,7 @@ const Sidebar = props => {
     changeTab,
     storeTab,
     handleDrawerClose,
+    triggerVisualizationResizeAction,
     storeLeftDrawerOpen,
     tab,
     variant
@@ -99,6 +127,7 @@ const Sidebar = props => {
           onClick={() => {
             handleDrawerClose();
             storeLeftDrawerOpen(false);
+            triggerVisualizationResizeAction();
           }}
         >
           {theme.direction === 'rtl' ? (
@@ -128,7 +157,10 @@ const Sidebar = props => {
             </ListItem>
           ))}
         </div>
+        <Divider />
+        <Controls />
       </List>
+
       <Divider />
     </Drawer>
   );
@@ -159,7 +191,8 @@ const mapDispatchToProps = dispatch =>
       handleDrawerClose: closeLeftDrawerAction,
       storeLeftDrawerOpen: storeLeftDrawerOpenPreferenceAction,
       changeTab: changeTabAction,
-      storeTab: storeTabPreferenceAction
+      storeTab: storeTabPreferenceAction,
+      triggerVisualizationResizeAction
     },
     dispatch
   );

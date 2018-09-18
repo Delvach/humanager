@@ -7,7 +7,7 @@ import HumansVisualizerComponent from '../../visualizations/Humans';
 
 import {
   setVisualContainerSizeAction,
-  toggleVisualizationResizeAction
+  completeVisualizationResizeAction
 } from '../../../actions/navigation';
 
 class VisualizationWrapper extends React.PureComponent {
@@ -26,8 +26,10 @@ class VisualizationWrapper extends React.PureComponent {
   }
 
   componentDidUpdate() {
+    // Is there a better way to trigger this from outside the component?
     if (this.props.triggerResize) {
-      this.props.toggleVisualizationResizeAction(false);
+      console.log('HumansVisualizer componentDidUpdte()');
+      this.props.completeVisualizationResizeAction();
     }
     this.storeDimensions();
   }
@@ -47,7 +49,6 @@ class VisualizationWrapper extends React.PureComponent {
   }
 
   updateStoreWithVisualizationDimensions(height = null, width = null) {
-    console.log(height, width);
     if (height === null || width === null) return;
     if (!this.visualizationDimensionsMatchStore(height, width)) {
       this.props.setContainerSize({
@@ -92,7 +93,7 @@ const mapDispatchToProps = dispatch =>
   bindActionCreators(
     {
       setContainerSize: setVisualContainerSizeAction,
-      toggleVisualizationResizeAction
+      completeVisualizationResizeAction
     },
     dispatch
   );

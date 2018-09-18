@@ -16,19 +16,6 @@ class Visualizer extends React.Component {
     super(props);
     this.visualRef = React.createRef();
   }
-  // } = ({ humans, height, width }) => {
-  //   const x = d3.scale
-  //     .linear()
-  //     .domain([0, 1])
-  //     .range([0, width]);
-  //   padding = 100;
-
-  //   const r = d3.scale
-  //     .sqrt()
-  //     .domain([0, 1])
-  //     .range([0, 30]);
-
-  //   maxRadius = this.props.humans.length ? this.props.humans.length * 10 : 10;
 
   prepareItemsForDisplay = (
     items,
@@ -95,6 +82,11 @@ class Visualizer extends React.Component {
       .domain([0, 1])
       .range([150, this.props.height - 300]);
 
+    const getGroupTopLeftPosition = human => ({
+      x: human.x - this.props.itemSizeBase / 2,
+      y: human.y - this.props.itemSizeBase / 2
+    });
+
     // const r = d3
     //   .scaleLinear()
     //   .domain([0, this.props.items.length - 1])
@@ -139,9 +131,16 @@ class Visualizer extends React.Component {
       });
 
     // 2.3 Update images
-    containerUpdater.select('image').attr('x', function(d, i) {
-      return x(i);
-    });
+    containerUpdater
+      .select('image')
+      .attr('x', function(d, i) {
+        return x(i) - (d.selected ? 64 : 32);
+      })
+      // .attr('y', function(d, i) {
+      //   return x(i) - (d.selected ? 64 : 32);
+      // })
+      .attr('height', d => (d.selected ? 128 : 64))
+      .attr('width', d => (d.selected ? 128 : 64));
 
     // Step 3 - If containers don't exist, create and initialize
     const containerEnter = humanGroups
@@ -205,19 +204,24 @@ class Visualizer extends React.Component {
         return getFauxAvatarImageURL({ email, size: 64 });
       })
       .attr('x', function(d, i) {
-        return x(i);
+        return x(i) - 32;
       })
       .attr('y', 100)
-      .attr('height', 64)
-      .attr('width', 64)
+      .attr('height', d => (d.selected ? 128 : 64))
+      .attr('width', d => (d.selected ? 128 : 64))
 
       // 5.1.2 Updated state after appearing
       .transition()
       .duration(1000)
       .ease(d3.easeBounceOut)
 
-      .attr('y', function(d, i) {
-        return y(d.y);
+      .attr('y', (d, i) => {
+        // 0-1 based
+        return y(d.y) - 32;
+
+        // Coordinated-based; randomizer needs to use calculated
+        // dimensions to support these methods
+        // return getGroupTopLeftPosition(d).y;
       });
 
     const containerExit = humanGroups
@@ -261,7 +265,9 @@ Visualizer.propTypes = {
   // itemsPositions: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
   selectedItemId: PropTypes.string,
   height: PropTypes.number,
-  width: PropTypes.number
+  width: PropTypes.number,
+  itemSizeBase: PropTypes.number,
+  itemSizeActive: PropTypes.number
 };
 
 Visualizer.defaultProps = {
@@ -269,7 +275,9 @@ Visualizer.defaultProps = {
   // itemsPositions: [],
   selectedItemId: null,
   height: 100,
-  width: 100
+  width: 100,
+  itemSizeBase: 32,
+  itemSizeActive: 48
 };
 
 const mapStateToProps = ({ humans, roles, navigation, visualizations }) => ({
@@ -277,7 +285,9 @@ const mapStateToProps = ({ humans, roles, navigation, visualizations }) => ({
   // itemsPositions: visualizations.itemsPositions,
   selectedItemId: visualizations.selectedItemId,
   bit: visualizations.bit,
-  tab: navigation.tab
+  tab: navigation.tab,
+  itemSizeBase: visualizations.itemSizeBase,
+  itemSizeActive: visualizations.itemSizeActive
 });
 
 const mapDispatchToProps = dispatch =>

@@ -21,7 +21,9 @@ import {
   resetHumanEditingDialogInitDataAction,
   resetRoleEditingDialogInitDataAction,
   closeDialogAction,
-  toggleVisualizationResizeAction
+  toggleVisualizationResizeFlagAction,
+  triggerVisualizationResizeAction,
+  completeVisualizationResizeAction
 } from '../actions/navigation';
 
 import { randomizeItemsPositionsAction } from '../actions/visualizations';
@@ -180,7 +182,21 @@ function* handleTopPaneResize(size) {
 
 function* handleContentPanelsResize(size) {
   yield* handleTopPaneResize(size);
-  yield put(toggleVisualizationResizeAction(true));
+  // yield put(toggleVisualizationResizeAction(true));
+  yield put(toggleVisualizationResizeFlagAction(true));
+  // yield put(completeVisualizationResizeAction());
+}
+
+function* handleResize() {
+  // Debounce resize; prevents excessive events and
+  // allows for drawer transition delay
+  yield call(delay, 500);
+
+  // Set flag to update component, will cause
+  // re-calculation of container size
+  yield put(toggleVisualizationResizeFlagAction(true));
+
+  // yield put(completeVisualizationResizeAction());
 }
 
 /*
@@ -222,10 +238,28 @@ function* watchTopPaneResize() {
   }
 }
 
+// The 'onchange' event that triggers drawer toggle needs a small delay before
+// triggering a re-calculation of visualization size
+function* watchResizeEvents() {
+  let task;
+
+  while (true) {
+    yield take(ACTIONS.TRIGGER_VISUALIZATION_RESIZE);
+    if (task) {
+      yield cancel(task);
+    }
+    task = yield fork(handleResize);
+  }
+
+  // toggleVisualizationResizeAction
+  //completeVisualizationResizeAction
+}
+
 export const navigationSagas = [
   initializeHumanagerApp(),
   watchDialogStatus(),
   watchHumanDialogSubmission(),
   watchRoleDialogSubmission(),
-  watchTopPaneResize()
+  watchTopPaneResize(),
+  watchResizeEvents()
 ];
