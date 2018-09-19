@@ -29,12 +29,13 @@ function* handleRandomizePositions() {
     rolesPositions[roles[i].id] = getRandomPosition();
   }
 
-  yield put(
-    setItemsPositionsAction({
-      humans: humansPositions,
-      roles: rolesPositions
-    })
-  );
+  // Disabled; need to be updated for revised behavior
+  // yield put(
+  //   setItemsPositionsAction({
+  //     humans: humansPositions,
+  //     roles: rolesPositions
+  //   })
+  // );
 }
 
 /*

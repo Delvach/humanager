@@ -29,6 +29,8 @@ import RolesIcon from '@material-ui/icons/List';
 
 import { TABS } from '../../constants/navigation';
 
+import VisualizationFilters from '../controls/VisualizationFilters';
+
 import {
   changeTabAction,
   closeLeftDrawerAction,
@@ -73,27 +75,6 @@ const styles = theme => ({
     }
   }
 });
-
-const Controls = () => {
-  return (
-    <FormControl component="fieldset">
-      <FormGroup>
-        <ListItem>
-          <FormControlLabel
-            control={
-              <Switch
-                // checked={this.state.gilad}
-                // onChange={this.handleChange('gilad')}
-                value="random"
-              />
-            }
-            label="Randomize"
-          />
-        </ListItem>
-      </FormGroup>
-    </FormControl>
-  );
-};
 
 const Sidebar = props => {
   const {
@@ -158,7 +139,7 @@ const Sidebar = props => {
           ))}
         </div>
         <Divider />
-        <Controls />
+        <VisualizationFilters />
       </List>
 
       <Divider />
