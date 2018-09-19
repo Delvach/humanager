@@ -18,7 +18,7 @@ const VisualizationFilters = ({ sortBy, handleChangeSortBy }) => {
     <FormControl component="fieldset">
       <FormGroup>
         {VISUALIZATION_SORTBY_FILTERS.map(({ label, value }) => (
-          <ListItem>
+          <ListItem key={`filter-${value}`}>
             <FormControlLabel
               control={
                 <Switch

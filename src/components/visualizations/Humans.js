@@ -17,18 +17,13 @@ class Visualizer extends React.Component {
     this.visualRef = React.createRef();
   }
 
-  prepareItemsForDisplay = (
-    items,
-    // itemsPositions,
-    selectedItemId = null,
-    sortBy = null
-  ) => {
+  prepareItemsForDisplay = (items, selectedItemId = null, sortBy = null) => {
     let updatedItems = items.map(item => {
       const selected = item.id === selectedItemId;
       return { ...item, selected };
     });
 
-    if (sortBy) {
+    if (sortBy && sortBy !== 'random') {
       updatedItems.sort((a, b) => {
         if (a[sortBy] > b[sortBy]) return 1;
         if (b[sortBy] > a[sortBy]) return -1;
@@ -58,34 +53,62 @@ class Visualizer extends React.Component {
       .attr('patternUnits', 'userSpaceOnUse');
   };
 
+  /*
+   * Scales using number of items
+   */
+  getLinearScaleUsingNumItems = (numItems, areaWidth) => {
+    return d3
+      .scaleLinear()
+      .domain([0, numItems - 1])
+      .range([100, areaWidth - 100]);
+  };
+
+  getLinearHeightScaleUsingNumItems = (numItems, height) =>
+    this.getLinearScaleUsingNumItems(numItems, height);
+
+  getLinearWidthScaleUsingNumItems = (numItems, width) =>
+    this.getLinearScaleUsingNumItems(numItems, width);
+
+  /*
+   * Scales using percentages
+   */
+  getLinearScaleUsingPercentage = value => {
+    return d3
+      .scaleLinear()
+      .domain([0, 1])
+      .range([100, value - 100]);
+  };
+
+  getLinearHeightScaleUsingPercentage = height =>
+    this.getLinearScaleUsingPercentage(height);
+
+  getLinearWidthScaleUsingPercentage = width =>
+    this.getLinearScaleUsingPercentage(width);
+
   /* 
    * Implementing d3 general update pattern
    */
   updateVisualization = function() {
-    // console.log(this.props.itemsPositions);
     const displayData = this.prepareItemsForDisplay(
       this.props.items,
-      // this.props.itemsPositions,
       this.props.selectedItemId,
-      'name'
+      this.props.sortBy
     );
 
     this.updateImageMapDefinitions(displayData);
 
-    const x = d3
-      .scaleLinear()
-      .domain([0, this.props.items.length - 1])
-      .range([100, this.props.width - 100]);
+    const x = this.getLinearWidthScaleUsingNumItems(
+      this.props.items.length,
+      this.props.width
+    );
 
-    const y = d3
-      .scaleLinear()
-      .domain([0, 1])
-      .range([150, this.props.height - 300]);
+    const xPercent = this.getLinearWidthScaleUsingPercentage(this.props.width);
+    const y = this.getLinearHeightScaleUsingPercentage(this.props.height);
 
-    const getGroupTopLeftPosition = human => ({
-      x: human.x - this.props.itemSizeBase / 2,
-      y: human.y - this.props.itemSizeBase / 2
-    });
+    // const getGroupTopLeftPosition = human => ({
+    //   x: human.x - this.props.itemSizeBase / 2,
+    //   y: human.y - this.props.itemSizeBase / 2
+    // });
 
     // const r = d3
     //   .scaleLinear()
@@ -95,11 +118,25 @@ class Visualizer extends React.Component {
       return d.selected ? 64 : 32;
     };
 
+    /*
+     * Coordinates helpers
+     */
+    const getCenterCoordinatesX = (item, index) => {
+      const value = this.props.sortByRandom ? item.x : index;
+      const scale = this.props.sortByRandom
+        ? this.getLinearWidthScaleUsingPercentage(this.props.width)
+        : this.getLinearWidthScaleUsingNumItems(
+            this.props.items.length,
+            this.props.width
+          );
+      return scale(value);
+    };
+
     // Step 1 - Grab collection of containers (or automagically create later)
     const humanGroups = d3
       .select(this.visualRef.current)
       .selectAll('g')
-      .data(displayData, function(h) {
+      .data(displayData, h => {
         return h.id;
       });
 
@@ -113,32 +150,31 @@ class Visualizer extends React.Component {
       .style('fill', d => {
         return d.selected ? 'green' : 'blue';
       })
-      .attr('r', function(d, i) {
+      .attr('r', (d, i) => {
         return r(d);
       })
-      .attr('cx', function(d, i) {
-        return x(i);
+      .attr('cx', getCenterCoordinatesX)
+      .attr('cy', d => {
+        return y(this.props.sortByRandom ? d.y : 0.5);
       });
 
     // 2.2 Update text
     containerUpdater
       .select('text')
-      .attr('x', function(d, i) {
-        return x(i);
-      })
-      .attr('y', function(d, i) {
-        return y(d.y) + r(d) + 18;
+      .attr('x', getCenterCoordinatesX)
+      .attr('y', (d, i) => {
+        return y(this.props.sortByRandom ? d.y : 0.5) + r(d) + 18;
       });
 
     // 2.3 Update images
     containerUpdater
       .select('image')
-      .attr('x', function(d, i) {
-        return x(i) - (d.selected ? 64 : 32);
+      .attr('x', (d, i) => {
+        return getCenterCoordinatesX(d, i) - (d.selected ? 64 : 32);
       })
-      // .attr('y', function(d, i) {
-      //   return x(i) - (d.selected ? 64 : 32);
-      // })
+      .attr('y', (d, i) => {
+        return y(this.props.sortByRandom ? d.y : 0.5) - (d.selected ? 64 : 32);
+      })
       .attr('height', d => (d.selected ? 128 : 64))
       .attr('width', d => (d.selected ? 128 : 64));
 
@@ -154,22 +190,22 @@ class Visualizer extends React.Component {
     containerEnter
       .append('circle')
       .attr('class', 'item')
-      .attr('r', function(d, i) {
+      .attr('r', (d, i) => {
         return r(d);
       })
-      .attr('cx', function(d, i) {
-        return x(i);
+      .attr('cx', getCenterCoordinatesX)
+      .attr('cy', d => {
+        return y(this.props.sortByRandom ? d.y : 0.5);
       })
-      .attr('cy', 0)
       .style('stroke', '#3E6E9C')
       .style('fill', 'red')
       // 3.1.2 Updated state after appearing
       .transition()
       .duration(1000)
       .ease(d3.easeBounceOut)
-      .attr('cy', function(d) {
-        return y(d.y);
-      })
+      // .attr('cy', d => {
+      //   return y(this.props.sortByRandom ? d.y : 0.5);
+      // })
       .style('fill', d => {
         return d.selected ? 'green' : 'blue';
       });
@@ -180,10 +216,10 @@ class Visualizer extends React.Component {
       .append('text')
       .attr('class', 'name')
       .text(human => human.name)
-      .attr('x', function(d, i) {
-        return x(i);
+      .attr('x', getCenterCoordinatesX)
+      .attr('y', (d, i) => {
+        return y(this.props.sortByRandom ? d.y : 0.5) + r(d) + 18;
       })
-      .attr('y', 100)
       .style('stroke', '#3E6E9C')
       .style('fill', 'red')
       .style('text-anchor', 'middle')
@@ -191,54 +227,52 @@ class Visualizer extends React.Component {
       .transition()
       .duration(1000)
       .ease(d3.easeBounceOut)
-      .style('fill', 'green')
-      .attr('y', function(d, i) {
-        return y(d.y) + r(d) + 18;
-      });
+      .style('fill', 'green');
+    // .attr('y', (d, i) => {
+    //   return y(this.props.sortByRandom ? d.y : 0.5) + r(d) + 18;
+    // });
 
     // 5.1 Add avatar images
     // 5.1.1 Initial state when appearing
     containerEnter
       .append('image')
-      .attr('xlink:href', function({ email }) {
+      .attr('xlink:href', ({ email }) => {
         return getFauxAvatarImageURL({ email, size: 64 });
       })
-      .attr('x', function(d, i) {
-        return x(i) - 32;
+      .attr('x', (d, i) => {
+        return getCenterCoordinatesX(d, i) - 32;
       })
-      .attr('y', 100)
+      .attr('y', (d, i) => {
+        return y(this.props.sortByRandom ? d.y : 0.5) - 32;
+      })
       .attr('height', d => (d.selected ? 128 : 64))
       .attr('width', d => (d.selected ? 128 : 64))
 
       // 5.1.2 Updated state after appearing
       .transition()
       .duration(1000)
-      .ease(d3.easeBounceOut)
+      .ease(d3.easeBounceOut);
 
-      .attr('y', (d, i) => {
-        // 0-1 based
-        return y(d.y) - 32;
+    // .attr('y', (d, i) => {
+    //   return y(this.props.sortByRandom ? d.y : 0.5) - 32;
 
-        // Coordinated-based; randomizer needs to use calculated
-        // dimensions to support these methods
-        // return getGroupTopLeftPosition(d).y;
-      });
+    // });
 
     const containerExit = humanGroups
       .exit()
       .filter(':not(.exiting)') // Don't select already exiting nodes
       .classed('exiting', true)
       .transition()
-      .duration(1000);
+      .duration(500);
 
     containerExit
-      .style('opacity', function(d, i) {
+      .style('opacity', (d, i) => {
         return 0;
       })
-      .style('fill-opacity', function(d, i) {
+      .style('fill-opacity', (d, i) => {
         return 0;
       })
-      .style('stroke-opacity', function(d, i) {
+      .style('stroke-opacity', (d, i) => {
         return 0;
       })
       .remove();
@@ -262,32 +296,35 @@ class Visualizer extends React.Component {
 
 Visualizer.propTypes = {
   items: PropTypes.array,
-  // itemsPositions: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
   selectedItemId: PropTypes.string,
   height: PropTypes.number,
   width: PropTypes.number,
   itemSizeBase: PropTypes.number,
-  itemSizeActive: PropTypes.number
+  itemSizeActive: PropTypes.number,
+  sortBy: PropTypes.string,
+  sortByRandom: PropTypes.bool
 };
 
 Visualizer.defaultProps = {
   items: [],
-  // itemsPositions: [],
   selectedItemId: null,
   height: 100,
   width: 100,
   itemSizeBase: 32,
-  itemSizeActive: 48
+  itemSizeActive: 48,
+  sortBy: 'name',
+  sortByRandom: false
 };
 
 const mapStateToProps = ({ humans, roles, navigation, visualizations }) => ({
   items: navigation.tab === 0 ? humans : roles,
-  // itemsPositions: visualizations.itemsPositions,
   selectedItemId: visualizations.selectedItemId,
   bit: visualizations.bit,
   tab: navigation.tab,
   itemSizeBase: visualizations.itemSizeBase,
-  itemSizeActive: visualizations.itemSizeActive
+  itemSizeActive: visualizations.itemSizeActive,
+  sortBy: visualizations.sortBy,
+  sortByRandom: visualizations.sortBy === 'random'
 });
 
 const mapDispatchToProps = dispatch =>

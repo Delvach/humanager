@@ -51,7 +51,6 @@ export default function visualizations(
     case ACTIONS.SET_VISUALIZATION_FILTER_SORTBY:
       const { sortBy } = payload;
       return Object.assign({}, state, { sortBy });
-      break;
 
     default:
       return state;

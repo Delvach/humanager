@@ -6,7 +6,7 @@ import { getRandomPosition } from '../utils/visualizations';
 
 import {
   testOutputAction,
-  setItemsPositionsAction,
+  // setItemsPositionsAction,
   updateVisualizationItemPositionsAction
 } from '../actions/visualizations';
 
