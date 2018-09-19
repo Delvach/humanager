@@ -15,7 +15,10 @@ export const DEFAULT_STATE_VISUALIZATIONS = {
 };
 
 export const VISUALIZATION_SORTBY_FILTERS = [
-  { label: 'Random', value: 'random' },
   { label: 'Name', value: 'name' },
-  { label: 'Age', value: 'age' }
+  { label: 'Age', value: 'age' },
+  { label: 'Random', value: 'random' }
 ];
+
+export const DEFAULT_VISUALIZATION_SORTBY_FILTER =
+  VISUALIZATION_SORTBY_FILTERS[0];

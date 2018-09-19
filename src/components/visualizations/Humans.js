@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 
 import { getFauxAvatarImageURL } from '../../utils/humans';
 
-import { selectItemAction } from '../../actions/visualizations';
+import { selectItemAction, getSortedItems } from '../../actions/visualizations';
 
 // import classNames from 'classnames';
 
@@ -17,40 +17,18 @@ class Visualizer extends React.Component {
     this.visualRef = React.createRef();
   }
 
-  prepareItemsForDisplay = (items, selectedItemId = null, sortBy = null) => {
-    let updatedItems = items.map(item => {
+  prepareItemsForDisplay = (
+    items = [],
+    selectedItemId = null,
+    sortBy = null
+  ) => {
+    // Add flag to indicate whether is currently selected item
+    const updatedItems = items.map(item => {
       const selected = item.id === selectedItemId;
       return { ...item, selected };
     });
 
-    if (sortBy && sortBy !== 'random') {
-      updatedItems.sort((a, b) => {
-        if (a[sortBy] > b[sortBy]) return 1;
-        if (b[sortBy] > a[sortBy]) return -1;
-        return 0;
-      });
-      return updatedItems;
-    }
-
-    return updatedItems;
-  };
-
-  updateImageMapDefinitions = itemsData => {
-    // Step 1 - Grab collection of patterns (or automagically create later)
-    const imageDefs = d3
-      .select(this.visualRef.current)
-      .append('defs')
-      .attr('id', 'image-definitions');
-
-    imageDefs
-      .selectAll('pattern')
-      .data(itemsData)
-      .enter()
-      .append('pattern')
-      .attr('id', ({ id }) => {
-        return `patterndef-${id}`;
-      })
-      .attr('patternUnits', 'userSpaceOnUse');
+    return getSortedItems(updatedItems, sortBy);
   };
 
   /*
@@ -94,8 +72,6 @@ class Visualizer extends React.Component {
       this.props.selectedItemId,
       this.props.sortBy
     );
-
-    this.updateImageMapDefinitions(displayData);
 
     const x = this.getLinearWidthScaleUsingNumItems(
       this.props.items.length,
@@ -175,6 +151,7 @@ class Visualizer extends React.Component {
       .attr('y', (d, i) => {
         return y(this.props.sortByRandom ? d.y : 0.5) - (d.selected ? 64 : 32);
       })
+      .style('opacity', 1)
       .attr('height', d => (d.selected ? 128 : 64))
       .attr('width', d => (d.selected ? 128 : 64));
 
@@ -185,33 +162,8 @@ class Visualizer extends React.Component {
       .on('click', d => this.props.selectItem(d.id))
       .attr('class', 'human');
 
-    // 3.1 Add (image cropping) circle
+    // 3.1 Add name text
     // 3.1.1 Initial state when appearing
-    containerEnter
-      .append('circle')
-      .attr('class', 'item')
-      .attr('r', (d, i) => {
-        return r(d);
-      })
-      .attr('cx', getCenterCoordinatesX)
-      .attr('cy', d => {
-        return y(this.props.sortByRandom ? d.y : 0.5);
-      })
-      .style('stroke', '#3E6E9C')
-      .style('fill', 'red')
-      // 3.1.2 Updated state after appearing
-      .transition()
-      .duration(1000)
-      .ease(d3.easeBounceOut)
-      // .attr('cy', d => {
-      //   return y(this.props.sortByRandom ? d.y : 0.5);
-      // })
-      .style('fill', d => {
-        return d.selected ? 'green' : 'blue';
-      });
-
-    // 4.1 Add name text
-    // 4.1.1 Initial state when appearing
     containerEnter
       .append('text')
       .attr('class', 'name')
@@ -220,10 +172,10 @@ class Visualizer extends React.Component {
       .attr('y', (d, i) => {
         return y(this.props.sortByRandom ? d.y : 0.5) + r(d) + 18;
       })
-      .style('stroke', '#3E6E9C')
+      // .style('stroke', '#3E6E9C')
       .style('fill', 'red')
       .style('text-anchor', 'middle')
-      // 4.1.2 Updated state after appearing
+      // 3.1.2 Updated state after appearing
       .transition()
       .duration(1000)
       .ease(d3.easeBounceOut)
@@ -232,8 +184,8 @@ class Visualizer extends React.Component {
     //   return y(this.props.sortByRandom ? d.y : 0.5) + r(d) + 18;
     // });
 
-    // 5.1 Add avatar images
-    // 5.1.1 Initial state when appearing
+    // 4.1 Add avatar images
+    // 4.1.1 Initial state when appearing
     containerEnter
       .append('image')
       .attr('xlink:href', ({ email }) => {
@@ -245,17 +197,49 @@ class Visualizer extends React.Component {
       .attr('y', (d, i) => {
         return y(this.props.sortByRandom ? d.y : 0.5) - 32;
       })
+      .style('opacity', 0)
+      // .attr('height', d => (d.selected ? 128 : 64))
+      // .attr('width', d => (d.selected ? 128 : 64))
+      .attr('height', 0)
+      .attr('width', 0)
+
+      // 4.1.2 Updated state after appearing
+      .transition()
+      .duration(600)
+      // .ease(d3.easeBounceOut)
       .attr('height', d => (d.selected ? 128 : 64))
       .attr('width', d => (d.selected ? 128 : 64))
-
-      // 5.1.2 Updated state after appearing
-      .transition()
-      .duration(1000)
-      .ease(d3.easeBounceOut);
+      .style('opacity', 1);
 
     // .attr('y', (d, i) => {
     //   return y(this.props.sortByRandom ? d.y : 0.5) - 32;
 
+    // });
+
+    // 5.1 Add circle
+    // 5.1.1 Initial state when appearing
+    containerEnter
+      .append('circle')
+      .attr('class', 'item')
+      .attr('r', (d, i) => {
+        return r(d);
+      })
+      .attr('cx', getCenterCoordinatesX)
+      .attr('cy', d => {
+        return y(this.props.sortByRandom ? d.y : 0.5);
+      })
+      // .style('stroke', '#fafafa')
+      // .style('stroke-width', '20px')
+      .style('fill-opacity', 0)
+      // 5.1.2 Updated state after appearing
+      .transition()
+      .duration(1000)
+      .ease(d3.easeBounceOut);
+    // .attr('cy', d => {
+    //   return y(this.props.sortByRandom ? d.y : 0.5);
+    // })
+    // .style('fill', d => {
+    //   return d.selected ? 'green' : 'blue';
     // });
 
     const containerExit = humanGroups
@@ -264,6 +248,11 @@ class Visualizer extends React.Component {
       .classed('exiting', true)
       .transition()
       .duration(500);
+
+    containerExit
+      .select('image')
+      .attr('height', 0)
+      .attr('width', 0);
 
     containerExit
       .style('opacity', (d, i) => {
