@@ -11,17 +11,13 @@ import Switch from '@material-ui/core/Switch';
 
 import { changeSortByAction } from '../../actions/visualizations';
 
-const humansFilters = [
-  { label: 'Random', value: 'random' },
-  { label: 'Name', value: 'name' },
-  { label: 'Age', value: 'age' }
-];
+import { VISUALIZATION_SORTBY_FILTERS } from '../../constants/visualizations';
 
 const VisualizationFilters = ({ sortBy, handleChangeSortBy }) => {
   return (
     <FormControl component="fieldset">
       <FormGroup>
-        {humansFilters.map(({ label, value }) => (
+        {VISUALIZATION_SORTBY_FILTERS.map(({ label, value }) => (
           <ListItem>
             <FormControlLabel
               control={

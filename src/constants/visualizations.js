@@ -13,3 +13,9 @@ export const DEFAULT_STATE_VISUALIZATIONS = {
   itemSizeActive: 48,
   sortBy: 'random'
 };
+
+export const VISUALIZATION_SORTBY_FILTERS = [
+  { label: 'Random', value: 'random' },
+  { label: 'Name', value: 'name' },
+  { label: 'Age', value: 'age' }
+];
