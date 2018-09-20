@@ -3,11 +3,6 @@ export const DEFAULT_STATE_VISUALIZATIONS = {
   width: 100,
   bit: true,
   selectedItemId: null,
-  // positions: {
-  //   // kill me
-  //   humans: [],
-  //   roles: []
-  // },
   itemsPositions: {},
   itemSizeBase: 32,
   itemSizeActive: 48,
@@ -17,6 +12,7 @@ export const DEFAULT_STATE_VISUALIZATIONS = {
 export const VISUALIZATION_SORTBY_FILTERS = [
   { label: 'Name', value: 'name' },
   { label: 'Age', value: 'age' },
+  { label: 'Color', value: 'color' },
   { label: 'Random', value: 'random' }
 ];
 

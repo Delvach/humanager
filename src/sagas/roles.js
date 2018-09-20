@@ -22,6 +22,8 @@ import * as DATABASE_NAMES from '../constants/api';
 
 import { getRandomPosition } from '../utils/visualizations';
 
+import { generateRandomAvatarColor, pickRandomColor } from '../utils/humans';
+
 import { normalizeAllRolesData } from '../utils/roles';
 
 /*
@@ -95,7 +97,8 @@ export function* createRole({ payload }) {
   // const { name, members } = payload;
   try {
     const { uid } = yield select(state => state.user);
-    const roleData = { ...payload, uid };
+    const color = pickRandomColor();
+    const roleData = { ...payload, uid, color };
 
     // Submit new role to API
     const newRoleID = yield call(

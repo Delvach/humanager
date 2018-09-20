@@ -56,13 +56,15 @@ const HumanList = ({
     </TableHead>
     <TableBody>
       {getSortedItems(humans, sortBy).map(human => {
-        const { id, email, name } = human;
+        const { id, avatar, name } = human;
         return (
           <TableRow key={id}>
             <TableCell>
               <img
+                height={32}
+                width={32}
                 alt={`Avatar for ${name}`}
-                src={getFauxAvatarImageURL({ email, size: 24 })}
+                src={avatar}
               />
             </TableCell>
             {HUMAN_LIST_FIELDS.map(({ value }) => (

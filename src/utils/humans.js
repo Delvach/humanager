@@ -1,4 +1,8 @@
-import { firstNames } from '../constants/faux';
+import {
+  firstNames,
+  adorableAvatarsParameters,
+  materialUiColors
+} from '../constants/faux';
 /*
  * Human data is stored as as list of 'id' objects, with child objects for each field.
  * Flatten humans' data to include id to facilitate list display.
@@ -51,3 +55,31 @@ export const getFauxHumansData = numItems => {
 
 export const getFauxAvatarImageURL = ({ email, size }) =>
   `https://api.adorable.io/avatars/${size}/${email}.png`;
+
+export const generateRandomFauxAvatarIcon = (color = '607D8B') => {
+  const { eyes, noses, mouths } = adorableAvatarsParameters;
+
+  const randomEyes = eyes[Math.floor(Math.random() * eyes.length)];
+  const randomNose = noses[Math.floor(Math.random() * noses.length)];
+  const randomMouth = mouths[Math.floor(Math.random() * mouths.length)];
+  return `https://api.adorable.io/avatars/face/${randomEyes}/${randomNose}/${randomMouth}/${color}`;
+};
+
+export const generateRandomAvatarColor = () => {
+  const { colors } = adorableAvatarsParameters;
+
+  return colors[Math.floor(Math.random() * colors.length)];
+};
+
+export const pickRandomColor = () => {
+  const colorsKeys = Object.keys(materialUiColors);
+
+  const colorName = colorsKeys[Math.floor(Math.random() * colorsKeys.length)];
+  const colorPalette = materialUiColors[colorName];
+
+  const paletteKeys = Object.keys(colorPalette);
+  const paletteVariant =
+    paletteKeys[Math.floor(Math.random() * paletteKeys.length)];
+
+  return colorPalette[paletteVariant];
+};

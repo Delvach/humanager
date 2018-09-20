@@ -14,8 +14,6 @@ import Button from './../../inputs/Button';
 import { deleteHumanAction } from '../../../actions/humans';
 import { openEditingDialogAction } from '../../../actions/navigation';
 
-import { getFauxAvatarImageURL } from '../../../utils/humans';
-
 import { HUMAN_LIST_FIELDS } from '../../../constants/humans';
 
 import { DEFAULT_VISUALIZATION_SORTBY_FILTER } from '../../../constants/visualizations';
@@ -55,14 +53,11 @@ const HumanList = ({
     </TableHead>
     <TableBody>
       {getSortedItems(humans, sortBy).map(human => {
-        const { id, email, name } = human;
+        const { id, name, avatar } = human;
         return (
           <TableRow key={id}>
             <TableCell>
-              <img
-                alt={`Avatar for ${name}`}
-                src={getFauxAvatarImageURL({ email, size: 24 })}
-              />
+              <img alt={`Avatar for ${name}`} src={avatar} />
             </TableCell>
             {HUMAN_LIST_FIELDS.map(({ value }) => (
               <TableCell key={value}>{human[value]}</TableCell>
