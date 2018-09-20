@@ -23,6 +23,11 @@ import { roleUpdateAction } from '../actions/roles';
 import * as ACTIONS from '../constants/actions';
 import * as DATABASE_NAMES from '../constants/api';
 
+import {
+  generateRandomAvatarColor,
+  generateRandomFauxAvatarIcon,
+  pickRandomColor
+} from '../utils/humans';
 import { getRandomPosition } from '../utils/visualizations';
 
 import {
@@ -118,13 +123,12 @@ export function* generateFauxHumans({ payload }) {
  *  Save new human to api
  */
 export function* createHuman(data) {
-  // const { email } = data;
-  // const avatar = getFauxAvatarImageURL(email);
-
   try {
     const { uid } = yield select(state => state.user);
+    const color = pickRandomColor();
+    const avatar = generateRandomFauxAvatarIcon(color);
 
-    const humanData = { ...data, uid };
+    const humanData = { uid, ...data, avatar, color: `#${color}` };
     // Submit new human to API
     const newHumanID = yield call(
       api.database.create,

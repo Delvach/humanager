@@ -19,7 +19,7 @@ import CreateEditDialog from './components/dialogs/DialogForm';
 
 import ModuleView from './components/modules/ModuleView';
 
-import HumansList from './components/modules/humans/HumansList';
+import HumansList from './components/modules/humans/HumansListSortable';
 import RolesList from './components/modules/roles/RolesList';
 
 import { MuiThemeProvider } from '@material-ui/core/styles';

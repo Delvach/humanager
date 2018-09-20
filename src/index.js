@@ -28,6 +28,9 @@ ReactDOM.render(
   document.getElementById('root')
 );
 
+const FIREBASE_API_KEY = process.env.FIREBASE_API_KEY;
+console.log(process.env);
+
 // Hot module replacement
 if (module.hot) {
   module.hot.accept('./App', () => {

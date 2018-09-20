@@ -9,10 +9,13 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+
 import Button from './../../inputs/Button';
 
 import { deleteHumanAction } from '../../../actions/humans';
 import { openEditingDialogAction } from '../../../actions/navigation';
+
+import { getFauxAvatarImageURL } from '../../../utils/humans';
 
 import { HUMAN_LIST_FIELDS } from '../../../constants/humans';
 
@@ -53,11 +56,16 @@ const HumanList = ({
     </TableHead>
     <TableBody>
       {getSortedItems(humans, sortBy).map(human => {
-        const { id, name, avatar } = human;
+        const { id, avatar, name } = human;
         return (
           <TableRow key={id}>
             <TableCell>
-              <img alt={`Avatar for ${name}`} src={avatar} />
+              <img
+                height={32}
+                width={32}
+                alt={`Avatar for ${name}`}
+                src={avatar}
+              />
             </TableCell>
             {HUMAN_LIST_FIELDS.map(({ value }) => (
               <TableCell key={value}>{human[value]}</TableCell>

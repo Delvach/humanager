@@ -3,13 +3,25 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { getFauxAvatarImageURL } from '../../utils/humans';
-
-import { selectItemAction } from '../../actions/visualizations';
+import { selectItemAction, getSortedItems } from '../../actions/visualizations';
 
 // import classNames from 'classnames';
 
 import * as d3 from 'd3';
+
+d3.selection.prototype.moveToFront = function() {
+  return this.each(function() {
+    this.parentNode.appendChild(this);
+  });
+};
+d3.selection.prototype.moveToBack = function() {
+  return this.each(function() {
+    var firstChild = this.parentNode.firstChild;
+    if (firstChild) {
+      this.parentNode.insertBefore(this, firstChild);
+    }
+  });
+};
 
 class Visualizer extends React.Component {
   constructor(props) {
@@ -18,74 +30,73 @@ class Visualizer extends React.Component {
   }
 
   prepareItemsForDisplay = (
-    items,
-    // itemsPositions,
+    items = [],
     selectedItemId = null,
     sortBy = null
   ) => {
-    let updatedItems = items.map(item => {
+    // Add flag to indicate whether is currently selected item
+    const updatedItems = items.map(item => {
       const selected = item.id === selectedItemId;
       return { ...item, selected };
     });
 
-    if (sortBy) {
-      updatedItems.sort((a, b) => {
-        if (a[sortBy] > b[sortBy]) return 1;
-        if (b[sortBy] > a[sortBy]) return -1;
-        return 0;
-      });
-      return updatedItems;
-    }
-
-    return updatedItems;
+    return getSortedItems(updatedItems, sortBy);
   };
 
-  updateImageMapDefinitions = itemsData => {
-    // Step 1 - Grab collection of patterns (or automagically create later)
-    const imageDefs = d3
-      .select(this.visualRef.current)
-      .append('defs')
-      .attr('id', 'image-definitions');
-
-    imageDefs
-      .selectAll('pattern')
-      .data(itemsData)
-      .enter()
-      .append('pattern')
-      .attr('id', ({ id }) => {
-        return `patterndef-${id}`;
-      })
-      .attr('patternUnits', 'userSpaceOnUse');
+  /*
+   * Scales using number of items
+   */
+  getLinearScaleUsingNumItems = (numItems, areaWidth) => {
+    return d3
+      .scaleLinear()
+      .domain([0, numItems - 1])
+      .range([100, areaWidth - 100]);
   };
+
+  getLinearHeightScaleUsingNumItems = (numItems, height) =>
+    this.getLinearScaleUsingNumItems(numItems, height);
+
+  getLinearWidthScaleUsingNumItems = (numItems, width) =>
+    this.getLinearScaleUsingNumItems(numItems, width);
+
+  /*
+   * Scales using percentages
+   */
+  getLinearScaleUsingPercentage = value => {
+    return d3
+      .scaleLinear()
+      .domain([0, 1])
+      .range([100, value - 100]);
+  };
+
+  getLinearHeightScaleUsingPercentage = height =>
+    this.getLinearScaleUsingPercentage(height);
+
+  getLinearWidthScaleUsingPercentage = width =>
+    this.getLinearScaleUsingPercentage(width);
 
   /* 
    * Implementing d3 general update pattern
    */
   updateVisualization = function() {
-    // console.log(this.props.itemsPositions);
     const displayData = this.prepareItemsForDisplay(
       this.props.items,
-      // this.props.itemsPositions,
       this.props.selectedItemId,
-      'name'
+      this.props.sortBy
     );
 
-    this.updateImageMapDefinitions(displayData);
+    const x = this.getLinearWidthScaleUsingNumItems(
+      this.props.items.length,
+      this.props.width
+    );
 
-    const x = d3
-      .scaleLinear()
-      .domain([0, this.props.items.length - 1])
-      .range([100, this.props.width - 100]);
+    const xPercent = this.getLinearWidthScaleUsingPercentage(this.props.width);
+    const y = this.getLinearHeightScaleUsingPercentage(this.props.height);
 
-    const y = d3
-      .scaleLinear()
-      .domain([0, 1])
-      .range([150, this.props.height - 300]);
-
-    const getGroupTopLeftPosition = human => ({
-      x: human.x - this.props.itemSizeBase / 2,
-      y: human.y - this.props.itemSizeBase / 2
-    });
+    // const getGroupTopLeftPosition = human => ({
+    //   x: human.x - this.props.itemSizeBase / 2,
+    //   y: human.y - this.props.itemSizeBase / 2
+    // });
 
     // const r = d3
     //   .scaleLinear()
@@ -95,11 +106,25 @@ class Visualizer extends React.Component {
       return d.selected ? 64 : 32;
     };
 
+    /*
+     * Coordinates helpers
+     */
+    const getCenterCoordinatesX = (item, index) => {
+      const value = this.props.sortByRandom ? item.x : index;
+      const scale = this.props.sortByRandom
+        ? this.getLinearWidthScaleUsingPercentage(this.props.width)
+        : this.getLinearWidthScaleUsingNumItems(
+            this.props.items.length,
+            this.props.width
+          );
+      return scale(value);
+    };
+
     // Step 1 - Grab collection of containers (or automagically create later)
     const humanGroups = d3
       .select(this.visualRef.current)
       .selectAll('g')
-      .data(displayData, function(h) {
+      .data(displayData, h => {
         return h.id;
       });
 
@@ -113,32 +138,36 @@ class Visualizer extends React.Component {
       .style('fill', d => {
         return d.selected ? 'green' : 'blue';
       })
-      .attr('r', function(d, i) {
-        return r(d);
+      .attr('r', (d, i) => {
+        return r(d) * 1.4;
       })
-      .attr('cx', function(d, i) {
-        return x(i);
-      });
+      .attr('cx', getCenterCoordinatesX)
+      .attr('cy', d => {
+        return y(this.props.sortByRandom ? d.y : 0.5);
+      })
+      .style('fill', d => d.color)
+      .style('stroke', '#000000')
+      .style('stroke-width', '1px');
 
     // 2.2 Update text
     containerUpdater
       .select('text')
-      .attr('x', function(d, i) {
-        return x(i);
-      })
-      .attr('y', function(d, i) {
-        return y(d.y) + r(d) + 18;
+      .attr('font-size', '18px')
+      .attr('x', getCenterCoordinatesX)
+      .attr('y', (d, i) => {
+        return y(this.props.sortByRandom ? d.y : 0.5) + r(d) + 28;
       });
 
     // 2.3 Update images
     containerUpdater
       .select('image')
-      .attr('x', function(d, i) {
-        return x(i) - (d.selected ? 64 : 32);
+      .attr('x', (d, i) => {
+        return getCenterCoordinatesX(d, i) - (d.selected ? 64 : 32);
       })
-      // .attr('y', function(d, i) {
-      //   return x(i) - (d.selected ? 64 : 32);
-      // })
+      .attr('y', (d, i) => {
+        return y(this.props.sortByRandom ? d.y : 0.5) - (d.selected ? 64 : 32);
+      })
+      .style('opacity', 1)
       .attr('height', d => (d.selected ? 128 : 64))
       .attr('width', d => (d.selected ? 128 : 64));
 
@@ -146,33 +175,43 @@ class Visualizer extends React.Component {
     const containerEnter = humanGroups
       .enter()
       .append('g')
-      .on('click', d => this.props.selectItem(d.id))
+      // .on('click', d => this.props.selectItem(d.id))
+      .on('click', function(d) {
+        d3.select(this).moveToBack();
+      })
+      .on('dblclick', function(d) {
+        d3.select(this).moveToFront();
+      })
       .attr('class', 'human');
 
-    // 3.1 Add (image cropping) circle
+    // 3.1 Add circle
     // 3.1.1 Initial state when appearing
     containerEnter
       .append('circle')
       .attr('class', 'item')
-      .attr('r', function(d, i) {
-        return r(d);
+      .attr('r', 0)
+      .attr('cx', getCenterCoordinatesX)
+      .attr('cy', d => {
+        return y(this.props.sortByRandom ? d.y : 0.5);
       })
-      .attr('cx', function(d, i) {
-        return x(i);
-      })
-      .attr('cy', 0)
-      .style('stroke', '#3E6E9C')
-      .style('fill', 'red')
+      .style('fill', d => d.color)
+      .style('stroke', '#000000')
+      .style('stroke-width', '1px')
+      // .style('fill-opacity', 0)
       // 3.1.2 Updated state after appearing
       .transition()
       .duration(1000)
+      .delay((_, i) => i * 20)
       .ease(d3.easeBounceOut)
-      .attr('cy', function(d) {
-        return y(d.y);
-      })
-      .style('fill', d => {
-        return d.selected ? 'green' : 'blue';
+      .attr('r', (d, i) => {
+        return r(d) * 1.4;
       });
+    // .attr('cy', d => {
+    //   return y(this.props.sortByRandom ? d.y : 0.5);
+    // })
+    // .style('fill', d => {
+    //   return d.selected ? 'green' : 'blue';
+    // });
 
     // 4.1 Add name text
     // 4.1.1 Initial state when appearing
@@ -180,65 +219,92 @@ class Visualizer extends React.Component {
       .append('text')
       .attr('class', 'name')
       .text(human => human.name)
-      .attr('x', function(d, i) {
-        return x(i);
+      .attr('x', getCenterCoordinatesX)
+      .attr('y', (d, i) => {
+        return y(this.props.sortByRandom ? d.y : 0.5) + r(d) + 28;
       })
-      .attr('y', 100)
-      .style('stroke', '#3E6E9C')
-      .style('fill', 'red')
+      .attr('font-size', 0)
+      // .style('stroke', '#3E6E9C')
+      // .style('fill', 'red')
+      .style('fill', 'black')
       .style('text-anchor', 'middle')
       // 4.1.2 Updated state after appearing
       .transition()
       .duration(1000)
       .ease(d3.easeBounceOut)
-      .style('fill', 'green')
-      .attr('y', function(d, i) {
-        return y(d.y) + r(d) + 18;
-      });
+
+      .attr('font-size', '18px');
+    // .attr('y', (d, i) => {
+    //   return y(this.props.sortByRandom ? d.y : 0.5) + r(d) + 18;
+    // });
 
     // 5.1 Add avatar images
     // 5.1.1 Initial state when appearing
     containerEnter
       .append('image')
-      .attr('xlink:href', function({ email }) {
-        return getFauxAvatarImageURL({ email, size: 64 });
+      .attr('xlink:href', ({ avatar }) => avatar)
+      .attr('x', (d, i) => {
+        return getCenterCoordinatesX(d, i);
       })
-      .attr('x', function(d, i) {
-        return x(i) - 32;
+      .attr('y', (d, i) => {
+        return y(this.props.sortByRandom ? d.y : 0.5);
       })
-      .attr('y', 100)
-      .attr('height', d => (d.selected ? 128 : 64))
-      .attr('width', d => (d.selected ? 128 : 64))
+      .style('opacity', 0)
+      // .attr('height', d => (d.selected ? 128 : 64))
+      // .attr('width', d => (d.selected ? 128 : 64))
+      .attr('height', 0)
+      .attr('width', 0)
 
       // 5.1.2 Updated state after appearing
       .transition()
       .duration(1000)
+      .delay((_, i) => i * 20)
       .ease(d3.easeBounceOut)
-
+      .attr('height', d => (d.selected ? 128 : 64))
+      .attr('width', d => (d.selected ? 128 : 64))
+      .attr('x', (d, i) => {
+        return getCenterCoordinatesX(d, i) - 32;
+      })
       .attr('y', (d, i) => {
-        // 0-1 based
-        return y(d.y) - 32;
+        return y(this.props.sortByRandom ? d.y : 0.5) - 32;
+      })
+      .style('opacity', 1);
 
-        // Coordinated-based; randomizer needs to use calculated
-        // dimensions to support these methods
-        // return getGroupTopLeftPosition(d).y;
-      });
+    // .attr('y', (d, i) => {
+    //   return y(this.props.sortByRandom ? d.y : 0.5) - 32;
+
+    // });
 
     const containerExit = humanGroups
       .exit()
       .filter(':not(.exiting)') // Don't select already exiting nodes
       .classed('exiting', true)
       .transition()
-      .duration(1000);
+      .duration(500);
+
+    containerExit.select('circle').attr('r', 0);
 
     containerExit
-      .style('opacity', function(d, i) {
+      .select('image')
+      .attr('height', 0)
+      .attr('width', 0)
+      .attr('x', (d, i) => {
+        return getCenterCoordinatesX(d, i);
+      })
+      .attr('y', (d, i) => {
+        return y(this.props.sortByRandom ? d.y : 0.5);
+      });
+
+    containerExit.select('text').attr('font-size', 0);
+
+    containerExit
+      .style('opacity', (d, i) => {
         return 0;
       })
-      .style('fill-opacity', function(d, i) {
+      .style('fill-opacity', (d, i) => {
         return 0;
       })
-      .style('stroke-opacity', function(d, i) {
+      .style('stroke-opacity', (d, i) => {
         return 0;
       })
       .remove();
@@ -262,32 +328,35 @@ class Visualizer extends React.Component {
 
 Visualizer.propTypes = {
   items: PropTypes.array,
-  // itemsPositions: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
   selectedItemId: PropTypes.string,
   height: PropTypes.number,
   width: PropTypes.number,
   itemSizeBase: PropTypes.number,
-  itemSizeActive: PropTypes.number
+  itemSizeActive: PropTypes.number,
+  sortBy: PropTypes.string,
+  sortByRandom: PropTypes.bool
 };
 
 Visualizer.defaultProps = {
   items: [],
-  // itemsPositions: [],
   selectedItemId: null,
   height: 100,
   width: 100,
   itemSizeBase: 32,
-  itemSizeActive: 48
+  itemSizeActive: 48,
+  sortBy: 'name',
+  sortByRandom: false
 };
 
 const mapStateToProps = ({ humans, roles, navigation, visualizations }) => ({
   items: navigation.tab === 0 ? humans : roles,
-  // itemsPositions: visualizations.itemsPositions,
   selectedItemId: visualizations.selectedItemId,
   bit: visualizations.bit,
   tab: navigation.tab,
   itemSizeBase: visualizations.itemSizeBase,
-  itemSizeActive: visualizations.itemSizeActive
+  itemSizeActive: visualizations.itemSizeActive,
+  sortBy: visualizations.sortBy,
+  sortByRandom: visualizations.sortBy === 'random'
 });
 
 const mapDispatchToProps = dispatch =>
