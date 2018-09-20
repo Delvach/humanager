@@ -47,14 +47,3 @@ export const changeSortByAction = sortBy => ({
   type: ACTIONS.SET_VISUALIZATION_FILTER_SORTBY,
   payload: { sortBy }
 });
-
-export const getSortedItems = (items = [], sortBy = 'name') => {
-  if (!sortBy || sortBy === 'random') return items;
-
-  items.sort((a, b) => {
-    if (a[sortBy] > b[sortBy]) return 1;
-    if (b[sortBy] > a[sortBy]) return -1;
-    return 0;
-  });
-  return items;
-};

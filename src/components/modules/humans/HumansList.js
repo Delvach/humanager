@@ -18,10 +18,8 @@ import { HUMAN_LIST_FIELDS } from '../../../constants/humans';
 
 import { DEFAULT_VISUALIZATION_SORTBY_FILTER } from '../../../constants/visualizations';
 
-import {
-  changeSortByAction,
-  getSortedItems
-} from '../../../actions/visualizations';
+import { changeSortByAction } from '../../../actions/visualizations';
+import { getSortedItems } from '../../../utils/data';
 
 const HumanList = ({
   deleteItem,
