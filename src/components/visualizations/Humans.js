@@ -8,21 +8,19 @@ import { selectItemAction } from '../../actions/visualizations';
 import { getSortedItems } from '../../utils/data';
 // import classNames from 'classnames';
 
+import {
+  getEnterDuration,
+  getExitDuration,
+  getUpdateDuration
+} from '../../utils/visualizations';
+
 import * as d3 from 'd3';
 
-d3.selection.prototype.moveToFront = function() {
-  return this.each(function() {
-    this.parentNode.appendChild(this);
-  });
-};
-d3.selection.prototype.moveToBack = function() {
-  return this.each(function() {
-    var firstChild = this.parentNode.firstChild;
-    if (firstChild) {
-      this.parentNode.insertBefore(this, firstChild);
-    }
-  });
-};
+import {
+  scaleNumItemsWidth,
+  scalePercentHeight,
+  scalePercentWidth
+} from '../../utils/scales';
 
 class Visualizer extends React.Component {
   constructor(props) {
@@ -34,12 +32,17 @@ class Visualizer extends React.Component {
     items = [],
     selectedItemId = null,
     sortBy = null,
-    sortByDirection = TABLE_SORT_ASCENDING
+    sortByDirection = TABLE_SORT_ASCENDING,
+    listItemsSelected = []
   ) => {
-    // Add flag to indicate whether is currently selected item
     const updatedItems = items.map(item => {
+      // Add flag to indicate whether item is highlighted
       const selected = item.id === selectedItemId;
-      return { ...item, selected };
+
+      // Add flag to indicate whether item is selected within list for deletion
+
+      const selectedForDeletion = listItemsSelected.indexOf(item.id) !== -1;
+      return { ...item, selected, selectedForDeletion };
     });
 
     return getSortedItems(
@@ -49,38 +52,6 @@ class Visualizer extends React.Component {
     );
   };
 
-  /*
-   * Scales using number of items
-   */
-  getLinearScaleUsingNumItems = (numItems, areaWidth) => {
-    return d3
-      .scaleLinear()
-      .domain([0, numItems - 1])
-      .range([100, areaWidth - 100]);
-  };
-
-  getLinearHeightScaleUsingNumItems = (numItems, height) =>
-    this.getLinearScaleUsingNumItems(numItems, height);
-
-  getLinearWidthScaleUsingNumItems = (numItems, width) =>
-    this.getLinearScaleUsingNumItems(numItems, width);
-
-  /*
-   * Scales using percentages
-   */
-  getLinearScaleUsingPercentage = value => {
-    return d3
-      .scaleLinear()
-      .domain([0, 1])
-      .range([100, value - 100]);
-  };
-
-  getLinearHeightScaleUsingPercentage = height =>
-    this.getLinearScaleUsingPercentage(height);
-
-  getLinearWidthScaleUsingPercentage = width =>
-    this.getLinearScaleUsingPercentage(width);
-
   /* 
    * Implementing d3 general update pattern
    */
@@ -89,26 +60,13 @@ class Visualizer extends React.Component {
       this.props.items,
       this.props.selectedItemId,
       this.props.sortBy,
-      this.props.sortByDirection
+      this.props.sortByDirection,
+      this.props.listItemsSelected
     );
 
-    // const x = this.getLinearWidthScaleUsingNumItems(
-    //   this.props.items.length,
-    //   this.props.width
-    // );
+    // Define scales
+    const y = scalePercentHeight(this.props.height);
 
-    // const xPercent = this.getLinearWidthScaleUsingPercentage(this.props.width);
-    const y = this.getLinearHeightScaleUsingPercentage(this.props.height);
-
-    // const getGroupTopLeftPosition = human => ({
-    //   x: human.x - this.props.itemSizeBase / 2,
-    //   y: human.y - this.props.itemSizeBase / 2
-    // });
-
-    // const r = d3
-    //   .scaleLinear()
-    //   .domain([0, this.props.items.length - 1])
-    //   .range([10, this.props.items.length ? this.props.items.length * 10 : 10]);
     const r = d => {
       return d.selected ? 64 : 32;
     };
@@ -119,11 +77,8 @@ class Visualizer extends React.Component {
     const getCenterCoordinatesX = (item, index) => {
       const value = this.props.sortByRandom ? item.x : index;
       const scale = this.props.sortByRandom
-        ? this.getLinearWidthScaleUsingPercentage(this.props.width)
-        : this.getLinearWidthScaleUsingNumItems(
-            this.props.items.length,
-            this.props.width
-          );
+        ? scalePercentWidth(this.props.width)
+        : scaleNumItemsWidth(this.props.items.length, this.props.width);
       return scale(value);
     };
 
@@ -136,15 +91,15 @@ class Visualizer extends React.Component {
       });
 
     // Step 2 - If updating existing containers, adjust properties with transition
-    const containerUpdater = humanGroups.transition().duration(1000);
+    const containerUpdater = humanGroups
+      .transition()
+      .duration(getUpdateDuration());
     // .ease(d3.easeBounceOut);
 
     // 2.1 Update circles
     containerUpdater
       .select('circle')
-      .style('fill', d => {
-        return d.selected ? 'green' : 'blue';
-      })
+
       .attr('r', (d, i) => {
         return r(d) * 1.4;
       })
@@ -153,8 +108,8 @@ class Visualizer extends React.Component {
         return y(this.props.sortByRandom ? d.y : 0.5);
       })
       .style('fill', d => d.color)
-      .style('stroke', '#000000')
-      .style('stroke-width', '1px');
+      .style('stroke', d => (d.selectedForDeletion ? 'red' : 'black'))
+      .style('stroke-width', d => (d.selectedForDeletion ? '6px' : '1px'));
 
     // 2.2 Update text
     containerUpdater
@@ -182,13 +137,13 @@ class Visualizer extends React.Component {
     const containerEnter = humanGroups
       .enter()
       .append('g')
-      .on('click', d => this.props.selectItem(d.id))
-      // .on('click', function(d) {
+      // .on('click', d => this.props.selectItem(d.id))
+      // .on('dblclick', function(d) {
       //   d3.select(this).moveToBack();
       // })
-      // .on('dblclick', function(d) {
-      //   d3.select(this).moveToFront();
-      // })
+      .on('click', function(d) {
+        d3.select(this).moveToFront();
+      })
       .attr('class', 'human');
 
     // 3.1 Add circle
@@ -202,12 +157,12 @@ class Visualizer extends React.Component {
         return y(this.props.sortByRandom ? d.y : 0.5);
       })
       .style('fill', d => d.color)
-      .style('stroke', '#000000')
-      .style('stroke-width', '1px')
+      .style('stroke', d => (d.selectedForDeletion ? 'red' : 'black'))
+      .style('stroke-width', d => (d.selectedForDeletion ? '6px' : '1px'))
       // .style('fill-opacity', 0)
       // 3.1.2 Updated state after appearing
       .transition()
-      .duration(1000)
+      .duration(getEnterDuration())
       .delay((_, i) => i * 20)
       .ease(d3.easeBounceOut)
       .attr('r', (d, i) => {
@@ -237,7 +192,7 @@ class Visualizer extends React.Component {
       .style('text-anchor', 'middle')
       // 4.1.2 Updated state after appearing
       .transition()
-      .duration(1000)
+      .duration(getEnterDuration())
       .ease(d3.easeBounceOut)
 
       .attr('font-size', '18px');
@@ -264,7 +219,7 @@ class Visualizer extends React.Component {
 
       // 5.1.2 Updated state after appearing
       .transition()
-      .duration(1000)
+      .duration(getEnterDuration())
       .delay((_, i) => i * 20)
       .ease(d3.easeBounceOut)
       .attr('height', d => (d.selected ? 128 : 64))
@@ -287,7 +242,7 @@ class Visualizer extends React.Component {
       .filter(':not(.exiting)') // Don't select already exiting nodes
       .classed('exiting', true)
       .transition()
-      .duration(500);
+      .duration(getExitDuration());
 
     containerExit.select('circle').attr('r', 0);
 
@@ -363,7 +318,8 @@ const mapStateToProps = ({ humans, roles, navigation, visualizations }) => ({
   itemSizeActive: visualizations.itemSizeActive,
   sortBy: navigation.sortBy,
   sortByDirection: navigation.sortByDirection,
-  sortByRandom: navigation.sortBy === 'random'
+  sortByRandom: navigation.sortBy === 'random',
+  listItemsSelected: navigation.listItemsSelected
 });
 
 const mapDispatchToProps = dispatch =>

@@ -17,3 +17,36 @@ export const VISUALIZATION_SORTBY_FILTERS = [
 
 export const DEFAULT_VISUALIZATION_SORTBY_FILTER =
   VISUALIZATION_SORTBY_FILTERS[0];
+
+/*
+   *  Default human appearance parameters
+   */
+export const HUMAN_VISUAL_SETTINGS = {
+  base: {
+    radius: 32,
+    fontSize: 14,
+    radiusToAvatarRatio: 0.8,
+    strokeWidth: 1,
+    strokeColor: 'black'
+  },
+  selected: {
+    radius: 64,
+    fontSize: 28,
+    radiusToAvatarRatio: 0.8,
+    strokeWidth: 3,
+    strokeColor: 'black'
+  },
+  selectedForDeletion: {
+    radius: 32,
+    fontSize: 14,
+    radiusToAvatarRatio: 0.8,
+    strokeWidth: 4,
+    strokeColor: 'red'
+  }
+};
+
+export const TRANSITION_DURATIONS = {
+  enter: 750,
+  exit: 300,
+  update: 500
+};
