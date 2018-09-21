@@ -6,9 +6,19 @@ export const DIALOG_MODE_CREATE = 'create';
 export const DIALOG_MODE_EDIT = 'edit';
 
 export const HUMAN_ATTRIBUTES = [
+  // {
+  //   label: 'Name',
+  //   value: 'name',
+  //   numeric: false
+  // },
   {
-    label: 'Name',
-    value: 'name',
+    label: 'First Name',
+    value: 'nameFirst',
+    numeric: false
+  },
+  {
+    label: 'Last Name',
+    value: 'nameLast',
     numeric: false
   },
   {

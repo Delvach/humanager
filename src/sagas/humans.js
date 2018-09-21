@@ -112,8 +112,8 @@ export function* generateFauxHumans({ payload }) {
   // Not checking for uniqueness. Need a while loop that checks faux humans against existing ones
   const fauxHumans = getFauxHumansData(numItems);
   for (let i = 0; i < numItems; i++) {
-    const { name, email, age } = fauxHumans[i];
-    yield* createHuman({ name, email, age });
+    const { name, nameFirst, nameLast, email, age } = fauxHumans[i];
+    yield* createHuman({ name, nameFirst, nameLast, email, age });
   }
   // Refresh master human list
   yield* loadAllHumansData();

@@ -19,9 +19,9 @@ export const ROLE_ATTRIBUTES = [
 ];
 
 export const ROLE_LIST_FIELDS = [
-  ...ROLE_ATTRIBUTES,
-  {
-    label: 'ID',
-    value: 'id'
-  }
+  ...ROLE_ATTRIBUTES
+  // {
+  //   label: 'ID',
+  //   value: 'id'
+  // }
 ];

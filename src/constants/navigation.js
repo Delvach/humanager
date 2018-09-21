@@ -24,7 +24,7 @@ export const DEFAULT_STATE_NAVIGATION = {
   tab: 0,
   triggerVisualizationResize: false,
   listItemsSelected: [],
-  sortBy: 'name',
+  sortBy: 'nameFirst',
   sortByDirection: 'asc'
 };
 
