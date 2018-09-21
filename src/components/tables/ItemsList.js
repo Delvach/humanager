@@ -24,6 +24,7 @@ import { getSortedItems } from '../../utils/data';
 
 import TableHeader from '../tables/SortableTableHeader';
 import EnhancedTableToolbar from '../controls/EnhancedTableToolbar';
+import HumansChips from '../chips/HumansChips';
 
 const styles = {
   root: {
@@ -93,7 +94,11 @@ let ItemsList = ({
               )}
               {itemFields.map(({ value, numeric }) => (
                 <TableCell numeric={numeric} key={value}>
-                  {item[value]}
+                  {value === 'members' ? (
+                    <HumansChips memberIds={item[value]} />
+                  ) : (
+                    item[value]
+                  )}
                 </TableCell>
               ))}
             </TableRow>
