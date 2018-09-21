@@ -6,11 +6,21 @@ export const loadHumansAction = () => {
   };
 };
 
-export const deleteHumanAction = id => {
+export const deleteHumanAction = (id, reloadList = true) => {
   return {
     type: ACTIONS.DELETE_HUMAN,
     payload: {
-      id
+      id,
+      reloadList
+    }
+  };
+};
+
+export const deleteHumansAction = ids => {
+  return {
+    type: ACTIONS.DELETE_HUMANS,
+    payload: {
+      ids
     }
   };
 };

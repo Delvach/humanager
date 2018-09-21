@@ -224,3 +224,38 @@ export const toggleVisualizationResizeAction = shouldResize => ({
 });
 
 */
+
+export const selectAllItemsAction = checked => ({
+  type: ACTIONS.LIST_SELECT_ALL,
+  payload: { checked }
+});
+
+export const changeSortAction = property => ({
+  type: ACTIONS.CHANGE_LIST_SORT,
+  payload: { property }
+});
+
+export const setSortFilterAction = (sortBy, sortByDirection) => ({
+  type: ACTIONS.SET_LIST_SORT,
+  payload: { sortBy, sortByDirection }
+});
+
+export const deleteSelectedItemsAction = () => ({
+  type: ACTIONS.DELETE_SELECTED_LIST_ITEMS,
+  payload: {}
+});
+
+export const handleListItemClickAction = id => ({
+  type: ACTIONS.TOGGLE_LIST_ITEM_SELECTION,
+  payload: { id }
+});
+
+export const setSelectedListItems = listItemsSelected => ({
+  type: ACTIONS.SET_SELECTED_LIST_ITEMS,
+  payload: { listItemsSelected }
+});
+
+export const resetSelectedListItems = () => ({
+  type: ACTIONS.RESET_SELECTED_LIST_ITEMS,
+  payload: {}
+});

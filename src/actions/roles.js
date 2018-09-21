@@ -15,6 +15,15 @@ export const deleteRoleAction = id => {
   };
 };
 
+export const deleteRolesAction = ids => {
+  return {
+    type: ACTIONS.DELETE_ROLES,
+    payload: {
+      ids
+    }
+  };
+};
+
 export const roleUpdateAction = ({ name, members, id }) => {
   console.log(name, members, id);
   return {

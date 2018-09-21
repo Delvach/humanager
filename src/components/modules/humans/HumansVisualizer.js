@@ -26,9 +26,7 @@ class VisualizationWrapper extends React.PureComponent {
   }
 
   componentDidUpdate() {
-    // Is there a better way to trigger this from outside the component?
     if (this.props.triggerResize) {
-      console.log('HumansVisualizer componentDidUpdte()');
       this.props.completeVisualizationResizeAction();
     }
     this.storeDimensions();

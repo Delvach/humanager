@@ -5,6 +5,7 @@ import api from '../api';
 import { apiError } from '../actions';
 
 import {
+  deleteRoleAction,
   roleCreatedAction,
   roleDeletedAction,
   rolesLoadedAction,
@@ -13,6 +14,7 @@ import {
 } from '../actions/roles';
 
 import {
+  resetItemAction,
   updateVisualizationItemPositionsAction,
   deleteVisualizationItemPositionAction
 } from '../actions/visualizations';
@@ -20,9 +22,11 @@ import {
 import * as ACTIONS from '../constants/actions';
 import * as DATABASE_NAMES from '../constants/api';
 
+import { removeItemFromList } from '../utils/data';
 import { getRandomPosition } from '../utils/visualizations';
+import { setSelectedListItems } from '../actions/navigation';
 
-import { generateRandomAvatarColor, pickRandomColor } from '../utils/humans';
+import { pickRandomColor } from '../utils/humans';
 
 import { normalizeAllRolesData } from '../utils/roles';
 
@@ -143,16 +147,44 @@ export function* updateRole({ payload }) {
  */
 export function* deleteRole({ payload }) {
   try {
-    const { id } = payload;
+    const { id, reloadList } = payload;
+    const state = yield select(state => state);
+    const { visualizations, navigation } = state;
+    const { listItemsSelected } = navigation;
+
+    // Check that this id is not currently selected in visualization
+    if (id === visualizations.selectedItemId) {
+      yield put(resetItemAction());
+
+      // Check that this id is not a selected list itemconst selectedItems = yield select(
+      const selectedIndex = listItemsSelected.indexOf(id);
+      if (selectedIndex !== -1) {
+        const newSelectedItems = removeItemFromList(listItemsSelected, id);
+
+        yield put(setSelectedListItems(newSelectedItems));
+      }
+    }
+
     yield call(api.database.delete, `${DATABASE_NAMES.ROLES}/${id}`);
     yield put(roleDeletedAction(id));
     yield put(deleteVisualizationItemPositionAction([id]));
 
     // Refresh master role list
-    yield* loadAllRolesData();
+    if (reloadList) {
+      yield* loadAllRolesData();
+    }
   } catch (error) {
     yield put(apiError(error));
   }
+}
+
+export function* deleteRoles({ payload }) {
+  const { ids } = payload;
+
+  for (let i = 0; i < ids.length; i++) {
+    yield* deleteRole(deleteRoleAction(ids[i], false));
+  }
+  yield* loadAllRolesData();
 }
 
 function* watchAllRolesLoad() {

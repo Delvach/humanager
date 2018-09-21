@@ -4,7 +4,10 @@ import api from '../api';
 
 import { apiError } from '../actions';
 
+import { setSelectedListItems } from '../actions/navigation';
+
 import {
+  deleteHumanAction,
   humanCreatedAction,
   humanDeletedAction,
   humansLoadedAction,
@@ -23,11 +26,8 @@ import { roleUpdateAction } from '../actions/roles';
 import * as ACTIONS from '../constants/actions';
 import * as DATABASE_NAMES from '../constants/api';
 
-import {
-  generateRandomAvatarColor,
-  generateRandomFauxAvatarIcon,
-  pickRandomColor
-} from '../utils/humans';
+import { removeItemFromList } from '../utils/data';
+import { generateRandomFauxAvatarIcon, pickRandomColor } from '../utils/humans';
 import { getRandomPosition } from '../utils/visualizations';
 
 import {
@@ -171,9 +171,10 @@ export function* updateHuman(data) {
  */
 export function* deleteHuman({ payload }) {
   try {
-    const { id } = payload;
+    const { id, reloadList } = payload;
     const state = yield select(state => state);
-    const { roles, visualizations } = state;
+    const { roles, visualizations, navigation } = state;
+    const { listItemsSelected } = navigation;
 
     // Is this human a member of any roles?
     const rolesWithMemberId = roles.filter(
@@ -185,23 +186,41 @@ export function* deleteHuman({ payload }) {
       yield put(resetItemAction());
     }
 
+    // Check that this id is not a selected list itemconst selectedItems = yield select(
+    const selectedIndex = listItemsSelected.indexOf(id);
+    if (selectedIndex !== -1) {
+      const newSelectedItems = removeItemFromList(listItemsSelected, id);
+
+      yield put(setSelectedListItems(newSelectedItems));
+    }
+
     // List of roles that need to be updated; trigger sagas from here? Best way to batch them?
     for (let i = 0; i < rolesWithMemberId.length; i++) {
       const role = Object.assign({}, rolesWithMemberId[i]);
       role.members.splice(role.members.indexOf(id), 1);
       yield put(roleUpdateAction(role));
     }
-    // return;
 
     yield call(api.database.delete, `${DATABASE_NAMES.HUMANS}/${id}`);
     yield put(humanDeletedAction(id));
     yield put(deleteVisualizationItemPositionAction([id]));
 
     // Refresh master human list
-    yield* loadAllHumansData();
+    if (reloadList) {
+      yield* loadAllHumansData();
+    }
   } catch (error) {
     yield put(apiError(error));
   }
+}
+
+export function* deleteHumans({ payload }) {
+  const { ids } = payload;
+
+  for (let i = 0; i < ids.length; i++) {
+    yield* deleteHuman(deleteHumanAction(ids[i], false));
+  }
+  yield* loadAllHumansData();
 }
 
 function* watchAllHumansLoad() {

@@ -53,7 +53,7 @@ const HumanList = ({
       {getSortedItems(humans, sortBy).map(human => {
         const { id, name, avatar } = human;
         return (
-          <TableRow key={id}>
+          <TableRow onClick={() => editItem('humans', id)} key={id}>
             <TableCell>
               <img alt={`Avatar for ${name}`} src={avatar} />
             </TableCell>
@@ -61,7 +61,7 @@ const HumanList = ({
               <TableCell key={value}>{human[value]}</TableCell>
             ))}
             <TableCell>
-              <Button onClick={() => editItem('humans', id)}>Edit</Button>
+              {/* <Button onClick={() => editItem('humans', id)}>Edit</Button> */}
               <Button onClick={() => deleteItem(id)}>Delete</Button>
             </TableCell>
           </TableRow>

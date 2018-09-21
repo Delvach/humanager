@@ -17,11 +17,13 @@ import {
   DEFAULT_VISUALIZATION_SORTBY_FILTER
 } from '../../constants/visualizations';
 
-const VisualizationFilters = ({ sortBy, handleChangeSortBy }) => {
+const VisualizationFilters = ({ sortBy, handleChangeSortBy, drawerOpen }) => {
   return (
     <FormControl component="fieldset">
       <ListItem>
-        <FormLabel component="legend">Sort By</FormLabel>
+        <FormLabel component="legend">
+          {drawerOpen ? 'Sort By' : 'Sort'}
+        </FormLabel>
       </ListItem>
       <FormGroup>
         {VISUALIZATION_SORTBY_FILTERS.map(({ label, value }) => (
@@ -49,15 +51,18 @@ const VisualizationFilters = ({ sortBy, handleChangeSortBy }) => {
 };
 
 VisualizationFilters.propTypes = {
-  sortBy: PropTypes.string
+  sortBy: PropTypes.string,
+  drawerOpen: PropTypes.bool
 };
 
 VisualizationFilters.defaultProps = {
-  sortBy: DEFAULT_VISUALIZATION_SORTBY_FILTER.value
+  sortBy: DEFAULT_VISUALIZATION_SORTBY_FILTER.value,
+  drawerOpen: true
 };
 
-const mapStateToProps = ({ visualizations }) => ({
-  sortBy: visualizations.sortBy
+const mapStateToProps = ({ navigation }) => ({
+  sortBy: navigation.sortBy,
+  drawerOpen: navigation.leftDrawerOpen
 });
 
 const mapDispatchToProps = dispatch =>

@@ -22,17 +22,27 @@ import {
   resetHumanEditingDialogInitDataAction,
   resetRoleEditingDialogInitDataAction,
   closeDialogAction,
-  toggleVisualizationResizeFlagAction
+  toggleVisualizationResizeFlagAction,
+  setSelectedListItems,
+  resetSelectedListItems,
+  setSortFilterAction
   // triggerVisualizationResizeAction,
   // completeVisualizationResizeAction
 } from '../actions/navigation';
 
+import { deleteHumansAction } from '../actions/humans';
+import { deleteRolesAction } from '../actions/roles';
 import { setUserIDAction } from '../actions/user';
 
 import { randomizeItemsPositionsAction } from '../actions/visualizations';
 
-import { createHuman, updateHuman, loadAllHumansData } from './humans';
-import { createRole, updateRole, loadAllRolesData } from './roles';
+import {
+  createHuman,
+  updateHuman,
+  deleteHumans,
+  loadAllHumansData
+} from './humans';
+import { createRole, updateRole, deleteRoles, loadAllRolesData } from './roles';
 
 import {
   loadUserPreferenceData,
@@ -43,7 +53,10 @@ import { uiErrorHandler } from '../utils/core';
 import { normalizeRoleData } from '../utils/roles';
 
 import * as ACTIONS from '../constants/actions';
-
+import {
+  TABLE_SORT_ASCENDING,
+  TABLE_SORT_DESCENDING
+} from '../constants/navigation';
 import { DIALOG_MODE_EDIT } from '../constants/humans';
 
 import rsf, { provider } from '../api';
@@ -209,6 +222,75 @@ function* handleResize() {
   // yield put(completeVisualizationResizeAction());
 }
 
+// User has clicked a list row
+function* handleListSelectionChange({ payload }) {
+  const { id } = payload;
+  const selectedItems = yield select(
+    state => state.navigation.listItemsSelected
+  );
+
+  const selectedIndex = selectedItems.indexOf(id);
+  let newSelectedItems = [];
+
+  if (selectedIndex === -1) {
+    newSelectedItems = newSelectedItems.concat(selectedItems, id);
+  } else if (selectedIndex === 0) {
+    newSelectedItems = newSelectedItems.concat(selectedItems.slice(1));
+  } else if (selectedIndex === selectedItems.length - 1) {
+    newSelectedItems = newSelectedItems.concat(selectedItems.slice(0, -1));
+  } else if (selectedIndex > 0) {
+    newSelectedItems = newSelectedItems.concat(
+      selectedItems.slice(0, selectedIndex),
+      selectedItems.slice(selectedIndex + 1)
+    );
+  }
+
+  yield put(setSelectedListItems(newSelectedItems));
+}
+
+function* handleSelectAllListItems({ payload }) {
+  const { checked } = payload;
+  const state = yield select(state => state);
+
+  const { tab } = state.navigation;
+  const items = tab !== 1 ? state.humans : state.roles;
+
+  if (!checked) {
+    yield put(resetSelectedListItems());
+  } else {
+    yield put(setSelectedListItems(items.map(i => i.id)));
+  }
+}
+
+function* handleListReset() {
+  yield put(setSelectedListItems([]));
+}
+
+function* handleSelectedItemDeletion() {
+  const navigation = yield select(state => state.navigation);
+  const { listItemsSelected } = navigation;
+  if (navigation.tab === 0) {
+    // Trigger batch delete in humans saga
+    yield* deleteHumans(deleteHumansAction(listItemsSelected));
+  } else if (navigation.tab === 1) {
+    // Trigger batch delete in roles saga
+    yield* deleteRoles(deleteRolesAction(listItemsSelected));
+  }
+}
+
+function* handleChangeListSort({ payload }) {
+  const { property } = payload;
+  const navigation = yield select(state => state.navigation);
+  let sortByDirection = TABLE_SORT_DESCENDING;
+  if (
+    navigation.sortBy === property &&
+    navigation.sortByDirection === TABLE_SORT_DESCENDING
+  ) {
+    sortByDirection = TABLE_SORT_ASCENDING;
+  }
+  yield put(setSortFilterAction(property, sortByDirection));
+}
+
 /*
  *  Define saga watchers
  */
@@ -226,6 +308,32 @@ function* watchHumanDialogSubmission() {
 
 function* watchRoleDialogSubmission() {
   yield takeEvery(ACTIONS.SUBMIT_ROLE_DIALOG, handleRoleDialogSubmit);
+}
+
+function* watchListSelectionEvents() {
+  yield takeEvery(
+    ACTIONS.TOGGLE_LIST_ITEM_SELECTION,
+    handleListSelectionChange
+  );
+}
+
+function* watchListSelectAllEvents() {
+  yield takeEvery(ACTIONS.LIST_SELECT_ALL, handleSelectAllListItems);
+}
+
+function* watchListReset() {
+  yield takeEvery(ACTIONS.RESET_SELECTED_LIST_ITEMS, handleListReset);
+}
+
+function* watchDeletedSelecteListItems() {
+  yield takeEvery(
+    ACTIONS.DELETE_SELECTED_LIST_ITEMS,
+    handleSelectedItemDeletion
+  );
+}
+
+function* watchChangeListSort() {
+  yield takeEvery(ACTIONS.CHANGE_LIST_SORT, handleChangeListSort);
 }
 
 // Debounce resizing
@@ -271,5 +379,10 @@ export const navigationSagas = [
   watchHumanDialogSubmission(),
   watchRoleDialogSubmission(),
   watchTopPaneResize(),
-  watchResizeEvents()
+  watchResizeEvents(),
+  watchListSelectAllEvents(),
+  watchListSelectionEvents(),
+  watchDeletedSelecteListItems(),
+  watchListReset(),
+  watchChangeListSort()
 ];

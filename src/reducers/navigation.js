@@ -62,6 +62,22 @@ export default function navigation(
         triggerVisualizationResize: false
       });
 
+    case ACTIONS.SET_SELECTED_LIST_ITEMS:
+      const { listItemsSelected } = payload;
+      return Object.assign(newState, {
+        listItemsSelected
+      });
+
+    case ACTIONS.SET_LIST_SORT:
+      const { sortBy, sortByDirection } = payload;
+      return Object.assign(newState, {
+        sortBy,
+        sortByDirection
+      });
+
+    case ACTIONS.SET_VISUALIZATION_FILTER_SORTBY:
+      return Object.assign({}, state, { sortBy: payload.sortBy });
+
     default:
       break;
   }

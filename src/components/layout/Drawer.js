@@ -21,6 +21,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 
 import HumansIcon from '@material-ui/icons/People';
 import RolesIcon from '@material-ui/icons/List';
+import AboutIcon from '@material-ui/icons/Help';
 
 import { TABS } from '../../constants/navigation';
 
@@ -127,7 +128,7 @@ const Sidebar = props => {
               button
             >
               <ListItemIcon>
-                {value === 0 ? <HumansIcon /> : <RolesIcon />}
+                {[<HumansIcon />, <RolesIcon />, <AboutIcon />][value]}
               </ListItemIcon>
               <ListItemText primary={title} />
             </ListItem>

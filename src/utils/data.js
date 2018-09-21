@@ -20,7 +20,7 @@ export const rgb2hsv = hexvalue => {
     v = Math.max(r, g, b),
     diff = v - Math.min(r, g, b),
     diffc = c => (v - c) / 6 / diff + 1 / 2;
-  if (diff == 0) {
+  if (diff === 0) {
     h = s = 0;
   } else {
     s = diff / v;
@@ -62,11 +62,31 @@ export const colorSort = sortBy => (a, b) => {
   return 0;
 };
 
-export const getSortedItems = (items = [], sortBy = 'name') => {
+export const getSortedItems = (
+  items = [],
+  sortBy = 'name',
+  ascending = true
+) => {
   if (!sortBy || sortBy === 'random') return items;
 
   const sorter = sortBy === 'color' ? colorSort(sortBy) : defaultSort(sortBy);
 
   items.sort(sorter);
-  return items;
+  return ascending ? items : items.reverse();
+};
+
+export const removeItemFromList = (list = [], id = 0) => {
+  const selectedIndex = list.indexOf(id);
+  let newSelectedItems = [];
+  if (selectedIndex === 0) {
+    newSelectedItems = newSelectedItems.concat(list.slice(1));
+  } else if (selectedIndex === list.length - 1) {
+    newSelectedItems = newSelectedItems.concat(list.slice(0, -1));
+  } else if (selectedIndex > 0) {
+    newSelectedItems = newSelectedItems.concat(
+      list.slice(0, selectedIndex),
+      list.slice(selectedIndex + 1)
+    );
+  }
+  return newSelectedItems;
 };

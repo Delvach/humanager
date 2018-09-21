@@ -3,6 +3,9 @@ import {
   adorableAvatarsParameters,
   materialUiColors
 } from '../constants/faux';
+
+import lastNames from '../constants/lastNames';
+
 /*
  * Human data is stored as as list of 'id' objects, with child objects for each field.
  * Flatten humans' data to include id to facilitate list display.
@@ -39,13 +42,21 @@ export const normalizeCreateHumanData = ({
 export const normalizeHumansDataForSelect = humans =>
   humans.map(({ name, id }) => ({ text: name, value: id }));
 
+export const getFauxFirstName = randomNumber =>
+  firstNames[Math.floor(randomNumber * firstNames.length)];
+
+export const getFauxLastName = randomNumber =>
+  firstNames[Math.floor(randomNumber * lastNames.length)];
+
 export const getFauxHumansData = numItems => {
   const humans = [];
   for (let i = 0; i < numItems; i++) {
-    const firstNameIndex = Math.floor(Math.random() * firstNames.length);
-    const firstName = firstNames[firstNameIndex];
+    // const firstNameIndex = Math.floor(Math.random() * firstNames.length);
+    // const firstName = firstNames[firstNameIndex];
+    const firstName = getFauxFirstName(Math.random());
+    const lastName = getFauxLastName(Math.random());
     humans.push({
-      name: firstName,
+      name: `${firstName} ${lastName}`,
       email: `${firstName.toLowerCase()}@delvach.com`,
       age: 18 + Math.floor(Math.random() * 30)
     });

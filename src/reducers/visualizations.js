@@ -48,10 +48,6 @@ export default function visualizations(
         itemsPositions: updatedItemsPositions
       });
 
-    case ACTIONS.SET_VISUALIZATION_FILTER_SORTBY:
-      const { sortBy } = payload;
-      return Object.assign({}, state, { sortBy });
-
     default:
       return state;
   }

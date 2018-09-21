@@ -14,17 +14,16 @@ import { withStyles } from '@material-ui/core/styles';
 import {
   openEditingDialogAction,
   handleListItemClickAction
-} from '../../../actions/navigation';
+} from '../../actions/navigation';
+import { TABLE_SORT_ASCENDING } from '../../constants/navigation';
+import { HUMAN_LIST_FIELDS } from '../../constants/humans';
+import { ROLE_LIST_FIELDS } from '../../constants/roles';
+import { DEFAULT_VISUALIZATION_SORTBY_FILTER } from '../../constants/visualizations';
 
-import { TABLE_SORT_ASCENDING } from '../constants/navigation';
-import { HUMAN_LIST_FIELDS } from '../../../constants/humans';
-import { ROLE_LIST_FIELDS } from '../../../constants/roles';
-import { DEFAULT_VISUALIZATION_SORTBY_FILTER } from '../../../constants/visualizations';
+import { getSortedItems } from '../../utils/data';
 
-import { getSortedItems } from '../../../utils/data';
-
-import TableHeader from '../../tables/SortableTableHeader';
-import EnhancedTableToolbar from '../../controls/EnhancedTableToolbar';
+import TableHeader from '../tables/SortableTableHeader';
+import EnhancedTableToolbar from '../controls/EnhancedTableToolbar';
 
 const styles = {
   root: {
@@ -36,6 +35,7 @@ const styles = {
 };
 
 let ItemsList = ({
+  moduleId,
   classes,
   itemFields,
   editItem,
@@ -58,7 +58,7 @@ let ItemsList = ({
           sortBy,
           sortByDirection === TABLE_SORT_ASCENDING
         ).map(item => {
-          const { id, avatar, name } = item;
+          const { id, name } = item;
           const selected = selectedItems.indexOf(id) !== -1;
           return (
             <TableRow
@@ -66,7 +66,7 @@ let ItemsList = ({
               hover
               onClick={event => {
                 if (event.target.type !== 'checkbox') {
-                  editItem('humans', id);
+                  editItem(moduleId, id);
                 }
               }}
               key={id}
@@ -81,14 +81,16 @@ let ItemsList = ({
                   checked={selected}
                 />
               </TableCell>
-              <TableCell>
-                <img
-                  height={32}
-                  width={32}
-                  alt={`Avatar for ${name}`}
-                  src={avatar}
-                />
-              </TableCell>
+              {moduleId === 'humans' && (
+                <TableCell>
+                  <img
+                    height={32}
+                    width={32}
+                    alt={`Avatar for ${name}`}
+                    src={item.avatar}
+                  />
+                </TableCell>
+              )}
               {itemFields.map(({ value, numeric }) => (
                 <TableCell numeric={numeric} key={value}>
                   {item[value]}
@@ -103,6 +105,7 @@ let ItemsList = ({
 );
 
 ItemsList.propTypes = {
+  moduleId: PropTypes.string,
   items: PropTypes.array,
   itemFields: PropTypes.array,
   sortBy: PropTypes.string,
@@ -110,6 +113,7 @@ ItemsList.propTypes = {
 };
 
 ItemsList.defaultProps = {
+  moduleId: 'humans',
   items: [],
   itemFields: [],
   sortBy: DEFAULT_VISUALIZATION_SORTBY_FILTER,
@@ -117,6 +121,7 @@ ItemsList.defaultProps = {
 };
 
 const mapStateToProps = ({ humans, navigation, roles }) => ({
+  moduleId: navigation.tab !== 1 ? 'humans' : 'roles',
   items: navigation.tab !== 1 ? humans : roles,
   itemFields: navigation.tab !== 1 ? HUMAN_LIST_FIELDS : ROLE_LIST_FIELDS,
   sortBy: navigation.sortBy,

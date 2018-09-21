@@ -5,10 +5,6 @@ import { withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-// import { openCreationDialogAction } from '../../actions/navigation';
-
-// import Button from '../inputs/Button';
-
 const styles = theme => ({
   extendedIcon: {
     marginRight: theme.spacing.unit
@@ -16,7 +12,6 @@ const styles = theme => ({
   fab: {
     position: 'absolute',
     bottom: theme.spacing.unit * 2,
-    // right: theme.spacing.unit * 2
     right: '150px'
   }
 });
@@ -39,13 +34,13 @@ ModuleView.propTypes = {
     PropTypes.string,
     PropTypes.array,
     PropTypes.object
-  ]),
-  moduleId: PropTypes.string
+  ])
+  // moduleId: PropTypes.string
 };
 
 ModuleView.defaultProps = {
-  children: '',
-  moduleId: 'humans'
+  children: ''
+  // moduleId: 'humans'
 };
 
 const mapStateToProps = () => ({});

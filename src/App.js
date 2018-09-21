@@ -19,8 +19,8 @@ import CreateEditDialog from './components/dialogs/DialogForm';
 
 import ModuleView from './components/modules/ModuleView';
 
-import HumansList from './components/modules/humans/HumansListSortable';
-import RolesList from './components/modules/roles/RolesList';
+import ItemsList from './components/tables/ItemsList';
+import AboutApplication from './components/modules/about/AboutApplication';
 
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import theme from './themes/default';
@@ -45,13 +45,19 @@ const styles = theme => ({
 });
 
 const Humans = () => (
-  <ModuleView moduleId="humans">
-    <HumansList />
+  <ModuleView>
+    <ItemsList />
   </ModuleView>
 );
 const Roles = () => (
-  <ModuleView moduleId="roles">
-    <RolesList />
+  <ModuleView>
+    <ItemsList />
+  </ModuleView>
+);
+
+const About = () => (
+  <ModuleView>
+    <AboutApplication />
   </ModuleView>
 );
 
@@ -72,7 +78,7 @@ class App extends Component {
     this.props.windowResizeHandler();
   };
 
-  tabViews = idx => [<Humans />, <Roles />][idx];
+  tabViews = idx => [<Humans />, <Roles />, <About />][idx];
 
   render() {
     return (

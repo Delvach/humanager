@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
+import { TABLE_SORT_ASCENDING } from '../../constants/navigation';
 import { selectItemAction } from '../../actions/visualizations';
 import { getSortedItems } from '../../utils/data';
 // import classNames from 'classnames';
@@ -32,7 +33,8 @@ class Visualizer extends React.Component {
   prepareItemsForDisplay = (
     items = [],
     selectedItemId = null,
-    sortBy = null
+    sortBy = null,
+    sortByDirection = TABLE_SORT_ASCENDING
   ) => {
     // Add flag to indicate whether is currently selected item
     const updatedItems = items.map(item => {
@@ -40,7 +42,11 @@ class Visualizer extends React.Component {
       return { ...item, selected };
     });
 
-    return getSortedItems(updatedItems, sortBy);
+    return getSortedItems(
+      updatedItems,
+      sortBy,
+      sortByDirection === TABLE_SORT_ASCENDING
+    );
   };
 
   /*
@@ -82,15 +88,16 @@ class Visualizer extends React.Component {
     const displayData = this.prepareItemsForDisplay(
       this.props.items,
       this.props.selectedItemId,
-      this.props.sortBy
+      this.props.sortBy,
+      this.props.sortByDirection
     );
 
-    const x = this.getLinearWidthScaleUsingNumItems(
-      this.props.items.length,
-      this.props.width
-    );
+    // const x = this.getLinearWidthScaleUsingNumItems(
+    //   this.props.items.length,
+    //   this.props.width
+    // );
 
-    const xPercent = this.getLinearWidthScaleUsingPercentage(this.props.width);
+    // const xPercent = this.getLinearWidthScaleUsingPercentage(this.props.width);
     const y = this.getLinearHeightScaleUsingPercentage(this.props.height);
 
     // const getGroupTopLeftPosition = human => ({
@@ -175,13 +182,13 @@ class Visualizer extends React.Component {
     const containerEnter = humanGroups
       .enter()
       .append('g')
-      // .on('click', d => this.props.selectItem(d.id))
-      .on('click', function(d) {
-        d3.select(this).moveToBack();
-      })
-      .on('dblclick', function(d) {
-        d3.select(this).moveToFront();
-      })
+      .on('click', d => this.props.selectItem(d.id))
+      // .on('click', function(d) {
+      //   d3.select(this).moveToBack();
+      // })
+      // .on('dblclick', function(d) {
+      //   d3.select(this).moveToFront();
+      // })
       .attr('class', 'human');
 
     // 3.1 Add circle
@@ -349,14 +356,14 @@ Visualizer.defaultProps = {
 };
 
 const mapStateToProps = ({ humans, roles, navigation, visualizations }) => ({
-  items: navigation.tab === 0 ? humans : roles,
+  items: navigation.tab !== 1 ? humans : roles,
   selectedItemId: visualizations.selectedItemId,
-  bit: visualizations.bit,
   tab: navigation.tab,
   itemSizeBase: visualizations.itemSizeBase,
   itemSizeActive: visualizations.itemSizeActive,
-  sortBy: visualizations.sortBy,
-  sortByRandom: visualizations.sortBy === 'random'
+  sortBy: navigation.sortBy,
+  sortByDirection: navigation.sortByDirection,
+  sortByRandom: navigation.sortBy === 'random'
 });
 
 const mapDispatchToProps = dispatch =>

@@ -41,7 +41,7 @@ const RoleList = ({ deleteItem, editItem, roles, humans }) => {
         {roles.map(role => {
           const { id } = role;
           return (
-            <TableRow key={id}>
+            <TableRow onClick={() => editItem('roles', id)} key={id}>
               {ROLE_LIST_FIELDS.map(({ label, value }) => (
                 <TableCell key={value}>
                   {displayRoleField(
@@ -54,7 +54,7 @@ const RoleList = ({ deleteItem, editItem, roles, humans }) => {
                 </TableCell>
               ))}
               <TableCell>
-                <Button onClick={() => editItem('roles', id)}>Edit</Button>
+                {/* <Button onClick={() => editItem('roles', id)}>Edit</Button> */}
                 <Button onClick={() => deleteItem(id)}>Delete</Button>
               </TableCell>
             </TableRow>
