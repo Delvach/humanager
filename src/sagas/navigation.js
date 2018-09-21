@@ -13,6 +13,7 @@ import {
 import { apiError } from '../actions';
 import { storeTopPaneHeightPreferenceAction } from '../actions/preferences';
 import {
+  changeTabAction,
   setDialogModeAction,
   setDialogDatatypeAction,
   setDialogEditIdAction,
@@ -81,6 +82,12 @@ function* initializeAppData() {
   } catch (error) {
     yield put(apiError(error));
   }
+}
+
+function* handleTabNavigation({ payload }) {
+  const { tab } = payload;
+  yield put(resetSelectedListItems());
+  yield put(changeTabAction(tab));
 }
 
 function* initializeHumanEditingDialog(id = null) {
@@ -298,6 +305,10 @@ function* initializeHumanagerApp() {
   yield takeEvery(ACTIONS.INITIALIZE_APP, initializeAppData);
 }
 
+function* watchTabNavigation() {
+  yield takeEvery(ACTIONS.TRIGGER_TAB_CHANGE, handleTabNavigation);
+}
+
 function* watchDialogStatus() {
   yield takeEvery(ACTIONS.SET_DIALOG_STATUS, setDialogStatus);
 }
@@ -375,6 +386,7 @@ function* watchResizeEvents() {
 
 export const navigationSagas = [
   initializeHumanagerApp(),
+  watchTabNavigation(),
   watchDialogStatus(),
   watchHumanDialogSubmission(),
   watchRoleDialogSubmission(),

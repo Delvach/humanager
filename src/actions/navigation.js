@@ -8,6 +8,15 @@ export const testAction = () => ({
   payload: {}
 });
 
+export const triggerTabChangeAction = tab => {
+  return {
+    type: ACTIONS.TRIGGER_TAB_CHANGE,
+    payload: {
+      tab
+    }
+  };
+};
+
 export const changeTabAction = tab => {
   return {
     type: ACTIONS.CHANGE_TAB,

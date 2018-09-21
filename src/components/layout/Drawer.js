@@ -28,7 +28,7 @@ import { TABS } from '../../constants/navigation';
 import VisualizationFilters from '../controls/VisualizationFilters';
 
 import {
-  changeTabAction,
+  triggerTabChangeAction,
   closeLeftDrawerAction,
   triggerVisualizationResizeAction
 } from '../../actions/navigation';
@@ -167,7 +167,7 @@ const mapDispatchToProps = dispatch =>
     {
       handleDrawerClose: closeLeftDrawerAction,
       storeLeftDrawerOpen: storeLeftDrawerOpenPreferenceAction,
-      changeTab: changeTabAction,
+      changeTab: triggerTabChangeAction,
       storeTab: storeTabPreferenceAction,
       triggerVisualizationResizeAction
     },

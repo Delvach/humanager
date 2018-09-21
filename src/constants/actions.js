@@ -64,6 +64,7 @@ export const ROLE_LOADED = 'ROLE_LOADED';
 export const ROLE_UPDATED = 'ROLE_UPDATED';
 
 // Navigation
+export const TRIGGER_TAB_CHANGE = 'TRIGGER_TAB_CHANGE';
 export const CHANGE_TAB = 'CHANGE_TAB';
 
 // Common dialog (human/role)
