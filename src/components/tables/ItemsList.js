@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableRow from '@material-ui/core/TableRow';
@@ -46,7 +45,7 @@ let ItemsList = ({
   sortByDirection,
   selectedItems
 }) => (
-  <Paper className={classes.root}>
+  <div className={classes.root}>
     <div>
       <EnhancedTableToolbar numSelected={0} />
     </div>
@@ -106,7 +105,7 @@ let ItemsList = ({
         })}
       </TableBody>
     </Table>
-  </Paper>
+  </div>
 );
 
 ItemsList.propTypes = {

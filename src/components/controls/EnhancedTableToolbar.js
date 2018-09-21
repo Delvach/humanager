@@ -22,7 +22,8 @@ import { TABS } from '../../constants/navigation';
 
 const toolbarStyles = theme => ({
   root: {
-    paddingRight: theme.spacing.unit
+    paddingRight: theme.spacing.unit,
+    minHeight: 48
   },
   highlight:
     theme.palette.type === 'light'
