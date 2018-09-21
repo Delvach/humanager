@@ -8,22 +8,25 @@ export const DIALOG_MODE_EDIT = 'edit';
 export const HUMAN_ATTRIBUTES = [
   {
     label: 'Name',
-    value: 'name'
+    value: 'name',
+    numeric: false
   },
   {
     label: 'Email',
-    value: 'email'
+    value: 'email',
+    numeric: false
   },
   {
     label: 'Age',
-    value: 'age'
+    value: 'age',
+    numeric: true
   }
 ];
 
 export const HUMAN_LIST_FIELDS = [
-  ...HUMAN_ATTRIBUTES,
-  {
-    label: 'ID',
-    value: 'id'
-  }
+  ...HUMAN_ATTRIBUTES
+  // {
+  //   label: 'ID',
+  //   value: 'id'
+  // }
 ];

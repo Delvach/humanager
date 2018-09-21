@@ -8,11 +8,13 @@ export const ROLE_MODAL_MODE_EDIT = 'edit';
 export const ROLE_ATTRIBUTES = [
   {
     label: 'Name',
-    value: 'name'
+    value: 'name',
+    numeric: false
   },
   {
     label: 'Members',
-    value: 'members'
+    value: 'members',
+    numeric: false
   }
 ];
 

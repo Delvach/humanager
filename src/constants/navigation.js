@@ -7,6 +7,10 @@ export const TABS = [
   {
     value: 1,
     title: 'Roles'
+  },
+  {
+    value: 2,
+    title: 'About'
   }
 ];
 
@@ -18,7 +22,13 @@ export const DEFAULT_STATE_NAVIGATION = {
   roleModalEditId: null,
   leftDrawerOpen: true,
   tab: 0,
-  triggerVisualizationResize: false
+  triggerVisualizationResize: false,
+  listItemsSelected: [],
+  sortBy: 'name',
+  sortByDirection: 'asc'
 };
 
 export const HUMAN_EDIT_MODAL_OPEN_STATUS = 'HUMAN_EDIT_MODAL_OPEN_STATUS';
+
+export const TABLE_SORT_ASCENDING = 'asc';
+export const TABLE_SORT_DESCENDING = 'desc';
