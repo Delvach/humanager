@@ -25,20 +25,6 @@ export const normalizeAllHumansData = (allHumans = {}) => {
   return sortedHumans;
 };
 
-export const normalizeHumanData = human => {
-  return human;
-};
-
-export const normalizeCreateHumanData = ({
-  name = '',
-  email = '',
-  age = ''
-}) => ({
-  name,
-  email,
-  age
-});
-
 export const normalizeHumansDataForSelect = humans =>
   humans.map(({ name, id }) => ({ text: name, value: id }));
 
@@ -51,21 +37,18 @@ export const getFauxLastName = randomNumber =>
 export const getFauxHumansData = numItems => {
   const humans = [];
   for (let i = 0; i < numItems; i++) {
-    // const firstNameIndex = Math.floor(Math.random() * firstNames.length);
-    // const firstName = firstNames[firstNameIndex];
     const firstName = getFauxFirstName(Math.random());
     const lastName = getFauxLastName(Math.random());
     humans.push({
       name: `${firstName} ${lastName}`,
+      nameFirst: firstName,
+      nameLast: lastName,
       email: `${firstName.toLowerCase()}@delvach.com`,
       age: 18 + Math.floor(Math.random() * 30)
     });
   }
   return humans;
 };
-
-export const getFauxAvatarImageURL = ({ email, size }) =>
-  `https://api.adorable.io/avatars/${size}/${email}.png`;
 
 export const generateRandomFauxAvatarIcon = (color = '607D8B') => {
   const { eyes, noses, mouths } = adorableAvatarsParameters;

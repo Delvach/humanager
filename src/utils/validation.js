@@ -5,10 +5,16 @@
 
 export const validateHuman = values => {
   const errors = {};
-  if (!values.name) {
-    errors.name = 'Required';
-  } else if (values.name.length > 15) {
-    errors.name = 'Must be 15 characters or less';
+  const minLen = 2;
+  if (!values.nameLast) {
+    errors.nameLast = 'Required';
+  } else if (values.nameLast.length > minLen) {
+    errors.nameLast = `Must be ${minLen} characters or less`;
+  }
+  if (!values.nameFirst) {
+    errors.nameFirst = 'Required';
+  } else if (values.nameFirst.length > minLen) {
+    errors.nameFirst = `Must be ${minLen} characters or less`;
   }
   if (!values.email) {
     errors.email = 'Required';
@@ -35,8 +41,11 @@ export const warnHuman = values => {
 
 export const validateRole = values => {
   const errors = {};
-  if (!values.name) {
-    errors.name = 'Required';
+  if (!values.nameLast) {
+    errors.nameLast = 'Required';
+  }
+  if (!values.nameFirst) {
+    errors.nameFirst = 'Required';
   }
 
   if (!values.members) {
