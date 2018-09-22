@@ -15,6 +15,11 @@ export const ROLE_ATTRIBUTES = [
     label: 'Members',
     value: 'members',
     numeric: false
+  },
+  {
+    label: 'Created',
+    value: 'created',
+    numeric: false
   }
 ];
 

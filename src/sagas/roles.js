@@ -104,7 +104,7 @@ export function* createRole({ payload }) {
   try {
     const { uid } = yield select(state => state.user);
     const color = pickRandomColor();
-    const roleData = { ...payload, uid, color };
+    const roleData = { ...payload, uid, color, created: Date.now().valueOf() };
 
     // Submit new role to API
     const newRoleID = yield call(

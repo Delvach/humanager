@@ -9,9 +9,7 @@ export const DEFAULT_STATE_VISUALIZATIONS = {
 };
 
 export const VISUALIZATION_SORTBY_FILTERS = [
-  { label: 'Name', value: 'name' },
-  { label: 'Age', value: 'age' },
-  { label: 'Color', value: 'color' },
+  { label: 'Column', value: 'column' },
   { label: 'Random', value: 'random' }
 ];
 

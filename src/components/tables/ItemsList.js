@@ -95,6 +95,8 @@ let ItemsList = ({
                 <TableCell numeric={numeric} key={value}>
                   {value === 'members' ? (
                     <HumansChips memberIds={item[value]} />
+                  ) : value === 'created' ? (
+                    new Date(item[value]).toLocaleString()
                   ) : (
                     item[value]
                   )}

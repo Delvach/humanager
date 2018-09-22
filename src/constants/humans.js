@@ -27,6 +27,11 @@ export const HUMAN_ATTRIBUTES = [
     numeric: false
   },
   {
+    label: 'Created',
+    value: 'created',
+    numeric: false
+  },
+  {
     label: 'Age',
     value: 'age',
     numeric: true

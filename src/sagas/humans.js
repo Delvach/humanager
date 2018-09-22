@@ -130,7 +130,13 @@ export function* createHuman(data) {
     const color = pickRandomColor();
     const avatar = generateRandomFauxAvatarIcon(color);
 
-    const humanData = { uid, ...data, avatar, color: `#${color}` };
+    const humanData = {
+      uid,
+      ...data,
+      avatar,
+      color: `#${color}`,
+      created: Date.now().valueOf()
+    };
     // Submit new human to API
     const newHumanID = yield call(
       api.database.create,
