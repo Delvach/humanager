@@ -4,7 +4,7 @@ import api from '../api';
 
 import { apiError } from '../actions';
 
-import { setSelectedListItems } from '../actions/navigation';
+// import { setSelectedListItems } from '../actions/navigation';
 
 import {
   deleteHumanAction,
@@ -26,7 +26,7 @@ import { roleUpdateAction } from '../actions/roles';
 import * as ACTIONS from '../constants/actions';
 import * as DATABASE_NAMES from '../constants/api';
 
-import { removeItemFromList } from '../utils/data';
+// import { removeItemFromList } from '../utils/data';
 import { generateRandomFauxAvatarIcon, pickRandomColor } from '../utils/humans';
 import { getRandomPosition } from '../utils/visualizations';
 
@@ -175,7 +175,7 @@ export function* deleteHuman({ payload }) {
   try {
     const { id, reloadList } = payload;
     const state = yield select(state => state);
-    const { roles, visualizations, navigation } = state;
+    const { roles, visualizations } = state;
 
     // Is this human a member of any roles?
     const rolesWithMemberId = roles.filter(

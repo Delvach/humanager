@@ -21,8 +21,6 @@ import {
 
 import * as d3 from 'd3';
 
-import { scalePercentHeight } from '../../utils/scales';
-
 class Visualizer extends React.Component {
   constructor(props) {
     super(props);
@@ -63,15 +61,14 @@ class Visualizer extends React.Component {
       this.props.listItemsSelected
     );
 
-    // Define scales
-    const y = scalePercentHeight(this.props.height);
-
     const r = d => {
       return d.selected ? 64 : 32;
     };
 
+    // Using a curried function to generate positioning helper with awareness of
+    // current properties while still using pure functions
     const getCenterPosition = _getCenterPosition({
-      mode: 'metric',
+      mode: this.props.sortBy === 'random' ? 'random' : 'metric',
       numItems: this.props.items.length,
       areaHeight: this.props.height,
       areaWidth: this.props.width

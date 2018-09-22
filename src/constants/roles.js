@@ -18,6 +18,8 @@ export const ROLE_ATTRIBUTES = [
   }
 ];
 
+export const DEFAULT_ROLE_ATTRIBUTE = ROLE_ATTRIBUTES[0].value;
+
 export const ROLE_LIST_FIELDS = [
   ...ROLE_ATTRIBUTES
   // {

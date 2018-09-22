@@ -33,6 +33,8 @@ export const HUMAN_ATTRIBUTES = [
   }
 ];
 
+export const DEFAULT_HUMAN_ATTRIBUTE = HUMAN_ATTRIBUTES[0].value;
+
 export const HUMAN_LIST_FIELDS = [
   ...HUMAN_ATTRIBUTES
   // {

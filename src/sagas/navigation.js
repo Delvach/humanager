@@ -58,7 +58,12 @@ import {
   TABLE_SORT_ASCENDING,
   TABLE_SORT_DESCENDING
 } from '../constants/navigation';
-import { DIALOG_MODE_EDIT } from '../constants/humans';
+import { ROLE_ATTRIBUTES, DEFAULT_ROLE_ATTRIBUTE } from '../constants/roles';
+import {
+  DIALOG_MODE_EDIT,
+  HUMAN_ATTRIBUTES,
+  DEFAULT_HUMAN_ATTRIBUTE
+} from '../constants/humans';
 
 import rsf, { provider } from '../api';
 
@@ -86,7 +91,21 @@ function* initializeAppData() {
 
 function* handleTabNavigation({ payload }) {
   const { tab } = payload;
+  const sortBy = yield select(state => state.navigation.sortBy);
+
   yield put(resetSelectedListItems());
+
+  // Ensure that current sort exists for current tab
+  const currFields = tab !== 1 ? HUMAN_ATTRIBUTES : ROLE_ATTRIBUTES;
+  if (currFields.find(field => field.value === sortBy) === undefined) {
+    yield put(
+      setSortFilterAction(
+        tab !== 1 ? DEFAULT_HUMAN_ATTRIBUTE : DEFAULT_ROLE_ATTRIBUTE,
+        TABLE_SORT_ASCENDING
+      )
+    );
+  }
+
   yield put(changeTabAction(tab));
 }
 

@@ -11,7 +11,7 @@ import {
 import {
   scalePercentHeight,
   scalePercentWidth,
-  scaleNumItemsHeight,
+  // scaleNumItemsHeight,
   scaleNumItemsWidth
 } from './scales';
 
@@ -107,20 +107,8 @@ export const _getCenterPosition = data => (human, i) => {
       // yScale = scaleNumItemsHeight(numItems, areaHeight);
       yScale = scalePercentHeight(areaHeight);
       return { x: xScale(i), y: yScale(0.5) };
+    default:
     case VISUALIZATION_MODE_FORCE:
       return { x, y };
   }
 };
-
-// export const getRandomCirclePos = getCenterPosition(VISUALIZATION_MODE_RANDOM);
-// export const getMetricCirclePos = getCenterPosition(VISUALIZATION_MODE_METRIC);
-// export const getForceCirclePos = getCenterPosition(VISUALIZATION_MODE_FORCE);
-
-// export const getAvatarData = human => {
-//   return getSquareInCircle
-//   getCircleX(human),
-//   getCircleY(human),
-//   getRadius(human)
-// }
-
-// export const getAvatarX = human
