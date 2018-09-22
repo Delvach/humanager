@@ -11,16 +11,17 @@ import { getSortedItems } from '../../utils/data';
 import {
   getEnterDuration,
   getExitDuration,
-  getUpdateDuration
+  getUpdateDuration,
+  getStrokeWidth,
+  getStrokeColor,
+  getRadius,
+  getAvatarColor,
+  _getCenterPosition
 } from '../../utils/visualizations';
 
 import * as d3 from 'd3';
 
-import {
-  scaleNumItemsWidth,
-  scalePercentHeight,
-  scalePercentWidth
-} from '../../utils/scales';
+import { scalePercentHeight } from '../../utils/scales';
 
 class Visualizer extends React.Component {
   constructor(props) {
@@ -36,13 +37,11 @@ class Visualizer extends React.Component {
     listItemsSelected = []
   ) => {
     const updatedItems = items.map(item => {
-      // Add flag to indicate whether item is highlighted
-      const selected = item.id === selectedItemId;
-
-      // Add flag to indicate whether item is selected within list for deletion
-
-      const selectedForDeletion = listItemsSelected.indexOf(item.id) !== -1;
-      return { ...item, selected, selectedForDeletion };
+      return {
+        ...item,
+        selected: item.id === selectedItemId,
+        selectedForDeletion: listItemsSelected.indexOf(item.id) !== -1
+      };
     });
 
     return getSortedItems(
@@ -71,16 +70,16 @@ class Visualizer extends React.Component {
       return d.selected ? 64 : 32;
     };
 
-    /*
-     * Coordinates helpers
-     */
-    const getCenterCoordinatesX = (item, index) => {
-      const value = this.props.sortByRandom ? item.x : index;
-      const scale = this.props.sortByRandom
-        ? scalePercentWidth(this.props.width)
-        : scaleNumItemsWidth(this.props.items.length, this.props.width);
-      return scale(value);
-    };
+    const getCenterPosition = _getCenterPosition({
+      mode: 'metric',
+      numItems: this.props.items.length,
+      areaHeight: this.props.height,
+      areaWidth: this.props.width
+    });
+
+    // Generate attribute helpers
+    const getCenterPositionX = (human, i) => getCenterPosition(human, i).x;
+    const getCenterPositionY = (human, i) => getCenterPosition(human, i).y;
 
     // Step 1 - Grab collection of containers (or automagically create later)
     const humanGroups = d3
@@ -100,34 +99,30 @@ class Visualizer extends React.Component {
     containerUpdater
       .select('circle')
 
-      .attr('r', (d, i) => {
-        return r(d) * 1.4;
-      })
-      .attr('cx', getCenterCoordinatesX)
-      .attr('cy', d => {
-        return y(this.props.sortByRandom ? d.y : 0.5);
-      })
-      .style('fill', d => d.color)
-      .style('stroke', d => (d.selectedForDeletion ? 'red' : 'black'))
-      .style('stroke-width', d => (d.selectedForDeletion ? '6px' : '1px'));
+      .attr('r', getRadius)
+      .attr('cx', getCenterPositionX)
+      .attr('cy', getCenterPositionY)
+      .style('fill', getAvatarColor)
+      .style('stroke', getStrokeColor)
+      .style('stroke-width', getStrokeWidth);
 
     // 2.2 Update text
     containerUpdater
       .select('text')
       .attr('font-size', '18px')
-      .attr('x', getCenterCoordinatesX)
+      .attr('x', getCenterPositionX)
       .attr('y', (d, i) => {
-        return y(this.props.sortByRandom ? d.y : 0.5) + r(d) + 28;
+        return getCenterPositionY(d, i) + r(d) + 28;
       });
 
     // 2.3 Update images
     containerUpdater
       .select('image')
       .attr('x', (d, i) => {
-        return getCenterCoordinatesX(d, i) - (d.selected ? 64 : 32);
+        return getCenterPositionX(d, i) - (d.selected ? 64 : 32);
       })
       .attr('y', (d, i) => {
-        return y(this.props.sortByRandom ? d.y : 0.5) - (d.selected ? 64 : 32);
+        return getCenterPositionY(d, i) - (d.selected ? 64 : 32);
       })
       .style('opacity', 1)
       .attr('height', d => (d.selected ? 128 : 64))
@@ -137,13 +132,13 @@ class Visualizer extends React.Component {
     const containerEnter = humanGroups
       .enter()
       .append('g')
-      // .on('click', d => this.props.selectItem(d.id))
+      .on('click', d => this.props.selectItem(d.id))
       // .on('dblclick', function(d) {
       //   d3.select(this).moveToBack();
       // })
-      .on('click', function(d) {
-        d3.select(this).moveToFront();
-      })
+      // .on('click', function(d) {
+      //   d3.select(this).moveToFront();
+      // })
       .attr('class', 'human');
 
     // 3.1 Add circle
@@ -152,22 +147,18 @@ class Visualizer extends React.Component {
       .append('circle')
       .attr('class', 'item')
       .attr('r', 0)
-      .attr('cx', getCenterCoordinatesX)
-      .attr('cy', d => {
-        return y(this.props.sortByRandom ? d.y : 0.5);
-      })
-      .style('fill', d => d.color)
-      .style('stroke', d => (d.selectedForDeletion ? 'red' : 'black'))
-      .style('stroke-width', d => (d.selectedForDeletion ? '6px' : '1px'))
+      .attr('cx', getCenterPositionX)
+      .attr('cy', getCenterPositionY)
+      .style('fill', getAvatarColor)
+      .style('stroke', getStrokeColor)
+      .style('stroke-width', getStrokeWidth)
       // .style('fill-opacity', 0)
       // 3.1.2 Updated state after appearing
       .transition()
       .duration(getEnterDuration())
       .delay((_, i) => i * 20)
       .ease(d3.easeBounceOut)
-      .attr('r', (d, i) => {
-        return r(d) * 1.4;
-      });
+      .attr('r', getRadius);
     // .attr('cy', d => {
     //   return y(this.props.sortByRandom ? d.y : 0.5);
     // })
@@ -181,12 +172,12 @@ class Visualizer extends React.Component {
       .append('text')
       .attr('class', 'name')
       .text(human => human.name)
-      .attr('x', getCenterCoordinatesX)
+      .attr('x', getCenterPositionX)
       .attr('y', (d, i) => {
-        return y(this.props.sortByRandom ? d.y : 0.5) + r(d) + 28;
+        return getCenterPositionY(d, i) + r(d) + 28;
       })
       .attr('font-size', 0)
-      // .style('stroke', '#3E6E9C')
+      // .style('stroke', getStrokeColor)
       // .style('fill', 'red')
       .style('fill', 'black')
       .style('text-anchor', 'middle')
@@ -206,11 +197,9 @@ class Visualizer extends React.Component {
       .append('image')
       .attr('xlink:href', ({ avatar }) => avatar)
       .attr('x', (d, i) => {
-        return getCenterCoordinatesX(d, i);
+        return getCenterPositionX(d, i);
       })
-      .attr('y', (d, i) => {
-        return y(this.props.sortByRandom ? d.y : 0.5);
-      })
+      .attr('y', getCenterPositionY)
       .style('opacity', 0)
       // .attr('height', d => (d.selected ? 128 : 64))
       // .attr('width', d => (d.selected ? 128 : 64))
@@ -225,10 +214,10 @@ class Visualizer extends React.Component {
       .attr('height', d => (d.selected ? 128 : 64))
       .attr('width', d => (d.selected ? 128 : 64))
       .attr('x', (d, i) => {
-        return getCenterCoordinatesX(d, i) - 32;
+        return getCenterPositionX(d, i) - 32;
       })
       .attr('y', (d, i) => {
-        return y(this.props.sortByRandom ? d.y : 0.5) - 32;
+        return getCenterPositionY(d, i) - 32;
       })
       .style('opacity', 1);
 
@@ -251,11 +240,9 @@ class Visualizer extends React.Component {
       .attr('height', 0)
       .attr('width', 0)
       .attr('x', (d, i) => {
-        return getCenterCoordinatesX(d, i);
+        return getCenterPositionX(d, i);
       })
-      .attr('y', (d, i) => {
-        return y(this.props.sortByRandom ? d.y : 0.5);
-      });
+      .attr('y', getCenterPositionY);
 
     containerExit.select('text').attr('font-size', 0);
 
