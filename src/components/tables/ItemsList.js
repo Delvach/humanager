@@ -84,6 +84,7 @@ let ItemsList = ({
               {moduleId === 'humans' && (
                 <TableCell>
                   <img
+                    style={{ backgroundColor: item.color }}
                     height={32}
                     width={32}
                     alt={`Avatar for ${name}`}

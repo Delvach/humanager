@@ -104,7 +104,7 @@ class Visualizer extends React.Component {
     // Step 2 - If updating existing containers, adjust properties with transition
     const containerUpdater = humanGroups
       .transition()
-      .duration(getUpdateDuration())
+      .duration(getUpdateDuration)
       .delay(getUpdateDelay);
     // .ease(d3.easeBounceOut);
 
@@ -159,19 +159,13 @@ class Visualizer extends React.Component {
       .style('fill', getAvatarColor)
       .style('stroke', getStrokeColor)
       .style('stroke-width', getStrokeWidth)
-      // .style('fill-opacity', 0)
+
       // 3.1.2 Updated state after appearing
       .transition()
-      .duration(getEnterDuration())
+      .duration(getEnterDuration)
       .delay(getEnterDelay)
       .ease(d3.easeBounceOut)
       .attr('r', getRadius);
-    // .attr('cy', d => {
-    //   return y(this.props.sortByRandom ? d.y : 0.5);
-    // })
-    // .style('fill', d => {
-    //   return d.selected ? 'green' : 'blue';
-    // });
 
     // 4.1 Add name text
     // 4.1.1 Initial state when appearing
@@ -183,19 +177,16 @@ class Visualizer extends React.Component {
       .attr('y', getTitleY)
       .attr('font-size', 0)
       // .style('stroke', getStrokeColor)
-      // .style('fill', 'red')
       .style('fill', 'black')
       .style('text-anchor', 'middle')
+
       // 4.1.2 Updated state after appearing
       .transition()
-      .duration(getEnterDuration())
+      .duration(getEnterDuration)
       .delay(getEnterDelay)
       .ease(d3.easeBounceOut)
 
       .attr('font-size', getTitleFontSize);
-    // .attr('y', (d, i) => {
-    //   return y(this.props.sortByRandom ? d.y : 0.5) + r(d) + 18;
-    // });
 
     // 5.1 Add avatar images
     // 5.1.1 Initial state when appearing
@@ -205,14 +196,12 @@ class Visualizer extends React.Component {
       .attr('x', getImageX)
       .attr('y', getImageY)
       .style('opacity', 0)
-      // .attr('height', d => (d.selected ? 128 : 64))
-      // .attr('width', d => (d.selected ? 128 : 64))
       .attr('height', 0)
       .attr('width', 0)
 
       // 5.1.2 Updated state after appearing
       .transition()
-      .duration(getEnterDuration())
+      .duration(getEnterDuration)
       .delay(getEnterDelay)
       .ease(d3.easeBounceOut)
       .attr('height', getImageHeight)
@@ -221,40 +210,31 @@ class Visualizer extends React.Component {
       .attr('y', getImageY)
       .style('opacity', 1);
 
-    // .attr('y', (d, i) => {
-    //   return y(this.props.sortByRandom ? d.y : 0.5) - 32;
-
-    // });
-
     const containerExit = humanGroups
       .exit()
       .filter(':not(.exiting)') // Don't select already exiting nodes
       .classed('exiting', true)
       .transition()
-      .duration(getExitDuration())
+      .duration(getExitDuration)
       .delay(getExitDelay);
 
     containerExit.select('circle').attr('r', 0);
+    // .attr('x', getCenterPositionX)
+    // .attr('y', getCenterPositionY);
 
     containerExit
       .select('image')
       .attr('height', 0)
-      .attr('width', 0)
-      .attr('x', getImageX)
-      .attr('y', getImageY);
+      .attr('width', 0);
+    // .attr('x', getCenterPositionX)
+    // .attr('y', getCenterPositionY);
 
     containerExit.select('text').attr('font-size', 0);
 
     containerExit
-      .style('opacity', (d, i) => {
-        return 0;
-      })
-      .style('fill-opacity', (d, i) => {
-        return 0;
-      })
-      .style('stroke-opacity', (d, i) => {
-        return 0;
-      })
+      .style('opacity', 0)
+      .style('fill-opacity', 0)
+      .style('stroke-opacity', 0)
       .remove();
   };
 

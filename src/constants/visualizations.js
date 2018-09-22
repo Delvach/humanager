@@ -21,15 +21,15 @@ export const DEFAULT_VISUALIZATION_SORTBY_FILTER =
    */
 export const HUMAN_VISUAL_SETTINGS = {
   base: {
-    radius: 32,
-    fontSize: 14,
+    radius: 16,
+    fontSize: 10,
     radiusToAvatarRatio: 0.8,
     strokeWidth: 1,
     stroke: 'black'
   },
   selected: {
-    radius: 64,
-    fontSize: 28,
+    radius: 32,
+    fontSize: 14,
     radiusToAvatarRatio: 0.8,
     strokeWidth: 10,
     stroke: 'purple'
@@ -44,7 +44,7 @@ export const HUMAN_VISUAL_SETTINGS = {
 };
 
 export const TRANSITION_DURATIONS = {
-  enter: 750,
+  enter: 400,
   exit: 300,
   update: 300
 };
