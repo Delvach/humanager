@@ -298,6 +298,21 @@ function* handleChangeListSort({ payload }) {
   yield put(setSortFilterAction(property, sortByDirection));
 }
 
+export function* removeIdsFromSelectedList(ids) {
+  const listItemsSelected = yield select(
+    state => state.navigation.listItemsSelected
+  );
+
+  const newItemsSelected = [];
+  for (let i = 0; i < listItemsSelected.length; i++) {
+    if (ids.indexOf(listItemsSelected[i]) === -1) {
+      newItemsSelected.push(listItemsSelected[i]);
+    }
+  }
+
+  yield put(setSelectedListItems(newItemsSelected));
+}
+
 /*
  *  Define saga watchers
  */

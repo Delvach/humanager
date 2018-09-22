@@ -30,6 +30,8 @@ import { removeItemFromList } from '../utils/data';
 import { generateRandomFauxAvatarIcon, pickRandomColor } from '../utils/humans';
 import { getRandomPosition } from '../utils/visualizations';
 
+import { removeIdsFromSelectedList } from './navigation';
+
 import {
   normalizeAllHumansData,
   getFauxHumansData
@@ -174,7 +176,6 @@ export function* deleteHuman({ payload }) {
     const { id, reloadList } = payload;
     const state = yield select(state => state);
     const { roles, visualizations, navigation } = state;
-    const { listItemsSelected } = navigation;
 
     // Is this human a member of any roles?
     const rolesWithMemberId = roles.filter(
@@ -184,14 +185,6 @@ export function* deleteHuman({ payload }) {
     // Check that this id is not currently selected in visualization
     if (id === visualizations.selectedItemId) {
       yield put(resetItemAction());
-    }
-
-    // Check that this id is not a selected list itemconst selectedItems = yield select(
-    const selectedIndex = listItemsSelected.indexOf(id);
-    if (selectedIndex !== -1) {
-      const newSelectedItems = removeItemFromList(listItemsSelected, id);
-
-      yield put(setSelectedListItems(newSelectedItems));
     }
 
     // List of roles that need to be updated; trigger sagas from here? Best way to batch them?
@@ -205,8 +198,10 @@ export function* deleteHuman({ payload }) {
     yield put(humanDeletedAction(id));
     yield put(deleteVisualizationItemPositionAction([id]));
 
-    // Refresh master human list
     if (reloadList) {
+      yield* removeIdsFromSelectedList([id]);
+
+      // Refresh master human list
       yield* loadAllHumansData();
     }
   } catch (error) {
@@ -220,6 +215,8 @@ export function* deleteHumans({ payload }) {
   for (let i = 0; i < ids.length; i++) {
     yield* deleteHuman(deleteHumanAction(ids[i], false));
   }
+
+  yield* removeIdsFromSelectedList(ids);
   yield* loadAllHumansData();
 }
 

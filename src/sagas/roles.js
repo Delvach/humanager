@@ -30,6 +30,8 @@ import { pickRandomColor } from '../utils/humans';
 
 import { normalizeAllRolesData } from '../utils/roles';
 
+import { removeIdsFromSelectedList } from './navigation';
+
 /*
  *  Define saga tasks
  */
@@ -169,8 +171,10 @@ export function* deleteRole({ payload }) {
     yield put(roleDeletedAction(id));
     yield put(deleteVisualizationItemPositionAction([id]));
 
-    // Refresh master role list
     if (reloadList) {
+      yield* removeIdsFromSelectedList([id]);
+
+      // Refresh master role list
       yield* loadAllRolesData();
     }
   } catch (error) {
@@ -184,6 +188,7 @@ export function* deleteRoles({ payload }) {
   for (let i = 0; i < ids.length; i++) {
     yield* deleteRole(deleteRoleAction(ids[i], false));
   }
+  yield* removeIdsFromSelectedList(ids);
   yield* loadAllRolesData();
 }
 
