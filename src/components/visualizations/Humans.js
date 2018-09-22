@@ -12,11 +12,17 @@ import {
   getEnterDuration,
   getExitDuration,
   getUpdateDuration,
+  getEnterDelay,
+  getExitDelay,
+  getUpdateDelay,
   getStrokeWidth,
   getStrokeColor,
   getRadius,
   getAvatarColor,
-  _getCenterPosition
+  getTitleFontSize,
+  _getCenterPosition,
+  _getImageData,
+  _getTitleData
 } from '../../utils/visualizations';
 
 import * as d3 from 'd3';
@@ -74,22 +80,32 @@ class Visualizer extends React.Component {
       areaWidth: this.props.width
     });
 
-    // Generate attribute helpers
+    // Generate attribute helpers. This happens here instead of within util file because
+    // 'getCenterPosition' now contains props data these functions use for scaling and positioning
     const getCenterPositionX = (human, i) => getCenterPosition(human, i).x;
     const getCenterPositionY = (human, i) => getCenterPosition(human, i).y;
+
+    const getImageData = _getImageData(getCenterPosition);
+    const getImageX = (item, i) => getImageData(item, i).x;
+    const getImageY = (item, i) => getImageData(item, i).y;
+    const getImageHeight = (item, i) => getImageData(item, i).h;
+    const getImageWidth = (item, i) => getImageData(item, i).w;
+
+    const getTitleData = _getTitleData(getCenterPosition);
+    const getTitleX = (item, i) => getTitleData(item, i).x;
+    const getTitleY = (item, i) => getTitleData(item, i).y;
 
     // Step 1 - Grab collection of containers (or automagically create later)
     const humanGroups = d3
       .select(this.visualRef.current)
       .selectAll('g')
-      .data(displayData, h => {
-        return h.id;
-      });
+      .data(displayData, h => `item-${h.id}`);
 
     // Step 2 - If updating existing containers, adjust properties with transition
     const containerUpdater = humanGroups
       .transition()
-      .duration(getUpdateDuration());
+      .duration(getUpdateDuration())
+      .delay(getUpdateDelay);
     // .ease(d3.easeBounceOut);
 
     // 2.1 Update circles
@@ -106,24 +122,18 @@ class Visualizer extends React.Component {
     // 2.2 Update text
     containerUpdater
       .select('text')
-      .attr('font-size', '18px')
-      .attr('x', getCenterPositionX)
-      .attr('y', (d, i) => {
-        return getCenterPositionY(d, i) + r(d) + 28;
-      });
+      .attr('font-size', getTitleFontSize)
+      .attr('x', getTitleX)
+      .attr('y', getTitleY);
 
     // 2.3 Update images
     containerUpdater
       .select('image')
-      .attr('x', (d, i) => {
-        return getCenterPositionX(d, i) - (d.selected ? 64 : 32);
-      })
-      .attr('y', (d, i) => {
-        return getCenterPositionY(d, i) - (d.selected ? 64 : 32);
-      })
+      .attr('x', getImageX)
+      .attr('y', getImageY)
       .style('opacity', 1)
-      .attr('height', d => (d.selected ? 128 : 64))
-      .attr('width', d => (d.selected ? 128 : 64));
+      .attr('height', getImageHeight)
+      .attr('width', getImageWidth);
 
     // Step 3 - If containers don't exist, create and initialize
     const containerEnter = humanGroups
@@ -153,7 +163,7 @@ class Visualizer extends React.Component {
       // 3.1.2 Updated state after appearing
       .transition()
       .duration(getEnterDuration())
-      .delay((_, i) => i * 20)
+      .delay(getEnterDelay)
       .ease(d3.easeBounceOut)
       .attr('r', getRadius);
     // .attr('cy', d => {
@@ -169,10 +179,8 @@ class Visualizer extends React.Component {
       .append('text')
       .attr('class', 'name')
       .text(human => human.name)
-      .attr('x', getCenterPositionX)
-      .attr('y', (d, i) => {
-        return getCenterPositionY(d, i) + r(d) + 28;
-      })
+      .attr('x', getTitleX)
+      .attr('y', getTitleY)
       .attr('font-size', 0)
       // .style('stroke', getStrokeColor)
       // .style('fill', 'red')
@@ -181,9 +189,10 @@ class Visualizer extends React.Component {
       // 4.1.2 Updated state after appearing
       .transition()
       .duration(getEnterDuration())
+      .delay(getEnterDelay)
       .ease(d3.easeBounceOut)
 
-      .attr('font-size', '18px');
+      .attr('font-size', getTitleFontSize);
     // .attr('y', (d, i) => {
     //   return y(this.props.sortByRandom ? d.y : 0.5) + r(d) + 18;
     // });
@@ -193,10 +202,8 @@ class Visualizer extends React.Component {
     containerEnter
       .append('image')
       .attr('xlink:href', ({ avatar }) => avatar)
-      .attr('x', (d, i) => {
-        return getCenterPositionX(d, i);
-      })
-      .attr('y', getCenterPositionY)
+      .attr('x', getImageX)
+      .attr('y', getImageY)
       .style('opacity', 0)
       // .attr('height', d => (d.selected ? 128 : 64))
       // .attr('width', d => (d.selected ? 128 : 64))
@@ -206,16 +213,12 @@ class Visualizer extends React.Component {
       // 5.1.2 Updated state after appearing
       .transition()
       .duration(getEnterDuration())
-      .delay((_, i) => i * 20)
+      .delay(getEnterDelay)
       .ease(d3.easeBounceOut)
-      .attr('height', d => (d.selected ? 128 : 64))
-      .attr('width', d => (d.selected ? 128 : 64))
-      .attr('x', (d, i) => {
-        return getCenterPositionX(d, i) - 32;
-      })
-      .attr('y', (d, i) => {
-        return getCenterPositionY(d, i) - 32;
-      })
+      .attr('height', getImageHeight)
+      .attr('width', getImageWidth)
+      .attr('x', getImageX)
+      .attr('y', getImageY)
       .style('opacity', 1);
 
     // .attr('y', (d, i) => {
@@ -228,7 +231,8 @@ class Visualizer extends React.Component {
       .filter(':not(.exiting)') // Don't select already exiting nodes
       .classed('exiting', true)
       .transition()
-      .duration(getExitDuration());
+      .duration(getExitDuration())
+      .delay(getExitDelay);
 
     containerExit.select('circle').attr('r', 0);
 
@@ -236,10 +240,8 @@ class Visualizer extends React.Component {
       .select('image')
       .attr('height', 0)
       .attr('width', 0)
-      .attr('x', (d, i) => {
-        return getCenterPositionX(d, i);
-      })
-      .attr('y', getCenterPositionY);
+      .attr('x', getImageX)
+      .attr('y', getImageY);
 
     containerExit.select('text').attr('font-size', 0);
 

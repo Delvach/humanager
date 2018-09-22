@@ -46,7 +46,13 @@ export const HUMAN_VISUAL_SETTINGS = {
 export const TRANSITION_DURATIONS = {
   enter: 750,
   exit: 300,
-  update: 500
+  update: 300
+};
+
+export const TRANSITION_DELAYS = {
+  enter: 10,
+  exit: 0,
+  update: 0
 };
 
 export const VISUALIZATION_MODE_RANDOM = 'random';

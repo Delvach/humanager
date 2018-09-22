@@ -3,6 +3,7 @@ import * as d3 from 'd3';
 import {
   HUMAN_VISUAL_SETTINGS,
   TRANSITION_DURATIONS,
+  TRANSITION_DELAYS,
   VISUALIZATION_MODE_RANDOM,
   VISUALIZATION_MODE_METRIC,
   VISUALIZATION_MODE_FORCE
@@ -35,15 +36,6 @@ d3.selection.prototype.moveToBack = function() {
 export const dataAsPx = d => `${d}px`;
 
 /*
- * Generate two random values for scaled display
- */
-export const getRandomPosition = () => ({
-  x: Math.random(),
-  y: Math.random(),
-  type: 'random'
-});
-
-/*
  * Given the center coordinates and radius of a circle,
  * return the height, width, top/left dimensions
  */
@@ -59,6 +51,15 @@ export const getSquareInCircle = (cx, cy, radius) => {
   };
 };
 
+/*
+ * Generate two random values for scaled display
+ */
+export const getRandomPosition = () => ({
+  x: Math.random(),
+  y: Math.random(),
+  type: 'random'
+});
+
 /* 
  * Curried functions to stick with pure functions for (future) tests
  */
@@ -71,6 +72,15 @@ export const getDuration = _getTransitionDurations(TRANSITION_DURATIONS);
 export const getEnterDuration = () => getDuration('enter');
 export const getExitDuration = () => getDuration('exit');
 export const getUpdateDuration = () => getDuration('update');
+
+// Retrieve settings for transition delays
+export const _getTransitionDelays = settings => transitionType =>
+  settings[transitionType];
+export const getDelay = _getTransitionDelays(TRANSITION_DELAYS);
+
+export const getEnterDelay = (_, i) => getDelay('enter') * i;
+export const getExitDelay = (_, i) => getDelay('exit') * i;
+export const getUpdateDelay = (_, i) => getDelay('update') * i;
 
 // Retrieve settings for human visual (avatar; need naming convention since avatar is specific to image)
 export const _getHumanSettings = settings => (
@@ -91,12 +101,16 @@ export const getStrokeWidth = getSpecificHumanSetting('strokeWidth');
 export const getStrokeColor = getSpecificHumanSetting('stroke');
 export const getRadius = getSpecificHumanSetting('radius');
 export const getAvatarColor = human => human.color;
+export const getRadiusToAvatarRatio = getSpecificHumanSetting(
+  'radiusToAvatarRatio'
+);
+export const getTitleFontSize = getSpecificHumanSetting('fontSize');
 
-export const _getCenterPosition = data => (human, i) => {
+export const _getCenterPosition = data => (item, i) => {
   const { mode, numItems, areaHeight, areaWidth } = data;
 
   let xScale, yScale;
-  const { x, y } = human;
+  const { x, y } = item;
   switch (mode) {
     case VISUALIZATION_MODE_RANDOM:
       xScale = scalePercentWidth(areaWidth);
@@ -111,4 +125,19 @@ export const _getCenterPosition = data => (human, i) => {
     case VISUALIZATION_MODE_FORCE:
       return { x, y };
   }
+};
+
+export const _getImageData = getCenter => (item, i) => {
+  const { x, y } = getCenter(item, i);
+  const radius = getRadius(item, i);
+  const ratio = getRadiusToAvatarRatio(item, i);
+  return getSquareInCircle(x, y, radius * ratio);
+};
+
+export const _getTitleData = getCenter => (item, i) => {
+  const { x, y } = getCenter(item, i);
+  return {
+    x,
+    y: y + getRadius(item, i) * 1.6
+  };
 };
