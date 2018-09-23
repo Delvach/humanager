@@ -1,4 +1,28 @@
+export const VISUALIZATION_BEHAVIOR_SORTED = {
+  label: 'Sorted',
+  value: 'sorted'
+};
+
+export const VISUALIZATION_BEHAVIOR_FORCE = {
+  label: 'Force Collide',
+  value: 'force'
+};
+
+export const VISUALIZATION_BEHAVIOR_RANDOM = {
+  label: 'Random',
+  value: 'random'
+};
+
+export const VISUALIZATION_BEHAVIORS = [
+  VISUALIZATION_BEHAVIOR_SORTED,
+  VISUALIZATION_BEHAVIOR_RANDOM,
+  VISUALIZATION_BEHAVIOR_FORCE
+];
+
+export const DEFAULT_VISUALIZATION_BEHAVIOR = VISUALIZATION_BEHAVIORS[0].value;
+
 export const DEFAULT_STATE_VISUALIZATIONS = {
+  behavior: DEFAULT_VISUALIZATION_BEHAVIOR,
   height: 100,
   width: 100,
   selectedItemId: null,

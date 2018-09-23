@@ -47,3 +47,8 @@ export const changeSortByAction = sortBy => ({
   type: ACTIONS.SET_VISUALIZATION_FILTER_SORTBY,
   payload: { sortBy }
 });
+
+export const changeVisualizationBehaviorAction = behavior => ({
+  type: ACTIONS.SET_VISUALIZATION_BEHAVIOR,
+  payload: { behavior }
+});

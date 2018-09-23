@@ -34,6 +34,7 @@ class Visualizer extends React.Component {
   }
 
   prepareItemsForDisplay = (
+    behavior = null,
     items = [],
     selectedItemId = null,
     sortBy = null,
@@ -60,6 +61,7 @@ class Visualizer extends React.Component {
    */
   updateVisualization = function() {
     const displayData = this.prepareItemsForDisplay(
+      this.props.behavior,
       this.props.items,
       this.props.selectedItemId,
       this.props.sortBy,
@@ -67,13 +69,14 @@ class Visualizer extends React.Component {
       this.props.listItemsSelected
     );
 
-    const r = d => {
-      return d.selected ? 64 : 32;
-    };
+    // const r = d => {
+    //   return d.selected ? 64 : 32;
+    // };
 
     // Using a curried function to generate positioning helper with awareness of
     // current properties while still using pure functions
     const getCenterPosition = _getCenterPosition({
+      behavior: this.props.behavior,
       mode: this.props.sortBy === 'random' ? 'random' : 'metric',
       numItems: this.props.items.length,
       areaHeight: this.props.height,
@@ -255,6 +258,7 @@ class Visualizer extends React.Component {
 }
 
 Visualizer.propTypes = {
+  behavior: PropTypes.string,
   items: PropTypes.array,
   selectedItemId: PropTypes.string,
   height: PropTypes.number,
@@ -266,6 +270,7 @@ Visualizer.propTypes = {
 };
 
 Visualizer.defaultProps = {
+  behavior: 'sorted',
   items: [],
   selectedItemId: null,
   height: 100,
@@ -277,6 +282,7 @@ Visualizer.defaultProps = {
 };
 
 const mapStateToProps = ({ humans, roles, navigation, visualizations }) => ({
+  behavior: visualizations.behavior,
   items: navigation.tab !== 1 ? humans : roles,
   selectedItemId: visualizations.selectedItemId,
   tab: navigation.tab,

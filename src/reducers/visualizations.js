@@ -48,6 +48,12 @@ export default function visualizations(
         itemsPositions: updatedItemsPositions
       });
 
+    case ACTIONS.SET_VISUALIZATION_BEHAVIOR:
+      const { behavior } = payload;
+      return Object.assign({}, state, {
+        behavior
+      });
+
     default:
       return state;
   }

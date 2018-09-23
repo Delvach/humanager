@@ -4,9 +4,12 @@ import {
   HUMAN_VISUAL_SETTINGS,
   TRANSITION_DURATIONS,
   TRANSITION_DELAYS,
-  VISUALIZATION_MODE_RANDOM,
-  VISUALIZATION_MODE_METRIC,
-  VISUALIZATION_MODE_FORCE
+  // VISUALIZATION_MODE_RANDOM,
+  // VISUALIZATION_MODE_METRIC,
+  // VISUALIZATION_MODE_FORCE,
+  VISUALIZATION_BEHAVIOR_SORTED,
+  VISUALIZATION_BEHAVIOR_FORCE,
+  VISUALIZATION_BEHAVIOR_RANDOM
 } from '../constants/visualizations';
 
 import {
@@ -107,22 +110,22 @@ export const getRadiusToAvatarRatio = getSpecificHumanSetting(
 export const getTitleFontSize = getSpecificHumanSetting('fontSize');
 
 export const _getCenterPosition = data => (item, i) => {
-  const { mode, numItems, areaHeight, areaWidth } = data;
+  const { behavior, numItems, areaHeight, areaWidth } = data;
 
   let xScale, yScale;
   const { x, y } = item;
-  switch (mode) {
-    case VISUALIZATION_MODE_RANDOM:
+  switch (behavior) {
+    case VISUALIZATION_BEHAVIOR_RANDOM.value:
       xScale = scalePercentWidth(areaWidth);
       yScale = scalePercentHeight(areaHeight);
       return { x: xScale(x), y: yScale(y) };
-    case VISUALIZATION_MODE_METRIC:
+    case VISUALIZATION_BEHAVIOR_SORTED.value:
       xScale = scaleNumItemsWidth(numItems, areaWidth);
       // yScale = scaleNumItemsHeight(numItems, areaHeight);
       yScale = scalePercentHeight(areaHeight);
       return { x: xScale(i), y: yScale(0.5) };
     default:
-    case VISUALIZATION_MODE_FORCE:
+    case VISUALIZATION_BEHAVIOR_FORCE.value:
       return { x, y };
   }
 };

@@ -10,23 +10,29 @@ import FormLabel from '@material-ui/core/FormLabel';
 import ListItem from '@material-ui/core/ListItem';
 import Switch from '@material-ui/core/Switch';
 
-import { changeSortByAction } from '../../actions/visualizations';
+import BubbleChartIcon from '@material-ui/icons/BubbleChart';
+
+import { changeVisualizationBehaviorAction } from '../../actions/visualizations';
 
 import {
-  VISUALIZATION_SORTBY_FILTERS,
-  DEFAULT_VISUALIZATION_SORTBY_FILTER
+  VISUALIZATION_BEHAVIORS,
+  DEFAULT_VISUALIZATION_BEHAVIOR
 } from '../../constants/visualizations';
 
-const VisualizationFilters = ({ sortBy, handleChangeSortBy, drawerOpen }) => {
+const VisualizationFilters = ({
+  behavior,
+  handleChangeBehavior,
+  drawerOpen
+}) => {
   return (
     <FormControl component="fieldset">
       <ListItem>
         <FormLabel component="legend">
-          {drawerOpen ? 'Sort By' : 'Sort'}
+          <BubbleChartIcon /> {drawerOpen && 'Behavior'}
         </FormLabel>
       </ListItem>
       <FormGroup>
-        {VISUALIZATION_SORTBY_FILTERS.map(({ label, value }) => (
+        {VISUALIZATION_BEHAVIORS.map(({ label, value }) => (
           <ListItem
             key={`filter-${value}`}
             style={{ paddingTop: 6, paddingBottom: 6 }}
@@ -34,9 +40,9 @@ const VisualizationFilters = ({ sortBy, handleChangeSortBy, drawerOpen }) => {
             <FormControlLabel
               control={
                 <Switch
-                  checked={sortBy === value}
+                  checked={behavior === value}
                   onChange={() => {
-                    handleChangeSortBy(value);
+                    handleChangeBehavior(value);
                   }}
                   value={value}
                 />
@@ -51,24 +57,24 @@ const VisualizationFilters = ({ sortBy, handleChangeSortBy, drawerOpen }) => {
 };
 
 VisualizationFilters.propTypes = {
-  sortBy: PropTypes.string,
+  behavior: PropTypes.string,
   drawerOpen: PropTypes.bool
 };
 
 VisualizationFilters.defaultProps = {
-  sortBy: DEFAULT_VISUALIZATION_SORTBY_FILTER.value,
+  behavior: DEFAULT_VISUALIZATION_BEHAVIOR.value,
   drawerOpen: true
 };
 
-const mapStateToProps = ({ navigation }) => ({
-  sortBy: navigation.sortBy,
+const mapStateToProps = ({ navigation, visualizations }) => ({
+  behavior: visualizations.behavior,
   drawerOpen: navigation.leftDrawerOpen
 });
 
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
     {
-      handleChangeSortBy: changeSortByAction
+      handleChangeBehavior: changeVisualizationBehaviorAction
     },
     dispatch
   );
