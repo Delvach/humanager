@@ -99,6 +99,7 @@ export const HANDLE_TOP_PANE_RESIZE = 'HANDLE_TOP_PANE_RESIZE';
 export const SET_VISUAL_CONTAINER_SIZE = 'SET_VISUAL_CONTAINER_SIZE';
 
 export const AUTO_GENERATE_FAUX_HUMANS = 'AUTO_GENERATE_FAUX_HUMANS';
+export const AUTO_GENERATE_FAUX_ROLES = 'AUTO_GENERATE_FAUX_HUMANS';
 
 // Start resize event, change boolean in mappped prop to trigger component update
 export const TRIGGER_VISUALIZATION_RESIZE = 'TRIGGER_VISUALIZATION_RESIZE';

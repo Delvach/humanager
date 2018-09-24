@@ -117,7 +117,7 @@ const AppBar = props => {
           Humanager
         </Typography>
 
-        {tab === 0 && (
+        {tab !== 2 && (
           <Button
             color="inherit"
             onClick={() => {

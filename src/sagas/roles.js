@@ -28,7 +28,11 @@ import { setSelectedListItems } from '../actions/navigation';
 
 import { pickRandomColor } from '../utils/humans';
 
-import { normalizeAllRolesData } from '../utils/roles';
+import {
+  normalizeAllRolesData,
+  getFauxRolesData,
+  normalizeRoleData
+} from '../utils/roles';
 
 import { removeIdsFromSelectedList } from './navigation';
 
@@ -94,6 +98,27 @@ export function* loadRoleData({ payload }) {
   } catch (error) {
     yield put(apiError(error));
   }
+}
+
+/*
+ * Generate X number of faux users
+ */
+export function* generateFauxRoles({ payload }) {
+  const { numItems } = payload;
+  const humans = yield select(state => state.humans);
+
+  const humansIds = humans.map(human => human.id);
+
+  // Not checking for uniqueness. Need a while loop that checks faux humans against existing ones
+  const fauxRoles = getFauxRolesData(numItems, humansIds);
+  console.log(fauxRoles);
+  for (let i = 0; i < numItems; i++) {
+    const { name, members } = fauxRoles[i];
+    const payload = normalizeRoleData(name, members);
+    yield* createRole({ payload });
+  }
+  // Refresh master human list
+  yield* loadAllRolesData();
 }
 
 /*
@@ -208,9 +233,14 @@ function* watchRoleUpdate() {
   yield takeEvery(ACTIONS.UPDATE_ROLE, updateRole);
 }
 
+function* watchFauxRoleDataGeneration() {
+  yield takeEvery(ACTIONS.AUTO_GENERATE_FAUX_ROLES, generateFauxRoles);
+}
+
 export const rolesSagas = [
   watchAllRolesLoad(),
   watchRoleLoad(),
   watchRoleDelete(),
-  watchRoleUpdate()
+  watchRoleUpdate(),
+  watchFauxRoleDataGeneration()
 ];

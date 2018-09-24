@@ -39,7 +39,7 @@ export const getFauxFirstName = randomNumber =>
   firstNames[Math.floor(randomNumber * firstNames.length)];
 
 export const getFauxLastName = randomNumber =>
-  firstNames[Math.floor(randomNumber * lastNames.length)];
+  lastNames[Math.floor(randomNumber * lastNames.length)];
 
 export const getFauxTitle = randomNumber => {
   const title = titles[Math.floor(randomNumber * titles.length)];
