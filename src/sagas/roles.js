@@ -111,7 +111,6 @@ export function* generateFauxRoles({ payload }) {
 
   // Not checking for uniqueness. Need a while loop that checks faux humans against existing ones
   const fauxRoles = getFauxRolesData(numItems, humansIds);
-  console.log(fauxRoles);
   for (let i = 0; i < numItems; i++) {
     const { name, members } = fauxRoles[i];
     const payload = normalizeRoleData(name, members);
