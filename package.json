@@ -16,7 +16,6 @@
     "flow-bin": "^0.80.0",
     "jest": "^23.5.0",
     "material-ui": "^0.20.2",
-    "material-ui-image": "^3.0.0",
     "prop-types": "^15.6.2",
     "react": "^16.4.2",
     "react-addons-transition-group": "^15.6.2",
