@@ -10,6 +10,7 @@ export const normalizeAllRolesData = (allRoles = {}) => {
     // role.randomY = Math.random();
     if (!role.members) role.members = [];
     sortedRoles.push({
+      itemType: 'role',
       ...role,
       ...{ id }
     });

@@ -22,6 +22,11 @@ export const HUMAN_ATTRIBUTES = [
     numeric: false
   },
   {
+    label: 'Title',
+    value: 'title',
+    numeric: false
+  },
+  {
     label: 'Email',
     value: 'email',
     numeric: false

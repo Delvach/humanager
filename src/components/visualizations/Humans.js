@@ -101,6 +101,9 @@ class Visualizer extends React.Component {
     // Step 1 - Grab collection of containers (or automagically create later)
     const humanGroups = d3
       .select(this.visualRef.current)
+      .on('click', e => {
+        this.props.selectItem();
+      })
       .selectAll('g')
       .data(displayData, h => `item-${h.id}`);
 
@@ -125,6 +128,7 @@ class Visualizer extends React.Component {
     // 2.2 Update text
     containerUpdater
       .select('text')
+      .text(human => human.name)
       .attr('font-size', getTitleFontSize)
       .attr('x', getTitleX)
       .attr('y', getTitleY);
@@ -142,7 +146,10 @@ class Visualizer extends React.Component {
     const containerEnter = humanGroups
       .enter()
       .append('g')
-      .on('click', d => this.props.selectItem(d.id))
+      .on('click', d => {
+        this.props.selectItem(d.id);
+        d3.event.stopPropagation();
+      })
       // .on('dblclick', function(d) {
       //   d3.select(this).moveToBack();
       // })

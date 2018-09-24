@@ -86,13 +86,11 @@ export const getExitDelay = (_, i) => getDelay('exit') * i;
 export const getUpdateDelay = (_, i) => getDelay('update') * i;
 
 // Retrieve settings for human visual (avatar; need naming convention since avatar is specific to image)
-export const _getHumanSettings = settings => (
-  parameterName,
-  variant = 'base'
-) => settings[variant][parameterName];
+export const _getitemSettings = settings => (parameterName, variant = 'base') =>
+  settings[variant][parameterName];
 
-export const getHumanSettings = _getHumanSettings(HUMAN_VISUAL_SETTINGS);
-export const getSpecificHumanSetting = parameterName => (human, i) => {
+export const getHumanSettings = _getitemSettings(HUMAN_VISUAL_SETTINGS);
+export const getSpecificItemSetting = parameterName => (human, i) => {
   let status = 'base';
   if (human.selected || human.selectedForDeletion) {
     status = human.selectedForDeletion ? 'selectedForDeletion' : 'selected';
@@ -100,14 +98,17 @@ export const getSpecificHumanSetting = parameterName => (human, i) => {
   return getHumanSettings(parameterName, status);
 };
 
-export const getStrokeWidth = getSpecificHumanSetting('strokeWidth');
-export const getStrokeColor = getSpecificHumanSetting('stroke');
-export const getRadius = getSpecificHumanSetting('radius');
-export const getAvatarColor = human => human.color;
-export const getRadiusToAvatarRatio = getSpecificHumanSetting(
+export const getStrokeWidth = getSpecificItemSetting('strokeWidth');
+export const getStrokeColor = getSpecificItemSetting('stroke');
+
+export const getRadius = getSpecificItemSetting('radius');
+
+export const getAvatarColor = item => item.color;
+
+export const getRadiusToAvatarRatio = getSpecificItemSetting(
   'radiusToAvatarRatio'
 );
-export const getTitleFontSize = getSpecificHumanSetting('fontSize');
+export const getTitleFontSize = getSpecificItemSetting('fontSize');
 
 export const _getCenterPosition = data => (item, i) => {
   const { behavior, numItems, areaHeight, areaWidth } = data;

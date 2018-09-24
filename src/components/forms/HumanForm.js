@@ -24,6 +24,8 @@ import {
   warnHuman as warn
 } from '../../utils/validation';
 
+const fields = HUMAN_ATTRIBUTES.filter(attrib => attrib.value !== 'created');
+
 // Define component
 const HumanForm = ({
   handleClose,
@@ -44,7 +46,7 @@ const HumanForm = ({
           human.
         </React.Fragment>
       </DialogContentText>
-      {HUMAN_ATTRIBUTES.map(({ label, value }, index) => (
+      {fields.map(({ label, value }, index) => (
         <TextField
           key={value}
           autoFocus={index === 0}
@@ -100,10 +102,10 @@ HumanReduxFormSubmittable.defaultProps = {
 
 // initialValues populates form when launched
 const mapStateToProps = ({ human, navigation }) => {
-  const { name, email, age } = human;
+  const { nameFirst, nameLast, title, email, age } = human;
   return {
     createNew: navigation.humanModalEditId === null,
-    initialValues: { name, email, age }
+    initialValues: { nameFirst, title, nameLast, email, age }
   };
 };
 

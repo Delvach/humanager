@@ -8,13 +8,13 @@ export const validateHuman = values => {
   const minLen = 2;
   if (!values.nameLast) {
     errors.nameLast = 'Required';
-  } else if (values.nameLast.length > minLen) {
-    errors.nameLast = `Must be ${minLen} characters or less`;
+  } else if (values.nameLast.length < minLen) {
+    errors.nameLast = `Must be ${minLen} characters or more`;
   }
   if (!values.nameFirst) {
     errors.nameFirst = 'Required';
-  } else if (values.nameFirst.length > minLen) {
-    errors.nameFirst = `Must be ${minLen} characters or less`;
+  } else if (values.nameFirst.length < minLen) {
+    errors.nameFirst = `Must be ${minLen} characters or more`;
   }
   if (!values.email) {
     errors.email = 'Required';

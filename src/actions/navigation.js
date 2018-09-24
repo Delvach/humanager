@@ -118,11 +118,13 @@ export const setDialogEditIdAction = (id, moduleId) => ({
 });
 
 export const setHumanEditingDialogAction = human => {
-  const { name, email, age } = human;
+  const { nameFirst, nameLast, title, email, age } = human;
   return {
     type: ACTIONS.SET_HUMAN_MODAL_INIT_VALUES,
     payload: {
-      name,
+      nameFirst,
+      nameLast,
+      title,
       email,
       age
     }
@@ -171,15 +173,19 @@ export const toggleLeftDrawerAction = (open = false) => ({
 });
 
 export const submitHumanDialogAction = ({
-  name = '',
+  nameFirst = '',
+  nameLast = '',
   email = '',
+  title,
   age = ''
 }) => {
   return {
     type: ACTIONS.SUBMIT_HUMAN_DIALOG,
     payload: {
-      name,
+      nameFirst,
+      nameLast,
       email,
+      title,
       age
     }
   };

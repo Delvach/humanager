@@ -39,7 +39,7 @@ const RoleForm = ({
     <DialogTitle id="form-dialog-title">
       {createNew ? 'Create' : 'Edit'} Role
     </DialogTitle>
-    <DialogContent>
+    <DialogContent style={{ minHeight: 400 }}>
       <DialogContentText>
         <React.Fragment>
           Please enter {createNew || 'updated '}

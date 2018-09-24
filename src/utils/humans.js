@@ -1,10 +1,15 @@
 import {
   firstNames,
   adorableAvatarsParameters,
-  materialUiColors
+  materialUiColors,
+  titles
 } from '../constants/faux';
 
 import lastNames from '../constants/lastNames';
+
+export const capitalizeFirstLetter = string => {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+};
 
 /*
  * Human data is stored as as list of 'id' objects, with child objects for each field.
@@ -14,9 +19,11 @@ export const normalizeAllHumansData = (allHumans = {}) => {
   const sortedHumans = [];
   for (const id in allHumans) {
     const human = allHumans[id];
+    human.name = `${allHumans[id].nameFirst} ${allHumans[id].nameLast}`;
     // human.randomX = Math.random();
     // human.randomY = Math.random();
     sortedHumans.push({
+      itemType: 'human',
       ...human,
       ...{ id }
     });
@@ -34,15 +41,26 @@ export const getFauxFirstName = randomNumber =>
 export const getFauxLastName = randomNumber =>
   firstNames[Math.floor(randomNumber * lastNames.length)];
 
+export const getFauxTitle = randomNumber => {
+  const title = titles[Math.floor(randomNumber * titles.length)];
+
+  return title
+    .split(' ')
+    .map(word => capitalizeFirstLetter(word))
+    .join(' ');
+};
+
 export const getFauxHumansData = numItems => {
   const humans = [];
   for (let i = 0; i < numItems; i++) {
     const firstName = getFauxFirstName(Math.random());
     const lastName = getFauxLastName(Math.random());
+    const title = getFauxTitle(Math.random());
     humans.push({
       name: `${firstName} ${lastName}`,
       nameFirst: firstName,
       nameLast: lastName,
+      title,
       email: `${firstName.toLowerCase()}@delvach.com`,
       age: 18 + Math.floor(Math.random() * 30)
     });

@@ -178,13 +178,19 @@ function* handleHumanDialogSubmit() {
   try {
     const state = yield select(state => state);
 
-    const { name, email, age } = state.form.humanForm.values;
+    const {
+      nameFirst,
+      nameLast,
+      title,
+      email,
+      age
+    } = state.form.humanForm.values;
     const id = state.navigation.humanModalEditId;
 
     if (id === null) {
-      yield* createHuman({ name, email, age });
+      yield* createHuman({ nameFirst, nameLast, title, email, age });
     } else {
-      yield* updateHuman({ name, email, age, id });
+      yield* updateHuman({ nameFirst, nameLast, title, email, age, id });
     }
 
     // Close human modal

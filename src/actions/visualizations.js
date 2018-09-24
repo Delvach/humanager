@@ -10,7 +10,7 @@ export const testOutputAction = () => ({
   payload: {}
 });
 
-export const selectItemAction = id => ({
+export const selectItemAction = (id = null) => ({
   type: ACTIONS.SELECT_VISUALIZATION_ITEM,
   payload: { id }
 });
