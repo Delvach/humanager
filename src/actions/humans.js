@@ -43,12 +43,12 @@ export const humanDeletedAction = id => {
   };
 };
 
-export const humansLoadedAction = (humans, allItemsKeys) => {
+export const humansLoadedAction = humans => {
   return {
     type: ACTIONS.HUMANS_LOADED,
     payload: {
       humans,
-      allItemsKeys
+      allItemsKeys: Object.keys(humans)
     }
   };
 };

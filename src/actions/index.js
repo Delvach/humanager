@@ -15,3 +15,12 @@ export const apiError = error => {
     }
   };
 };
+
+export const sagaError = error => {
+  return {
+    type: ACTIONS.SAGA_ERROR,
+    payload: {
+      error
+    }
+  };
+};

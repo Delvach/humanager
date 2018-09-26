@@ -53,12 +53,12 @@ export const roleDeletedAction = id => {
   };
 };
 
-export const rolesLoadedAction = (roles, allItemsKeys) => {
+export const rolesLoadedAction = roles => {
   return {
     type: ACTIONS.ROLES_LOADED,
     payload: {
       roles,
-      allItemsKeys
+      allItemsKeys: Object.keys(roles)
     }
   };
 };
