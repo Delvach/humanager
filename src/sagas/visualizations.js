@@ -10,6 +10,9 @@ import {
   updateVisualizationItemPositionsAction
 } from '../actions/visualizations';
 
+import { mergeHumansPositions } from './humans';
+import { mergeRolesPositions } from './roles';
+
 function* handleTest() {
   yield put(testOutputAction());
 }
@@ -28,6 +31,9 @@ function* handleRandomizePositions() {
   for (let i = 0; i < roles.length; i++) {
     rolesPositions[roles[i].id] = getRandomPosition();
   }
+
+  yield* mergeHumansPositions(humansPositions);
+  yield* mergeRolesPositions(rolesPositions);
 
   // Disabled; need to be updated for revised behavior
   // yield put(
@@ -75,6 +81,15 @@ function* updateVisualizationSettings({ type, payload }) {
     case ACTIONS.ROLE_DELETED:
       // Remove item
       delete itemsPositions[payload.id];
+      break;
+
+    case ACTIONS.RANDOMIZE_VISUALIZATION_POSITIONS:
+      const { humans, roles, navigation } = yield select(state => state);
+      const items = navigation.tab !== 1 ? humans : roles;
+
+      for (let i in items) {
+        itemsPositions[items[i].id] = getRandomPosition();
+      }
       break;
     default:
       break;

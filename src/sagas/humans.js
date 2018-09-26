@@ -2,7 +2,7 @@ import { call, put, takeEvery, select } from 'redux-saga/effects';
 
 import api from '../api';
 
-import { apiError } from '../actions';
+import { apiError, sagaError } from '../actions';
 
 // import { setSelectedListItems } from '../actions/navigation';
 
@@ -65,25 +65,37 @@ export function* loadAllHumansData() {
     }
 
     for (const i in myHumans) {
-      if (!itemsPositions[i]) {
-        itemsPositions[i] = getRandomPosition();
-      }
+      // if (!itemsPositions[i]) { // This check allows persistent position
+      itemsPositions[i] = getRandomPosition();
+      // }
 
       myHumans[i].x = itemsPositions[i].x;
       myHumans[i].y = itemsPositions[i].y;
+      myHumans[i].z = itemsPositions[i].z;
     }
 
     yield put(updateVisualizationItemPositionsAction({ itemsPositions }));
 
     // Update state with master humans list data
-    yield put(
-      humansLoadedAction(
-        normalizeAllHumansData(myHumans),
-        Object.keys(myHumans)
-      )
-    );
+    yield put(humansLoadedAction(normalizeAllHumansData(myHumans)));
   } catch (error) {
     yield put(apiError(error));
+  }
+}
+
+export function* mergeHumansPositions(positions) {
+  try {
+    let humans = yield select(state => state.humans);
+    for (let i in humans) {
+      const id = humans[i].id;
+      humans[i].x = positions[id].x;
+      humans[i].y = positions[id].y;
+      humans[i].z = positions[id].z;
+    }
+    // Update state with master humans list data
+    yield put(humansLoadedAction(normalizeAllHumansData(humans)));
+  } catch (error) {
+    yield put(sagaError(error));
   }
 }
 

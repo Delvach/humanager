@@ -53,11 +53,11 @@ let ItemsList = ({
       <TableHeader columns={itemFields} />
 
       <TableBody>
-        {getSortedItems(
+        {getSortedItems({
           items,
           sortBy,
-          sortByDirection === TABLE_SORT_ASCENDING
-        ).map(item => {
+          ascending: sortByDirection === TABLE_SORT_ASCENDING
+        }).map(item => {
           const { id, name } = item;
           const selected = selectedItems.indexOf(id) !== -1;
           return (

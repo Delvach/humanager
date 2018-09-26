@@ -4,26 +4,17 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import { TABLE_SORT_ASCENDING } from '../../constants/navigation';
-import { selectItemAction } from '../../actions/visualizations';
-import { getSortedItems } from '../../utils/data';
-// import classNames from 'classnames';
 
 import {
-  getEnterDuration,
-  getExitDuration,
-  getUpdateDuration,
-  getEnterDelay,
-  getExitDelay,
-  getUpdateDelay,
-  getStrokeWidth,
-  getStrokeColor,
-  getRadius,
-  getAvatarColor,
-  getTitleFontSize,
-  _getCenterPosition,
-  _getImageData,
-  _getTitleData
-} from '../../utils/visualizations';
+  ITEM_VISUAL_SETTINGS,
+  TRANSITION_DURATIONS,
+  TRANSITION_DELAYS
+} from '../../constants/visualizations';
+
+import { selectItemAction } from '../../actions/visualizations';
+import { getSortedItems } from '../../utils/data';
+import { Items } from '../../utils/items';
+// import classNames from 'classnames';
 
 import * as d3 from 'd3';
 
@@ -31,6 +22,32 @@ class Visualizer extends React.Component {
   constructor(props) {
     super(props);
     this.visualRef = React.createRef();
+
+    // this.props.behavior,
+    //   this.props.items,
+    //   this.props.selectedItemId,
+    //   this.props.sortBy,
+    //   this.props.sortByDirection,
+    //   this.props.listItemsSelected;
+
+    const { behavior, items, sortBy, height, width } = props;
+
+    const propSettings = {
+      behavior: behavior,
+      numItems: items.length,
+      areaHeight: height,
+      areaWidth: width,
+      ascending: this.props.sortByDirection === TABLE_SORT_ASCENDING
+    };
+
+    this.tools = Items(
+      this.props.width,
+      this.props.height,
+      propSettings,
+      ITEM_VISUAL_SETTINGS,
+      TRANSITION_DURATIONS,
+      TRANSITION_DELAYS
+    );
   }
 
   prepareItemsForDisplay = (
@@ -49,11 +66,12 @@ class Visualizer extends React.Component {
       };
     });
 
-    return getSortedItems(
-      updatedItems,
+    return getSortedItems({
+      behavior,
+      items: updatedItems,
       sortBy,
-      sortByDirection === TABLE_SORT_ASCENDING
-    );
+      ascending: sortByDirection === TABLE_SORT_ASCENDING
+    });
   };
 
   /* 
@@ -69,37 +87,8 @@ class Visualizer extends React.Component {
       this.props.listItemsSelected
     );
 
-    // const r = d => {
-    //   return d.selected ? 64 : 32;
-    // };
-
-    // Using a curried function to generate positioning helper with awareness of
-    // current properties while still using pure functions
-    const getCenterPosition = _getCenterPosition({
-      behavior: this.props.behavior,
-      mode: this.props.sortBy === 'random' ? 'random' : 'metric',
-      numItems: this.props.items.length,
-      areaHeight: this.props.height,
-      areaWidth: this.props.width
-    });
-
-    // Generate attribute helpers. This happens here instead of within util file because
-    // 'getCenterPosition' now contains props data these functions use for scaling and positioning
-    const getCenterPositionX = (human, i) => getCenterPosition(human, i).x;
-    const getCenterPositionY = (human, i) => getCenterPosition(human, i).y;
-
-    const getImageData = _getImageData(getCenterPosition);
-    const getImageX = (item, i) => getImageData(item, i).x;
-    const getImageY = (item, i) => getImageData(item, i).y;
-    const getImageHeight = (item, i) => getImageData(item, i).h;
-    const getImageWidth = (item, i) => getImageData(item, i).w;
-
-    const getTitleData = _getTitleData(getCenterPosition);
-    const getTitleX = (item, i) => getTitleData(item, i).x;
-    const getTitleY = (item, i) => getTitleData(item, i).y;
-
     // Step 1 - Grab collection of containers (or automagically create later)
-    const humanGroups = d3
+    const itemsGroups = d3
       .select(this.visualRef.current)
       .on('click', e => {
         this.props.selectItem();
@@ -107,148 +96,23 @@ class Visualizer extends React.Component {
       .selectAll('g')
       .data(displayData, h => `item-${h.id}`);
 
-    // Step 2 - If updating existing containers, adjust properties with transition
-    const containerUpdater = humanGroups
-      .transition()
-      .duration(getUpdateDuration)
-      .delay(getUpdateDelay);
-    // .ease(d3.easeBounceOut);
+    this.tools.updateGroup(itemsGroups);
 
-    // 2.1 Update circles
-    containerUpdater
-      .select('circle')
-
-      .attr('r', getRadius)
-      .attr('cx', getCenterPositionX)
-      .attr('cy', getCenterPositionY)
-      .style('fill', getAvatarColor)
-      .style('stroke', getStrokeColor)
-      .style('stroke-width', getStrokeWidth);
-
-    // 2.2 Update text
-    containerUpdater
-      .select('text')
-      .text(human => human.name)
-      .attr('font-size', getTitleFontSize)
-      .attr('x', getTitleX)
-      .attr('y', getTitleY);
-
-    // 2.3 Update images
-    containerUpdater
-      .select('image')
-      .attr('x', getImageX)
-      .attr('y', getImageY)
-      .style('opacity', 1)
-      .attr('height', getImageHeight)
-      .attr('width', getImageWidth);
-
-    // Step 3 - If containers don't exist, create and initialize
-    const containerEnter = humanGroups
-      .enter()
-      .append('g')
-      .on('click', d => {
-        this.props.selectItem(d.id);
-        d3.event.stopPropagation();
-      })
-      // .on('dblclick', function(d) {
-      //   d3.select(this).moveToBack();
-      // })
-      // .on('click', function(d) {
-      //   d3.select(this).moveToFront();
-      // })
-      .attr('class', 'human');
-
-    // 3.1 Add circle
-    // 3.1.1 Initial state when appearing
-    containerEnter
-      .append('circle')
-      .attr('class', 'item')
-      .attr('r', 0)
-      .attr('cx', getCenterPositionX)
-      .attr('cy', getCenterPositionY)
-      .style('fill', getAvatarColor)
-      .style('stroke', getStrokeColor)
-      .style('stroke-width', getStrokeWidth)
-
-      // 3.1.2 Updated state after appearing
-      .transition()
-      .duration(getEnterDuration)
-      .delay(getEnterDelay)
-      .ease(d3.easeBounceOut)
-      .attr('r', getRadius);
-
-    // 4.1 Add name text
-    // 4.1.1 Initial state when appearing
-    containerEnter
-      .append('text')
-      .attr('class', 'name')
-      .text(human => human.name)
-      .attr('x', getTitleX)
-      .attr('y', getTitleY)
-      .attr('font-size', 0)
-      // .style('stroke', getStrokeColor)
-      .style('fill', 'black')
-      .style('text-anchor', 'middle')
-
-      // 4.1.2 Updated state after appearing
-      .transition()
-      .duration(getEnterDuration)
-      .delay(getEnterDelay)
-      .ease(d3.easeBounceOut)
-
-      .attr('font-size', getTitleFontSize);
-
-    // 5.1 Add avatar images
-    // 5.1.1 Initial state when appearing
-    containerEnter
-      .append('image')
-      .attr('xlink:href', ({ avatar }) => avatar)
-      .attr('x', getImageX)
-      .attr('y', getImageY)
-      .style('opacity', 0)
-      .attr('height', 0)
-      .attr('width', 0)
-
-      // 5.1.2 Updated state after appearing
-      .transition()
-      .duration(getEnterDuration)
-      .delay(getEnterDelay)
-      .ease(d3.easeBounceOut)
-      .attr('height', getImageHeight)
-      .attr('width', getImageWidth)
-      .attr('x', getImageX)
-      .attr('y', getImageY)
-      .style('opacity', 1);
-
-    const containerExit = humanGroups
-      .exit()
-      .filter(':not(.exiting)') // Don't select already exiting nodes
-      .classed('exiting', true)
-      .transition()
-      .duration(getExitDuration)
-      .delay(getExitDelay);
-
-    containerExit.select('circle').attr('r', 0);
-    // .attr('x', getCenterPositionX)
-    // .attr('y', getCenterPositionY);
-
-    containerExit
-      .select('image')
-      .attr('height', 0)
-      .attr('width', 0);
-    // .attr('x', getCenterPositionX)
-    // .attr('y', getCenterPositionY);
-
-    containerExit.select('text').attr('font-size', 0);
-
-    containerExit
-      .style('opacity', 0)
-      .style('fill-opacity', 0)
-      .style('stroke-opacity', 0)
-      .remove();
+    this.tools.enterGroup(itemsGroups);
+    this.tools.reorderGroup(this.props.behavior, itemsGroups);
+    this.tools.exitGroup(itemsGroups);
   };
 
   componentDidUpdate = function() {
+    const { behavior, items, height, width } = this.props;
+
+    this.tools.updateSettings({
+      behavior,
+      numItems: items.length,
+      areaHeight: height,
+      areaWidth: width,
+      ascending: this.props.sortByDirection === TABLE_SORT_ASCENDING
+    });
     this.updateVisualization();
   };
 
@@ -272,8 +136,7 @@ Visualizer.propTypes = {
   width: PropTypes.number,
   itemSizeBase: PropTypes.number,
   itemSizeActive: PropTypes.number,
-  sortBy: PropTypes.string,
-  sortByRandom: PropTypes.bool
+  sortBy: PropTypes.string
 };
 
 Visualizer.defaultProps = {
@@ -284,8 +147,7 @@ Visualizer.defaultProps = {
   width: 100,
   itemSizeBase: 32,
   itemSizeActive: 48,
-  sortBy: 'name',
-  sortByRandom: false
+  sortBy: 'name'
 };
 
 const mapStateToProps = ({ humans, roles, navigation, visualizations }) => ({
@@ -297,7 +159,6 @@ const mapStateToProps = ({ humans, roles, navigation, visualizations }) => ({
   itemSizeActive: visualizations.itemSizeActive,
   sortBy: navigation.sortBy,
   sortByDirection: navigation.sortByDirection,
-  sortByRandom: navigation.sortBy === 'random',
   listItemsSelected: navigation.listItemsSelected
 });
 

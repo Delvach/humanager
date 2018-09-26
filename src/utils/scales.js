@@ -16,6 +16,9 @@ export const scaleNumItemsHeight = (numItems, height) =>
 export const scaleNumItemsWidth = (numItems, width) =>
   scaleNumItems(numItems, width);
 
+export const scaleNumItemsDepth = (numItems, depth) =>
+  scaleNumItems(numItems, depth);
+
 /*
    * Scales using percentages
    */
@@ -27,5 +30,10 @@ export const scalePercent = value => {
 };
 
 export const scalePercentHeight = height => scalePercent(height);
-
 export const scalePercentWidth = width => scalePercent(width);
+export const scalePercentDepth = () => {
+  return d3
+    .scaleLinear()
+    .domain([0, 1])
+    .range([10, 50]);
+};

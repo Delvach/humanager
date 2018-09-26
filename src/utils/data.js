@@ -62,14 +62,27 @@ export const colorSort = sortBy => (a, b) => {
   return 0;
 };
 
-export const getSortedItems = (
+export const depthSort = (a, b) => {
+  if (a.z > b.z) return 1;
+  if (b.z > a.z) return -1;
+  return 0;
+};
+
+export const getSortedItems = ({
   items = [],
   sortBy = 'name',
-  ascending = true
-) => {
+  ascending = true,
+  behavior = 'sorted'
+}) => {
+  // Possible?
   if (!sortBy || sortBy === 'random') return items;
 
-  const sorter = sortBy === 'color' ? colorSort(sortBy) : defaultSort(sortBy);
+  let sorter;
+  if (behavior === 'random') {
+    sorter = depthSort;
+  } else {
+    sorter = sortBy === 'color' ? colorSort(sortBy) : defaultSort(sortBy);
+  }
 
   items.sort(sorter);
   return ascending ? items : items.reverse();

@@ -42,7 +42,7 @@ export const DEFAULT_VISUALIZATION_SORTBY_FILTER =
 /*
    *  Default human appearance parameters
    */
-export const HUMAN_VISUAL_SETTINGS = {
+export const ITEM_VISUAL_SETTINGS = {
   base: {
     radius: 16,
     fontSize: 10,

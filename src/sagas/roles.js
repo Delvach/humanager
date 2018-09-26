@@ -2,7 +2,7 @@ import { call, put, takeEvery, select } from 'redux-saga/effects';
 
 import api from '../api';
 
-import { apiError } from '../actions';
+import { apiError, sagaError } from '../actions';
 
 import {
   deleteRoleAction,
@@ -63,22 +63,37 @@ export function* loadAllRolesData() {
     }
 
     for (const i in myRoles) {
-      if (!itemsPositions[i]) {
-        itemsPositions[i] = getRandomPosition();
-      }
+      // if (!itemsPositions[i]) {
+      itemsPositions[i] = getRandomPosition();
+      // }
 
       myRoles[i].x = itemsPositions[i].x;
       myRoles[i].y = itemsPositions[i].y;
+      myRoles[i].z = itemsPositions[i].z;
     }
 
     yield put(updateVisualizationItemPositionsAction({ itemsPositions }));
 
     // Update state with master roles list data
-    yield put(
-      rolesLoadedAction(normalizeAllRolesData(myRoles), Object.keys(myRoles))
-    );
+    yield put(rolesLoadedAction(normalizeAllRolesData(myRoles)));
   } catch (error) {
     yield put(apiError(error));
+  }
+}
+
+export function* mergeRolesPositions(positions) {
+  try {
+    let roles = yield select(state => state.roles);
+    for (let i in roles) {
+      const id = roles[i].id;
+      roles[i].x = positions[id].x;
+      roles[i].y = positions[id].y;
+      roles[i].z = positions[id].z;
+    }
+    // Update state with master roles list data
+    yield put(rolesLoadedAction(normalizeAllRolesData(roles)));
+  } catch (error) {
+    yield put(sagaError(error));
   }
 }
 

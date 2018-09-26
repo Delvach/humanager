@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 
 import {
-  HUMAN_VISUAL_SETTINGS,
+  ITEM_VISUAL_SETTINGS,
   TRANSITION_DURATIONS,
   TRANSITION_DELAYS,
   // VISUALIZATION_MODE_RANDOM,
@@ -15,6 +15,7 @@ import {
 import {
   scalePercentHeight,
   scalePercentWidth,
+  scalePercentDepth,
   // scaleNumItemsHeight,
   scaleNumItemsWidth
 } from './scales';
@@ -60,6 +61,7 @@ export const getSquareInCircle = (cx, cy, radius) => {
 export const getRandomPosition = () => ({
   x: Math.random(),
   y: Math.random(),
+  z: Math.random(),
   type: 'random'
 });
 
@@ -89,7 +91,7 @@ export const getUpdateDelay = (_, i) => getDelay('update') * i;
 export const _getitemSettings = settings => (parameterName, variant = 'base') =>
   settings[variant][parameterName];
 
-export const getHumanSettings = _getitemSettings(HUMAN_VISUAL_SETTINGS);
+export const getHumanSettings = _getitemSettings(ITEM_VISUAL_SETTINGS);
 export const getSpecificItemSetting = parameterName => (human, i) => {
   let status = 'base';
   if (human.selected || human.selectedForDeletion) {
@@ -101,8 +103,6 @@ export const getSpecificItemSetting = parameterName => (human, i) => {
 export const getStrokeWidth = getSpecificItemSetting('strokeWidth');
 export const getStrokeColor = getSpecificItemSetting('stroke');
 
-export const getRadius = getSpecificItemSetting('radius');
-
 export const getAvatarColor = item => item.color;
 
 export const getRadiusToAvatarRatio = getSpecificItemSetting(
@@ -113,29 +113,35 @@ export const getTitleFontSize = getSpecificItemSetting('fontSize');
 export const _getCenterPosition = data => (item, i) => {
   const { behavior, numItems, areaHeight, areaWidth } = data;
 
-  let xScale, yScale;
-  const { x, y } = item;
+  let xScale, yScale, zScale;
+  const { x, y, z } = item;
   switch (behavior) {
     case VISUALIZATION_BEHAVIOR_RANDOM.value:
       xScale = scalePercentWidth(areaWidth);
       yScale = scalePercentHeight(areaHeight);
-      return { x: xScale(x), y: yScale(y) };
+      zScale = scalePercentDepth(areaWidth);
+      return { x: xScale(x), y: yScale(y), z: zScale(z) };
     case VISUALIZATION_BEHAVIOR_SORTED.value:
       xScale = scaleNumItemsWidth(numItems, areaWidth);
       // yScale = scaleNumItemsHeight(numItems, areaHeight);
       yScale = scalePercentHeight(areaHeight);
-      return { x: xScale(i), y: yScale(0.5) };
+      zScale = scalePercentDepth(areaWidth);
+      return { x: xScale(i), y: yScale(0.5), z: zScale(0.5) };
     default:
     case VISUALIZATION_BEHAVIOR_FORCE.value:
-      return { x, y };
+      return { x, y, z };
   }
 };
 
+/*
+ *  Generate image data utility
+ *  Uses props data in conjunction with item for coordinates
+ */
 export const _getImageData = getCenter => (item, i) => {
   const { x, y } = getCenter(item, i);
   const radius = getRadius(item, i);
   const ratio = getRadiusToAvatarRatio(item, i);
-  return getSquareInCircle(x, y, radius * ratio);
+  return { a: 1, ...getSquareInCircle(x, y, radius * ratio) };
 };
 
 export const _getTitleData = getCenter => (item, i) => {
@@ -144,4 +150,12 @@ export const _getTitleData = getCenter => (item, i) => {
     x,
     y: y + getRadius(item, i) * 1.6
   };
+};
+
+// export const _getRadius =
+
+export const getRadius = getSpecificItemSetting('radius');
+
+export const _getCircleData = getCenter => (item, i) => {
+  const { x, y, z } = getCenter(item, i);
 };

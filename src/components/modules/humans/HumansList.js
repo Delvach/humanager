@@ -50,7 +50,7 @@ const HumanList = ({
       </TableRow>
     </TableHead>
     <TableBody>
-      {getSortedItems(humans, sortBy).map(human => {
+      {getSortedItems({ items: humans, sortBy }).map(human => {
         const { id, name, avatar } = human;
         return (
           <TableRow onClick={() => editItem('humans', id)} key={id}>
