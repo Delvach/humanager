@@ -58,7 +58,7 @@ export const rolesLoadedAction = roles => {
     type: ACTIONS.ROLES_LOADED,
     payload: {
       roles,
-      allItemsKeys: Object.keys(roles)
+      allItemsIDs: roles.map(r => r.id)
     }
   };
 };

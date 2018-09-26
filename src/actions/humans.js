@@ -48,7 +48,7 @@ export const humansLoadedAction = humans => {
     type: ACTIONS.HUMANS_LOADED,
     payload: {
       humans,
-      allItemsKeys: Object.keys(humans)
+      allItemsIDs: humans.map(h => h.id)
     }
   };
 };

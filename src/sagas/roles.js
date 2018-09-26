@@ -62,14 +62,14 @@ export function* loadAllRolesData() {
       }
     }
 
-    for (const i in myRoles) {
+    for (const id in myRoles) {
       // if (!itemsPositions[i]) {
-      itemsPositions[i] = getRandomPosition();
+      itemsPositions[id] = getRandomPosition();
       // }
 
-      myRoles[i].x = itemsPositions[i].x;
-      myRoles[i].y = itemsPositions[i].y;
-      myRoles[i].z = itemsPositions[i].z;
+      myRoles[id].x = itemsPositions[id].x;
+      myRoles[id].y = itemsPositions[id].y;
+      myRoles[id].z = itemsPositions[id].z;
     }
 
     yield put(updateVisualizationItemPositionsAction({ itemsPositions }));
@@ -84,14 +84,16 @@ export function* loadAllRolesData() {
 export function* mergeRolesPositions(positions) {
   try {
     let roles = yield select(state => state.roles);
+    const myRoles = {};
     for (let i in roles) {
       const id = roles[i].id;
       roles[i].x = positions[id].x;
       roles[i].y = positions[id].y;
       roles[i].z = positions[id].z;
+      myRoles[id] = roles[i];
     }
     // Update state with master roles list data
-    yield put(rolesLoadedAction(normalizeAllRolesData(roles)));
+    yield put(rolesLoadedAction(normalizeAllRolesData(myRoles)));
   } catch (error) {
     yield put(sagaError(error));
   }
@@ -165,6 +167,7 @@ export function* createRole({ payload }) {
 export function* updateRole({ payload }) {
   try {
     const { name, members, id } = payload;
+    console.log(payload);
     const { uid } = yield select(state => state.user);
     if (!id) {
       throw new Error('updateRole requires valid ID');
@@ -189,6 +192,9 @@ export function* updateRole({ payload }) {
 export function* deleteRole({ payload }) {
   try {
     const { id, reloadList } = payload;
+    if (!id) {
+      throw new Error('updateRole requires valid ID');
+    }
     const state = yield select(state => state);
     const { visualizations, navigation } = state;
     const { listItemsSelected } = navigation;

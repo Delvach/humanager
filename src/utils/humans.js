@@ -28,7 +28,7 @@ export const normalizeAllHumansData = (allHumans = {}) => {
       ...{ id }
     });
   }
-
+  // console.log(sortedHumans);
   return sortedHumans;
 };
 

@@ -64,14 +64,14 @@ export function* loadAllHumansData() {
       }
     }
 
-    for (const i in myHumans) {
+    for (const id in myHumans) {
       // if (!itemsPositions[i]) { // This check allows persistent position
-      itemsPositions[i] = getRandomPosition();
+      itemsPositions[id] = getRandomPosition();
       // }
 
-      myHumans[i].x = itemsPositions[i].x;
-      myHumans[i].y = itemsPositions[i].y;
-      myHumans[i].z = itemsPositions[i].z;
+      myHumans[id].x = itemsPositions[id].x;
+      myHumans[id].y = itemsPositions[id].y;
+      myHumans[id].z = itemsPositions[id].z;
     }
 
     yield put(updateVisualizationItemPositionsAction({ itemsPositions }));
@@ -85,15 +85,17 @@ export function* loadAllHumansData() {
 
 export function* mergeHumansPositions(positions) {
   try {
-    let humans = yield select(state => state.humans);
+    const humans = yield select(state => state.humans);
+    const myHumans = {};
     for (let i in humans) {
       const id = humans[i].id;
       humans[i].x = positions[id].x;
       humans[i].y = positions[id].y;
       humans[i].z = positions[id].z;
+      myHumans[id] = humans[i];
     }
     // Update state with master humans list data
-    yield put(humansLoadedAction(normalizeAllHumansData(humans)));
+    yield put(humansLoadedAction(normalizeAllHumansData(myHumans)));
   } catch (error) {
     yield put(sagaError(error));
   }
@@ -210,7 +212,7 @@ export function* deleteHuman({ payload }) {
     // List of roles that need to be updated; trigger sagas from here? Best way to batch them?
     for (let i = 0; i < rolesWithMemberId.length; i++) {
       const role = Object.assign({}, rolesWithMemberId[i]);
-      role.members.splice(role.members.indexOf(id), 1);
+      role.members = role.members.splice(role.members.indexOf(id), 1);
       yield put(roleUpdateAction(role));
     }
 

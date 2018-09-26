@@ -62,10 +62,10 @@ function* updateVisualizationSettings({ type, payload }) {
     case ACTIONS.HUMANS_LOADED:
     case ACTIONS.ROLES_LOADED:
       // Process all items
-      const { allItemsKeys } = payload;
-      // const allItemsKeys = Object.keys({ ...humans, ...roles });
-      for (let i in allItemsKeys) {
-        const key = allItemsKeys[i];
+      const { allItemsIDs } = payload;
+      // const allItemsIDs = Object.keys({ ...humans, ...roles });
+      for (let i in allItemsIDs) {
+        const key = allItemsIDs[i];
         if (!itemsPositions[key]) {
           itemsPositions[key] = getRandomPosition();
         }

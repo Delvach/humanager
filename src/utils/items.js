@@ -108,8 +108,15 @@ export const Items = (
     getTitleFontSize = (item, i) => {
       return itemSettings[getStatus(item, i)].fontSize;
     },
+    getGroupID = (item, i) => `group-${item.id}`,
+    getImageID = (item, i) => `image-${item.id}`,
+    getCircleID = (item, i) => `circle-${item.id}`,
+    getTextID = (item, i) => `text-${item.id}`,
     getImageX = (item, i) => getImageData(item, i).x,
     getImageY = (item, i) => getImageData(item, i).y,
+    getImageOpacity = (item, i) => {
+      return item.itemType === 'human' ? 1 : 0;
+    },
     getImageHeight = (item, i) => getImageData(item, i).h,
     getImageWidth = (item, i) => getImageData(item, i).w,
     getTitleData = (item, i) => {
@@ -194,11 +201,11 @@ export const Items = (
         .style('fill', getAvatarColor)
         .style('stroke', getStrokeColor)
         .style('stroke-width', getStrokeWidth);
-      // .style('opacity', (d, i) => d.z);
     },
     enterCircle = enterer => {
       enterer
         .append('circle')
+        .attr('id', getCircleID)
         .attr('class', 'item')
         .attr('r', 0)
         .attr('cx', getCenterPositionX)
@@ -223,13 +230,18 @@ export const Items = (
         .delay(getUpdateDelay)
         .attr('x', getImageX)
         .attr('y', getImageY)
-        .style('opacity', 1)
+        .style('opacity', getImageOpacity)
         .attr('height', getImageHeight)
         .attr('width', getImageWidth);
     },
     enterImage = enterer => {
       enterer
         .append('image')
+        .attr('id', (d, i) => {
+          const id = getImageID(d, i);
+          // console.log(d.id, id);
+          return id;
+        })
         .attr('xlink:href', ({ avatar }) => avatar)
         .attr('x', getImageX)
         .attr('y', getImageY)
@@ -246,7 +258,7 @@ export const Items = (
         .attr('width', getImageWidth)
         .attr('x', getImageX)
         .attr('y', getImageY)
-        .style('opacity', 1);
+        .style('opacity', getImageOpacity);
     },
     exitImage = exiter => {
       exiter
@@ -266,6 +278,7 @@ export const Items = (
     enterText = enterer => {
       enterer
         .append('text')
+        .attr('id', getTextID)
         .attr('class', 'name')
         .text(human => human.name)
         .attr('x', getTitleX)
@@ -327,8 +340,15 @@ export const Items = (
   calc.getStrokeWidth = getStrokeWidth;
   calc.getTitleFontSize = getTitleFontSize;
 
+  calc.getGroupID = getGroupID;
+  calc.getImageID = getImageID;
+  calc.getCircleID = getCircleID;
+  calc.getTextID = getTextID;
+
   calc.getImageX = getImageX;
   calc.getImageY = getImageY;
+
+  calc.getImageOpacity = getImageOpacity;
 
   calc.getImageHeight = getImageHeight;
   calc.getImageWidth = getImageWidth;

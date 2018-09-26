@@ -30,10 +30,11 @@ class Visualizer extends React.Component {
     //   this.props.sortByDirection,
     //   this.props.listItemsSelected;
 
-    const { behavior, items, sortBy, height, width } = props;
+    const { behavior, items, itemsType, sortBy, height, width } = props;
 
     const propSettings = {
       behavior: behavior,
+      itemsType: itemsType,
       numItems: items.length,
       areaHeight: height,
       areaWidth: width,
@@ -104,11 +105,12 @@ class Visualizer extends React.Component {
   };
 
   componentDidUpdate = function() {
-    const { behavior, items, height, width } = this.props;
+    const { behavior, items, itemsType, height, width } = this.props;
 
     this.tools.updateSettings({
       behavior,
       numItems: items.length,
+      itemsType,
       areaHeight: height,
       areaWidth: width,
       ascending: this.props.sortByDirection === TABLE_SORT_ASCENDING
@@ -131,6 +133,7 @@ class Visualizer extends React.Component {
 Visualizer.propTypes = {
   behavior: PropTypes.string,
   items: PropTypes.array,
+  itemsType: PropTypes.string,
   selectedItemId: PropTypes.string,
   height: PropTypes.number,
   width: PropTypes.number,
@@ -142,6 +145,7 @@ Visualizer.propTypes = {
 Visualizer.defaultProps = {
   behavior: 'sorted',
   items: [],
+  itemsType: 'humans',
   selectedItemId: null,
   height: 100,
   width: 100,
@@ -153,6 +157,7 @@ Visualizer.defaultProps = {
 const mapStateToProps = ({ humans, roles, navigation, visualizations }) => ({
   behavior: visualizations.behavior,
   items: navigation.tab !== 1 ? humans : roles,
+  itemsType: navigation.tab !== 1 ? 'humans' : 'roles',
   selectedItemId: visualizations.selectedItemId,
   tab: navigation.tab,
   itemSizeBase: visualizations.itemSizeBase,

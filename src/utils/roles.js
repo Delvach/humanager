@@ -48,6 +48,7 @@ export const getRandomArrayElements = (arr, count) => {
 };
 
 export const getFauxMembers = (randomNumber, ids) => {
+  if (!ids.length) return [];
   let numIds = Math.floor(randomNumber * ids.length);
 
   if (numIds < 1) {
